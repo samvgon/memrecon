@@ -1,0 +1,17 @@
+{
+ "seed": 329,
+ "dev": [
+  "financial_analyst",
+  "management_consultant",
+  "sales_manager"
+ ],
+ "test": [
+  "academic_researcher",
+  "business_executive",
+  "content_writer",
+  "creative_designer",
+  "marketing_manager",
+  "software_engineer",
+  "startup_founder"
+ ]
+}
