@@ -88,3 +88,4 @@ Assume any run can be killed at any moment (SSH drop, power cut, network loss, a
 - Before running anything long or expensive, say what it will do and roughly how long it will take.
 - Don't tune anything on the held-out personas.
 - Write findings to `notes/` as short dated markdown files when something is learned that the next session would otherwise have to rediscover.
+- **Keep `notes/decision-log.md` current.** Whenever a decision is made, something is found out about the data, or the plan deviates from the submitted proposal, append a dated entry (decision log table, deviations list, data facts, open questions). Do not rewrite old entries; add a new one if a decision changes. This is the source for the midway and final reports.
