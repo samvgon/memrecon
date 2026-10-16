@@ -1,0 +1,82 @@
+# memrecon
+
+CS329Z (Stanford, Engineering AI Agents) solo project by Sam Goncalves. Full title: *Keep, Discard, or Verify: Write Policies for Recall-Time Memory Rewrites in LLM Agents*. The proposal was submitted Oct 9, 2026. The midway report and final report use ICLR format, and the course wraps in December 2026.
+
+## The question
+
+Some agent-memory systems rewrite a memory at recall time so it suits the task at hand (JitMem, MemHarness, ReMe). None of the ones we found writes that rewrite back unchecked; TierMem writes back only after verifying against an immutable raw log. This project tests what happens when the agent **keeps its own rewrite unchecked**. It resembles human memory reconsolidation: retrieval makes a memory labile, which can keep it relevant but can also distort it.
+
+**Hypothesis.** Persisting unchecked rewrites erodes fidelity, increasingly with rewrite depth, and verifying against the original recovers it at lower cost than re-reading.
+
+- **Q1.** Does persisting the agent's unchecked rewrite cause more drift than discarding it?
+- **Q2.** If so, does a check against the source make write-back safe?
+- **Q3.** Can rewrite depth, or how much a memory has changed from its original, tell the agent when to run that check?
+
+Each question is conditioned on the last. Stage 1 is informative whether or not drift appears.
+
+## System design
+
+One memory agent: it ingests sessions into memory, retrieves memories to answer each query, and rewrites what it retrieves for the task. **Only the write policy varies**; everything else (model, prompts, retrieval, budget) is held fixed. The write policy decides what is stored.
+
+Every memory carries a **rewrite counter** and an **archived original**, kept for scoring whether or not the policy uses them. Each recall rewrites the latest version, so rewrite depth accumulates.
+
+## Staged plan
+
+| Stage | Conditions compared | Runs if |
+|---|---|---|
+| 0 (gate) | LLM judge vs. ~50 hand labels; no-rewrite control (drift ≈ 0) | Always; gates the rest |
+| 1 (Q1) | Rewrite *discarded* (original only), *replaced* (overwrites original), or *added* (both kept); append-only; periodic summarization (no archive); verbatim duplicate-original control; full and source-filtered re-reading | Always |
+| 2 (Q2) | Write back always; only on a detected conflict (no source check); after verifying against the original (TierMem-style) | Stage 1 finds drift |
+| 3 (Q3) | Verify at depth k; when distance from original passes a threshold; always; periodically (full-pipeline cost) | Drift is gradual; Stage 2 works |
+
+Stages 0–1 target the midway report and Stages 2–3 the final. Stretch goals: a second model size, MemoryAgentBench's FactConsolidation task, a LongMemEval subset, and PersonaMem as an external check (code-graded multiple choice with evolving preferences). Verify the details of any benchmark before citing it.
+
+**Do Stage 0 first.** Nothing after it means anything if the measurement is wrong. Do not start Stage 1 until the harness shows near-zero drift with no rewriting and the judge agrees with the hand labels.
+
+## Data and evaluation
+
+- **Core data: Memora** (Uddin et al., 2026). Simulated persona conversations; a weekly persona averages 155 sessions with a per-session add/update/delete log, giving per-fact ground truth for repeated recall. Check this structure on the real download before building on it.
+- **Metrics:** benchmark accuracy (including Memora's forgetting-aware FAMA); fidelity via probes against the original fact (numbers, hedges, applicability conditions); tokens per use; a failure taxonomy (lost detail, lost hedge, invented detail).
+- **Grading:** code where possible. Hedges go to an LLM judge from a *different model family* than the agent, scoring each item twice (re-judging can flip labels).
+- **Split personas into development and held-out test sets on day one**, before looking at any results. Prompts and the choice of k are tuned on development only. Report test-set results only.
+- **Pre-registered test:** compare each persisted state with discarded on fidelity and accuracy at matched context tokens, paired. About 500 probed facts detects roughly a 6-point difference. Power is the main risk.
+- **Success:** a write policy that matches the fidelity of discarding at lower cost than always verifying or re-reading.
+
+## Compute and costs
+
+- Runs on the GMKtec EVO-X2 (Ubuntu, 128 GB unified memory, reached over SSH). Local inference is llama.cpp's `llama-server` (OpenAI-compatible, port 8080). Check which models are actually installed before assuming; earlier plans were Qwen3-30B-A3B-Instruct-2507 Q4_K_M as the default, Qwen3-8B Q4_K_M, and nomic-embed-text-v1.5 Q8_0 for embeddings.
+- **Local models only for now. Never make a paid API call unless Sam explicitly says so in that session.** No API keys are set up yet. If a key is ever added, it goes in `.env` (git-ignored), never in code or the repo.
+- Make the endpoint configurable: read base URL, model name and key from environment variables, defaulting to `http://localhost:8080/v1` with a dummy key. Switching to OpenRouter or Gemini later should be a `.env` change only.
+- Credits that exist (for later): OpenRouter $200 (course lifetime), Tinker $250, Gemini $100, AWS $200 (pending), plus a Google Cloud $300 trial that ends Jan 7, 2027 and can't pay for AI Studio or use GPUs.
+
+## Repo layout and conventions
+
+- Python with `uv`. Add dependencies with `uv add`; run scripts with `uv run`.
+- `data/` and `results/` are git-ignored. Never commit datasets, run outputs, model files or `.env`.
+- `scripts/` for runnable entry points; keep the experiment logic in the package so it is testable.
+- **Reproducibility:** pin and log model names and versions, seeds, prompts, and the write-policy config for every run. Save raw agent and judge outputs, not only the scores.
+- Keep the write policy a small swappable component with one interface, so adding a condition from the table above doesn't touch the rest of the agent.
+- Run multiple seeds and report paired comparisons with confidence intervals; differences may be small.
+
+## Durability: never lose work to an interruption
+
+Assume any run can be killed at any moment (SSH drop, power cut, network loss, a crash). Design so that costs at most one unit of work.
+
+- **Unit of work = one persona × policy × seed × session.** Each unit writes its result to its own file as soon as it finishes. Write to a temp file, flush, then rename, so a crash never leaves a half-written file.
+- **Resumable by default.** On startup, skip any unit whose valid output already exists. Unit IDs come from a hash of the config, so reruns are idempotent. Every runner must support this.
+- **Save raw output before parsing.** Write each agent and judge response (request and response) to disk before any parsing or scoring, so a parsing bug never forces a rerun.
+- **Snapshot memory state after every session**, including rewrite counters and archived originals.
+- **Cache model calls** by a hash of prompt, model, and settings. This is a resume aid, not proof of reproducibility, because local models are not perfectly deterministic.
+- **Long jobs run inside `tmux`** (or a systemd service), never in a bare SSH session. Log to a file as well as the terminal.
+- **Research and long Claude responses:** write findings to `notes/` as they are found, one short dated file per topic, not at the end of the task. Do the same for long literature checks or deep-research runs.
+- **Commit small and often**, and push. Commit summary files (aggregate metrics, notes), not raw `results/`.
+- **Back up `results/`** (git-ignored) by rsync to another machine or a bucket, and after any long run.
+- **Portability:** keep `uv.lock` committed, keep the model endpoint in `.env`, and have `scripts/download_data.sh` fetch every dataset. A Dockerfile for the harness (not the model server) can wait until the project first moves to another machine.
+
+## Working rules for Claude
+
+- Don't invent results, numbers, citations or dataset details. If something hasn't been run or checked, say so.
+- Check the real structure of a downloaded dataset before writing code that depends on it.
+- Before running anything long or expensive, say what it will do and roughly how long it will take.
+- Don't tune anything on the held-out personas.
+- Write findings to `notes/` as short dated markdown files when something is learned that the next session would otherwise have to rediscover.
