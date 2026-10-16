@@ -26,6 +26,7 @@ Every memory carries a **rewrite counter** and an **archived original**, kept fo
 |---|---|---|
 | 0 (gate) | LLM judge vs. ~50 hand labels; no-rewrite control (drift ≈ 0) | Always; gates the rest |
 | 1 (Q1) | Rewrite *discarded* (original only), *replaced* (overwrites original), or *added* (both kept); append-only; periodic summarization (no archive); verbatim duplicate-original control; full and source-filtered re-reading | Always |
+| 1b (hedges) | The Stage 1 conditions repeated on a small **synthetic hedge subset**: 100–150 numeric facts rewritten to carry a hedge ("approximately", "estimated", "tentatively"), with the unhedged originals kept as a control. Reported separately and labelled synthetic. | Stage 1 works on natural facts; time permitting |
 | 2 (Q2) | Write back always; only on a detected conflict (no source check); after verifying against the original (TierMem-style) | Stage 1 finds drift |
 | 3 (Q3) | Verify at depth k; when distance from original passes a threshold; always; periodically (full-pipeline cost) | Drift is gradual; Stage 2 works |
 
@@ -36,7 +37,14 @@ Stages 0–1 target the midway report and Stages 2–3 the final. Stretch goals:
 ## Data and evaluation
 
 - **Core data: Memora** (Uddin et al., 2026). Simulated persona conversations; a weekly persona averages 155 sessions with a per-session add/update/delete log, giving per-fact ground truth for repeated recall. Check this structure on the real download before building on it.
-- **Metrics:** benchmark accuracy (including Memora's forgetting-aware FAMA); fidelity via probes against the original fact (numbers, hedges, applicability conditions); tokens per use; a failure taxonomy (lost detail, lost hedge, invented detail).
+- **What Memora actually contains (checked Oct 15, 2026; see `notes/` and the project's `memora-findings.md`):**
+  - About 1,550 weekly sessions over 10 personas. The add/update/delete log is in each session's `operation` and `operation_details`. About a third of sessions are `no_memory` filler.
+  - The log's `operation_details` holds details the agent was never told. **Build probes from the turns flagged `share_memory: True`** (1,613 of them; short single sentences), not from `operation_details`.
+  - Apply the add/update/delete operations in order to get the latest legitimate state, and score drift against that. Facts never updated or deleted are the cleanest probes.
+  - Memora's own 15 questions per persona are too few. We generate our own recall queries from the flagged facts and re-ask them at several points in the timeline, so rewrite depth can build up.
+  - Natural hedges are almost absent (about 7 of 1,613 flagged turns). The main probe types are therefore numbers and units, qualifiers ("12+", "maximum", currency), named entities and conditions, all code-gradable. Hedge probes come from the synthetic subset in Stage 1b.
+- **Persona split:** `notes/split.json` (seed 329, 3 development and 7 test personas). Frozen once committed; never change it after seeing results.
+- **Metrics:** benchmark accuracy (including Memora's forgetting-aware FAMA); fidelity via probes against the original fact (numbers and units, qualifiers and conditions, hedges via Stage 1b); tokens per use; a failure taxonomy (lost detail, lost hedge, invented detail).
 - **Grading:** code where possible. Hedges go to an LLM judge from a *different model family* than the agent, scoring each item twice (re-judging can flip labels).
 - **Split personas into development and held-out test sets on day one**, before looking at any results. Prompts and the choice of k are tuned on development only. Report test-set results only.
 - **Pre-registered test:** compare each persisted state with discarded on fidelity and accuracy at matched context tokens, paired. About 500 probed facts detects roughly a 6-point difference. Power is the main risk.
