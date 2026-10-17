@@ -28,7 +28,7 @@ This also gives a ready record for the AI-use disclosure in the reports: what Cl
 
 - Stage 0 (measurement gate): not started.
 - Stage 1 (Q1: keep vs discard the rewrite): not started.
-- Data: Memora weekly split downloaded and inspected (Oct 15). Exploration scripts E01–E09 written and run on a fresh clone (Oct 16); run them on the EVO-X2 and commit the stamped evidence files.
+- Data: Memora weekly split downloaded and inspected (Oct 15). Exploration scripts E01–E09 written, committed and run on the EVO-X2 (Oct 16, code commit `bb38eda`, scripts clean); stamped outputs are in `notes/evidence/` (commit `72e7b8f`).
 - Compute: local models only; no API keys set up yet.
 
 ## 2. Decision log (newest last)
@@ -46,7 +46,7 @@ Evidence (`E#`) and assumptions (`A#`) are defined in sections 9 and 10.
 | D07 | Oct 15 | Docker deferred until the project first moves to another machine. Portability via `uv.lock`, `.env` endpoint and a data download script. | llama.cpp with Vulkan in Docker needs GPU passthrough; the harness only needs an endpoint URL. | Both | Claude, Oct 16 | Sam, Oct 16 | — |
 | D08 | Oct 15 | Dev/held-out split fixed: seed 329, 3 development personas (`financial_analyst`, `management_consultant`, `sales_manager`), 7 test personas. Saved in `notes/split.json`. | Fixed before any results were seen. **Frozen.** Never retune on test personas. `scripts/make_split.py` recreates and checks it (reproduced Oct 16). | Claude | Claude, Oct 16 | Sam, Oct 16 | `make_split.py` |
 | D09 | Oct 15 | Hedge probes: start without a separate hedge probe (option A); add a synthetic hedge subset as **Stage 1b** (option B). | Natural hedges are almost absent in Memora: about 7 real hedges in 1,613 flagged turns. | Both | Claude, Oct 16 | Sam, Oct 16 | E05 · A4 |
-| D10 | Oct 15 | Probes are built from the dialogue (`share_memory: True` turns), not from `operation_details`. | For activity updates the log holds the whole record but the dialogue states only the change (about a third of logged values appear verbatim); preference and goal values are almost always spoken. | Claude | Claude, Oct 16 | Sam, Oct 16 | E03 · E04 · E06 · E07 · A1 · A2 · A3 |
+| D10 | Oct 15 | Probes are built from the dialogue (`share_memory: True` turns), not from `operation_details`. | For activity updates the log holds the whole record but the dialogue states only the change (about a third of logged values appear verbatim); preference and goal values are almost always spoken. | Claude | Claude, Oct 16 | pending | E03 · E04 · E06 · E07 · A1 · A2 · A3 |
 | D11 | Oct 16 | Provenance and review convention added to this log: Proposed by, Written by, Review (with name and date). | Sam wants to see who added each item and whether she has checked it. | Sam | Claude, Oct 16 | Sam, Oct 16 | — |
 | D12 | Oct 16 | Evidence trail: every data finding comes from a numbered script in `scripts/explore/`, run through `run.py` (output saved in `notes/evidence/`), and is logged in sections 9–10 with the assumptions it uses. Decisions carry IDs and cite evidence; if an assumption proves wrong, dependent decisions are marked reopened. | If we later find we misread a field, we need to know which decisions were made on that basis and re-evaluate them. | Sam | Claude, Oct 16 | Sam, Oct 16 | — |
 
@@ -83,7 +83,7 @@ State these openly in the reports. *Written by Claude, Oct 16 · review: pending
 
 *Written by Claude, Oct 16 · review: pending (whole section).*
 
-- [ ] Run E01–E06 on the EVO-X2 (`uv run python scripts/explore/run.py E01`, …), commit the scripts with the stamped evidence files, and update the "Run" column in section 9.
+- [x] Run E01–E09 on the EVO-X2, commit the scripts with the stamped evidence files, and update the "Run" column in section 9 (done Oct 16: scripts `bb38eda`, evidence `72e7b8f`).
 - [ ] Decide how to use Memora's own rubric (735 sub-questions, 479 "should mention"): at least run it once at the end of the timeline for comparability (FAMA), and decide whether its "should mention" items can also serve as probes.
 - [ ] Extract facts from flagged turns of add and update sessions (not delete sessions) into probe facts (persona, session, date); apply the operations log in order; count usable facts per persona. Decides whether about 500 probes is realistic.
 - [ ] Check A6 (file order matches `date`; session IDs unique per persona) before applying operations in order.
@@ -129,19 +129,19 @@ State these openly in the reports. *Written by Claude, Oct 16 · review: pending
 
 Each piece of evidence is a script in `scripts/explore/` whose output is saved in `notes/evidence/` (see `scripts/explore/README.md`). *Written by Claude, Oct 16 · review: pending (whole section).*
 
-**Run column:** E01–E06 began as ad hoc commands Sam ran on the EVO-X2 on Oct 15 (E06 is new). Claude re-created them as saved scripts and ran them on Oct 16 against a fresh shallow clone of Memora (commit `a6493188`), outside the memrecon repo, so those runs carry no memrecon commit. The numbers matched Sam's Oct 15 output for E01, E02, E04 and E05. A stamped run by Sam on the EVO-X2 is still to do.
+**Run column:** E01–E06 began as ad hoc commands Sam ran on the EVO-X2 on Oct 15 (E06 is new). Claude re-created them as saved scripts and ran all nine on Oct 16 against a fresh shallow clone of Memora (commit `a6493188`), where the numbers matched Sam's Oct 15 output for E01, E02, E04 and E05. Sam then ran E01–E09 on the EVO-X2 with the scripts committed (code `bb38eda`, header "scripts clean"; outputs committed in `72e7b8f`). The stamped files in `notes/evidence/` are the record; the numbers below match them.
 
 | ID | Script | Question | Result | Assumptions | Run | Used by | Status |
 |---|---|---|---|---|---|---|---|
-| E01 | `E01_session_operations.py` | What do `session_type` and `operation` contain? | 1,551 sessions; add/update/delete counts as in section 4; README's `session_type` examples do not match the data | A1 | Claude, Oct 16 (test clone) | D10 | Reproduced by Claude; Sam's run pending |
-| E02 | `E02_eval_question_evidence.py` | How many items do Memora's questions list? | 150 questions; the `{value, session_id}` counter found 34 remembered and 252 forgotten items but evidence has many other shapes, so the count is an undercount | A5 | Claude, Oct 16 (test clone) | — (earlier claim withdrawn) | Reproduced; shows A5 wrong; superseded by E08 for sizing |
-| E03 | `E03_session_text_examples.py` | For one project, what does the dialogue say compared with the log? | Add session states the whole record in about 10 flagged turns; update session states only an added deliverable | A2, A3 | Claude, Oct 16 (test clone) | D10 | Three-session example only |
-| E04 | `E04_flagged_turn_stats.py` | How many flagged turns, how long? | 1,613; median 106, mean 117 characters; max 10 per session; flags only in memory-bearing sessions | A2 | Claude, Oct 16 (test clone) | D10 | Reproduced by Claude |
-| E05 | `E05_hedge_search.py` | How often do flagged turns hedge? | Loose search 151 (9.4%), mostly the preposition "about"; tight search about 7 real hedges ("estimated" 6, "approximately" 1) | A4 | Claude, Oct 16 (test clone) | D09 | Reproduced by Claude; keyword search only |
-| E06 | `E06_log_vs_dialogue.py` | How much of the log's content is spoken? | Verbatim in dialogue: preference add 93%, update 100%, goal 100%, activity add 52%, activity update 33% (lower bounds; paraphrases missed) | A2, A3 | Claude, Oct 16 (test clone) | D10 | New; first run |
-| E07 | `E07_flagged_by_operation.py` | Which flagged turns are facts to remember, and which are instructions to forget? | Of 1,613: add sessions 1,125, update sessions 229, delete sessions 259, none in `no_memory`; update turns state changes ("from $800,000 to $850,000") | A2 | Claude, Oct 16 (test clone) | D10 | New; first run |
-| E08 | `E08_eval_rubric_counts.py` | How big is Memora's scored rubric? | 735 sub-questions (479 memory_presence, 256 forgetting_absence); reasoning questions presence only; stated totals match in all 150 questions | A7 | Claude, Oct 16 (test clone) | — | New; first run |
-| E09 | `E09_history_length.py` | How long is each persona's full history? | About 62–74k tokens per persona (characters / 4 estimate), 145–163 sessions each, longest session about 900 tokens | — | Claude, Oct 16 (test clone) | — | New; token counts are estimates |
+| E01 | `E01_session_operations.py` | What do `session_type` and `operation` contain? | 1,551 sessions; add/update/delete counts as in section 4; README's `session_type` examples do not match the data | A1 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Reproduced on EVO-X2; matches Claude's test-clone run |
+| E02 | `E02_eval_question_evidence.py` | How many items do Memora's questions list? | 150 questions; the `{value, session_id}` counter found 34 remembered and 252 forgotten items but evidence has many other shapes, so the count is an undercount | A5 | Sam, Oct 16 (EVO-X2, `bb38eda`) | — (earlier claim withdrawn) | Reproduced on EVO-X2; shows A5 wrong; superseded by E08 for sizing |
+| E03 | `E03_session_text_examples.py` | For one project, what does the dialogue say compared with the log? | Add session states the whole record in about 10 flagged turns; update session states only an added deliverable | A2, A3 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Three-session example only |
+| E04 | `E04_flagged_turn_stats.py` | How many flagged turns, how long? | 1,613; median 106, mean 117 characters; max 10 per session; flags only in memory-bearing sessions | A2 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Reproduced on EVO-X2 |
+| E05 | `E05_hedge_search.py` | How often do flagged turns hedge? | Loose search 151 (9.4%), mostly the preposition "about"; tight search about 7 real hedges ("estimated" 6, "approximately" 1) | A4 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D09 | Reproduced on EVO-X2; keyword search only |
+| E06 | `E06_log_vs_dialogue.py` | How much of the log's content is spoken? | Verbatim in dialogue: preference add 93%, update 100%, goal 100%, activity add 52%, activity update 33% (lower bounds; paraphrases missed) | A2, A3 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Run on EVO-X2 |
+| E07 | `E07_flagged_by_operation.py` | Which flagged turns are facts to remember, and which are instructions to forget? | Of 1,613: add sessions 1,125, update sessions 229, delete sessions 259, none in `no_memory`; update turns state changes ("from $800,000 to $850,000") | A2 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Run on EVO-X2 |
+| E08 | `E08_eval_rubric_counts.py` | How big is Memora's scored rubric? | 735 sub-questions (479 memory_presence, 256 forgetting_absence); reasoning questions presence only; stated totals match in all 150 questions | A7 | Sam, Oct 16 (EVO-X2, `bb38eda`) | — | Run on EVO-X2 |
+| E09 | `E09_history_length.py` | How long is each persona's full history? | About 62–74k tokens per persona (characters / 4 estimate), 145–163 sessions each, longest session about 900 tokens | — | Sam, Oct 16 (EVO-X2, `bb38eda`) | — | Run on EVO-X2; token counts are estimates |
 
 **Reference documents** (read, not run; they can be wrong too, so claims that rest on them are assumptions):
 
