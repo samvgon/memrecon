@@ -1,0 +1,27 @@
+# Evidence E05
+script:       scripts/explore/E05_hedge_search.py
+run at:       2026-10-16T21:36:06-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+v1 (loose): 151 of 1613 flagged turns match (9.4%)
+  - Speaking of abstract concepts, I just spent $3.66 on a coffee, and it got me thinking about how even simple transactions can feel quite abstract sometimes.
+  - The main objectives are to develop a robust, interpretable deep learning framework for identifying key climate-related drivers of energy demand fluctuations, and to publish at least two high-impact re
+  - That's really cool! Speaking of fascinating things, I've always wanted to visit Australia; I just love everything about it.
+  - That reminds me, I used to dislike books about social dynamics, but lately, I've actually found them pretty fascinating!
+  - That reminds me, I actually really like reading about modernism in books.
+  - Yes, I used to be really into books about modernism, but I find them less engaging now because I'm more drawn to contemporary fiction.
+  - Speaking of different environments, I actually really like tropical climates for travel. There's just something about the warmth and lush greenery!
+  - It really is. I actually just spent $15.01 on lunch, so I'm thinking about my own spending habits.
+
+v2 (tight, per word) over 1613 flagged turns:
+    6  estimated          | The key points are that financial modeling projects break-even within 24 months with an estimated ROI of 35% by year three, market analysis indicates a 40% grow
+    4  up to              | Yes, please update the key decisions to include: 'Establish a weekly content sync meeting for the next few weeks leading up to launch.'
+    3  at least           | The main objectives are to develop a robust, interpretable deep learning framework for identifying key climate-related drivers of energy demand fluctuations, an
+    3  probably           | That's so true. In fact, I just spent $8.63 on coffee, which probably wasn't a conscious decision this morning.
+    1  around             | I actually got around to visiting the local bookstore today.
+    1  approximately      | The timeline for this project is approximately 6 months, starting with a 2-month discovery and concept phase, then 4 months for design and prototyping.
+    1  maybe              | Hmm, maybe when deciding what movie to watch. I definitely try to avoid movies with Sandra Bullock, I just don't enjoy her acting.
+    1  depends            | It really depends on the workplace culture; for example, I just spent $3.45 on coffee this morning, and it felt like a necessary boundary to start my day.
+    1  might              | Speaking of predictions, I just spent $9.82 on coffee this morning, which might predict a productive afternoon for me.

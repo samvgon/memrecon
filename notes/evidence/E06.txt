@@ -1,0 +1,24 @@
+# Evidence E06
+script:       scripts/explore/E06_log_vs_dialogue.py
+run at:       2026-10-16T21:36:07-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+(session_type, operation): sessions | log values checked | found in dialogue | found in flagged turns
+  ('activity', 'add'): 514 | 956 | 498 (52%) | 492 (51%)
+  ('activity', 'update'): 58 | 797 | 265 (33%) | 217 (27%)
+  ('goal', 'add'): 30 | 18 | 18 (100%) | 18 (100%)
+  ('preference', 'add'): 159 | 127 | 118 (93%) | 118 (93%)
+  ('preference', 'update'): 78 | 96 | 96 (100%) | 95 (99%)
+
+Examples of log values NOT found verbatim in the dialogue (up to 3 per group):
+  ('activity', 'add')  academic_researcher/session_0006.json: Prepare conference abstract
+  ('activity', 'add')  academic_researcher/session_0008.json: Dr. Anya Sharma, Principal Investigator (Computer Science)
+  ('activity', 'add')  academic_researcher/session_0008.json: To develop a robust, interpretable deep learning framework capable of identifying key clim
+  ('activity', 'update')  academic_researcher/session_0013.json: To develop and validate advanced deep learning models for highly accurate, long-term predi
+  ('activity', 'update')  academic_researcher/session_0013.json: 30 months, structured into three 10-month phases for foundational research, model developm
+  ('activity', 'update')  academic_researcher/session_0013.json: Dr. Anya Sharma, Principal Investigator (Computer Science)
+  ('preference', 'add')  business_executive/session_0089.json: Canaves Oia Hotel, Santorini
+  ('preference', 'add')  content_writer/session_0130.json: Mont Saint-Michel Abbey, France
+  ('preference', 'add')  financial_analyst/session_0003.json: North Island Lodge, Seychelles

@@ -1,0 +1,28 @@
+# Evidence E04
+script:       scripts/explore/E04_flagged_turn_stats.py
+run at:       2026-10-16T21:36:06-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+flagged turns: 1613
+characters per flagged turn: median 106, mean 117, max 401
+flagged turns per session: max 10, mean 1.04
+
+by session_type (flagged turns | sessions with any flag / sessions):
+  'activity'      1159 | 720 / 720
+  'goal'            30 | 30 / 30
+  'no_memory'        0 | 0 / 519
+  'preference'     424 | 282 / 282
+
+by persona:
+  academic_researcher      159
+  business_executive       154
+  content_writer           158
+  creative_designer        163
+  financial_analyst        152
+  management_consultant    172
+  marketing_manager        159
+  sales_manager            167
+  software_engineer        164
+  startup_founder          165

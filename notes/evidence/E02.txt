@@ -1,0 +1,18 @@
+# Evidence E02
+script:       scripts/explore/E02_eval_question_evidence.py
+run at:       2026-10-16T21:36:06-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+150 questions {'remembering': 50, 'reasoning': 50, 'recommending': 50}
+34 memory items and 252 forgotten items matched as {value, session_id} dicts
+
+memory_evidence keys: {'item_count': 39, 'memory_items': 39, 'content_data': 38, 'session_history': 38, 'goal_value': 20, 'actual_value': 20, 'goal_status': 20, 'goal_data': 20, 'goal_session': 20, 'activity_sessions': 20, 'subcategory_data': 11, 'likes_count': 11, 'specific_items': 11, 'expense_count': 10, 'total_amount': 10}
+forgetting_evidence keys: {'forgotten_items': 100, 'total_forgotten_items': 100}
+
+Questions where no memory item was matched (up to 4 examples):
+ - ('academic_researcher', 'remembering', 'content_project_proposal_158_project_proposal_2', '{"content_data": {"project_title": "Secure Federated Learning Framework for Regional Healthcare Data Analysis", "project_description": "This project proposes the development and evaluation of a secure federated learning framework to enable collaborative analysis of distributed healthcare datasets wh')
+ - ('academic_researcher', 'remembering', 'content_email_writeup_158_email_writeup_1', '{"content_data": {"email_purpose": "To outline strategic research priorities for enhancing digital accessibility in healthcare, leveraging current technological advancements.", "recipient_list": ["Non-profit Leadership Team", "European Healthcare Policy Advisors"], "key_points": ["Proposed framework')
+ - ('academic_researcher', 'remembering', 'content_meeting_notes_158_meeting_notes_2', '{"content_data": {"meeting_title": "Strategic Alignment for AI-Driven Drug Discovery Initiatives", "agenda_items": ["Review of current AI model performance in early-stage compound screening", "Discussion on data governance protocols for multi-institutional research collaborations"], "key_decisions":')
+ - ('academic_researcher', 'remembering', 'content_project_proposal_158_project_proposal_1', '{"content_data": {"project_title": "Deep Learning for Regional Energy Demand Forecasting under Climate Volatility", "project_description": "To develop and validate advanced deep learning models for highly accurate, long-term predictive analytics of energy demand across a specific regional grid, inco')

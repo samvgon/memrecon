@@ -1,0 +1,33 @@
+# Evidence E08
+script:       scripts/explore/E08_eval_rubric_counts.py
+run at:       2026-10-16T21:36:07-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+150 questions; 735 scored sub-questions: {'memory_presence': 479, 'forgetting_absence': 256}
+
+by task type:
+  remembering   {'memory_presence': 260, 'forgetting_absence': 150}
+  reasoning     {'memory_presence': 90}
+  recommending  {'memory_presence': 129, 'forgetting_absence': 106}
+
+by persona (sub-questions):
+  academic_researcher      81
+  business_executive       65
+  content_writer           65
+  creative_designer        74
+  financial_analyst        76
+  management_consultant    80
+  marketing_manager        80
+  sales_manager            71
+  software_engineer        71
+  startup_founder          72
+
+questions whose stated totals do not match the counts: 0
+
+Example sub-questions:
+  - Does the response mention the task: Plan field work schedule?
+  - Does the response include the project title: Secure Federated Learning Framework for Regional Healthcare Data Analysis?
+  - Does the response include the email purpose: To outline strategic research priorities for enhancing digital accessibility in healthcare, leveraging current tech
+  - Does the response include the meeting title: Strategic Alignment for AI-Driven Drug Discovery Initiatives?

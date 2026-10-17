@@ -1,0 +1,136 @@
+# Evidence E01
+script:       scripts/explore/E01_session_operations.py
+run at:       2026-10-16T21:36:06-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+10 personas, 1551 sessions
+  519  session_type='no_memory'    operation=None
+  514  session_type='activity'     operation='add'
+  159  session_type='preference'   operation='add'
+  148  session_type='activity'     operation='delete'
+   78  session_type='preference'   operation='update'
+   58  session_type='activity'     operation='update'
+   45  session_type='preference'   operation='delete'
+   30  session_type='goal'         operation='add'
+
+--- example ('no_memory', None): academic_researcher/session_0001.json
+{
+ "session_id": 1,
+ "session_type": "no_memory",
+ "operation": null,
+ "operation_details": {},
+ "date": "2025-06-01",
+ "persona": "academic_researcher"
+}
+--- example ('activity', 'add'): academic_researcher/session_0002.json
+{
+ "session_id": 2,
+ "session_type": "activity",
+ "operation": "add",
+ "operation_details": {
+  "item": {
+   "expense_type": "coffee",
+   "amount": 3.66,
+   "created_at": "2025-06-01"
+  },
+  "category": "food_expenses"
+ },
+ "date": "2025-06-01",
+ "persona": "academic_researcher"
+}
+--- example ('preference', 'add'): academic_researcher/session_0005.json
+{
+ "session_id": 5,
+ "session_type": "preference",
+ "operation": "add",
+ "operation_details": {
+  "item": "Joan Crawford",
+  "preference": "like",
+  "subcategory": "actors"
+ },
+ "date": "2025-06-01",
+ "persona": "academic_researcher"
+}
+--- example ('activity', 'update'): academic_researcher/session_0013.json
+{
+ "session_id": 13,
+ "session_type": "activity",
+ "operation": "update",
+ "operation_details": {
+  "item": "project_proposal_1",
+  "content_data": {
+   "project_title": "Deep Learning for Regional Energy Demand Forecasting under Climate Volatility",
+   "project_description": "To develop and validate advanced deep learning models for highly accurate, long-term predictive analytics of energy demand across a specific regional grid, incorporating dynamic climate variables.",
+   "budget": 1200000,
+   "timeline": "30 months, structured into three 10-month phases for foundational research, model development, and validation/deployment preparation.",
+   "project_lead": "Dr. Anya Sharma, Principal Investigator (Computer Science)",
+   "stakeholders": [
+    "Local Utility Companies - Operations & Planning",
+    "Environmental Protection Agency (EPA) - Climate Modeling Division"
+   ],
+   "objectives": [
+    "To develop a robust, interpretable deep learning framework capable of identifying key climate-related drivers of energy demand fluctuations.",
+    "To publish at least two high-impact research papers in peer-reviewed journals and present findings at relevant academic and industry conferences.",
+    "To provide actionable insights and scenario planning tools for regional energy agencies to enhance grid stability and resource allocation."
+   ],
+   "deliverables": [
+    "Open-source code repository for developed models and data preprocessing scripts (where appropriate and non-proprietar
+--- example ('goal', 'add'): academic_researcher/session_0016.json
+{
+ "session_id": 16,
+ "session_type": "goal",
+ "operation": "add",
+ "operation_details": {
+  "subcategory": "daily_steps",
+  "item": 11000,
+  "actual_operation": "add"
+ },
+ "date": "2025-06-01",
+ "persona": "academic_researcher"
+}
+--- example ('preference', 'delete'): academic_researcher/session_0026.json
+{
+ "session_id": 26,
+ "session_type": "preference",
+ "operation": "delete",
+ "operation_details": {
+  "item": "Australia",
+  "preference": "like",
+  "subcategory": "regions"
+ },
+ "date": "2025-06-02",
+ "persona": "academic_researcher"
+}
+--- example ('activity', 'delete'): academic_researcher/session_0027.json
+{
+ "session_id": 27,
+ "session_type": "activity",
+ "operation": "delete",
+ "operation_details": {
+  "item": {
+   "task_type": "personal_tasks",
+   "description": "Visit university library",
+   "created_at": "2025-06-01"
+  },
+  "category": "todo_list"
+ },
+ "date": "2025-06-02",
+ "persona": "academic_researcher"
+}
+--- example ('preference', 'update'): academic_researcher/session_0028.json
+{
+ "session_id": 28,
+ "session_type": "preference",
+ "operation": "update",
+ "operation_details": {
+  "item": "social dynamics",
+  "preference": "like",
+  "subcategory": "topics",
+  "update_type": "preference_update",
+  "old_preference": "dislike"
+ },
+ "date": "2025-06-02",
+ "persona": "academic_researcher"
+}

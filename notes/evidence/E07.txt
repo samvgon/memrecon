@@ -1,0 +1,40 @@
+# Evidence E07
+script:       scripts/explore/E07_flagged_by_operation.py
+run at:       2026-10-16T21:36:07-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1613 flagged turns in total
+(session_type, operation): flagged turns | sessions | flagged per session
+  ('activity', 'add')              857 |  514 | 1.67
+  ('preference', 'add')            238 |  159 | 1.50
+  ('activity', 'delete')           191 |  148 | 1.29
+  ('preference', 'update')         118 |   78 | 1.51
+  ('activity', 'update')           111 |   58 | 1.91
+  ('preference', 'delete')          68 |   45 | 1.51
+  ('goal', 'add')                   30 |   30 | 1.00
+  ('no_memory', None)                0 |  519 | 0.00
+
+Examples (up to 3 per group):
+  ('activity', 'add')  academic_researcher/session_0002.json: Speaking of abstract concepts, I just spent $3.66 on a coffee, and it got me thinking about how even simple transactions can feel quite abst
+  ('activity', 'add')  academic_researcher/session_0004.json: Speaking of forces, I just spent $10.89 on breakfast, so my wallet is feeling a different kind of pull.
+  ('activity', 'add')  academic_researcher/session_0006.json: That's a good way to put it, and it reminds me that I need to prepare a conference abstract by next week.
+  ('activity', 'delete')  academic_researcher/session_0027.json: I no longer need to track "Visit university library" on my to-do list. I've already taken care of it.
+  ('activity', 'delete')  academic_researcher/session_0036.json: I actually finished planning the academic conference attendance.
+  ('activity', 'delete')  academic_researcher/session_0042.json: I no longer need to track the "Research methodology workshop." Please remove it from my calendar events.
+  ('activity', 'update')  academic_researcher/session_0013.json: Please update the deliverables to include: 'Technical report detailing methodology, results, and recommendations for operational implementat
+  ('activity', 'update')  academic_researcher/session_0013.json: Yes, please update the objectives to include: 'To provide actionable insights and scenario planning tools for regional energy agencies to en
+  ('activity', 'update')  academic_researcher/session_0013.json: Please update the budget from $800,000 to $850,000.
+  ('goal', 'add')  academic_researcher/session_0016.json: Oh, I'm glad you asked! My current goal is to hit 11,000 steps every day to stay active and healthy.
+  ('goal', 'add')  academic_researcher/session_0017.json: I'm really excited to try and keep my dinner spending under $230 per week; it's a challenge I'm ready for!
+  ('goal', 'add')  academic_researcher/session_0020.json: That's really interesting! I actually have a new goal I'd love to add: I want to spend under $70 per week on lunch to save money.
+  ('preference', 'add')  academic_researcher/session_0005.json: Oh, I absolutely love Joan Crawford! Her intensity and presence on screen were just captivating.
+  ('preference', 'add')  academic_researcher/session_0010.json: That's really cool! Speaking of fascinating things, I've always wanted to visit Australia; I just love everything about it.
+  ('preference', 'add')  academic_researcher/session_0010.json: I just love the diverse landscapes, from the outback to the Great Barrier Reef, and the unique wildlife is just incredible!
+  ('preference', 'delete')  academic_researcher/session_0026.json: Speaking of new thoughts, I actually used to really like the idea of traveling to Australia, but honestly, I'm not so keen on it anymore. Th
+  ('preference', 'delete')  academic_researcher/session_0026.json: Well, besides the flight, I've just found myself more drawn to places with ancient history and ruins lately, like Italy or Greece.
+  ('preference', 'delete')  academic_researcher/session_0051.json: Yes, I used to be really into books about modernism, but I find them less engaging now because I'm more drawn to contemporary fiction.
+  ('preference', 'update')  academic_researcher/session_0028.json: That reminds me, I used to dislike books about social dynamics, but lately, I've actually found them pretty fascinating!
+  ('preference', 'update')  academic_researcher/session_0028.json: I think it's because I've been trying to understand people better, and those books offer some great insights.
+  ('preference', 'update')  academic_researcher/session_0040.json: Speaking of elegance, I actually used to prefer Joan Crawford, but I've really come to appreciate Grace Kelly's acting and timeless style so

@@ -1,0 +1,21 @@
+# Evidence E09
+script:       scripts/explore/E09_history_length.py
+run at:       2026-10-16T21:36:07-07:00
+memrecon:     665aa04 (scripts have uncommitted changes)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+persona                  sessions  turns     chars  ~tokens  longest session (~tokens)
+academic_researcher           158   2516    284940    71235                        783
+business_executive            145   2312    266790    66697                        907
+content_writer                151   2390    266546    66636                        874
+creative_designer             147   2300    249356    62339                        756
+financial_analyst             156   2395    261635    65408                        817
+management_consultant         157   2535    288445    72111                        780
+marketing_manager             156   2355    260551    65137                        861
+sales_manager                 163   2529    280441    70110                        879
+software_engineer             163   2636    295743    73935                        847
+startup_founder               155   2483    277247    69311                        803
+
+all personas: 2731694 characters, about 682923 tokens; mean per persona about 68292 tokens
+largest persona: about 73935 tokens (estimate = characters / 4)
