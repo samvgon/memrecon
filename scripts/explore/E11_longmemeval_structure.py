@@ -32,7 +32,7 @@ def sha(p):
 
 def summary(xs):
     xs = sorted(xs)
-    return f"min {xs[0]}, median {int(st.median(xs))}, mean {int(st.mean(xs))}, max {xs[-1]}"
+    return f"min {xs[0]}, median {st.median(xs):.1f}, mean {st.mean(xs):.1f}, max {xs[-1]}"
 
 
 for path in found:
