@@ -26,5 +26,6 @@ Every finding about the data that a decision relies on must come from a script i
 | E09 | How long is each persona's full history (turns, characters, estimated tokens)? |
 | E10 | LoCoMo (`data/locomo/locomo10.json`): conversation lengths, question categories, evidence references. Prints the file's sha256 (the data is not a git clone). |
 | E11 | LongMemEval (`data/longmemeval/*.json`): question types, history lengths, answer sessions and `has_answer` turns. Prints each file's sha256. Written from the README before the data was seen. |
+| E12 | After a fact is introduced, how often do later sessions mention it again (strict string match, user turns, excluding update/delete of the same fact)? Lower bound on natural recall opportunities. |
 
 `common.py` holds the shared loaders and the version helpers. `../make_split.py` recreates or checks the frozen persona split.
