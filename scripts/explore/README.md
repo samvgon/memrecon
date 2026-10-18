@@ -24,5 +24,7 @@ Every finding about the data that a decision relies on must come from a script i
 | E07 | Which flagged turns are facts to remember (add, update sessions) and which are instructions to forget (delete sessions)? |
 | E08 | How big is Memora's scored rubric (the `evaluation` yes/no sub-questions)? Supersedes E02 for sizing. |
 | E09 | How long is each persona's full history (turns, characters, estimated tokens)? |
+| E10 | LoCoMo (`data/locomo/locomo10.json`): conversation lengths, question categories, evidence references. Prints the file's sha256 (the data is not a git clone). |
+| E11 | LongMemEval (`data/longmemeval/*.json`): question types, history lengths, answer sessions and `has_answer` turns. Prints each file's sha256. Written from the README before the data was seen. |
 
 `common.py` holds the shared loaders and the version helpers. `../make_split.py` recreates or checks the frozen persona split.
