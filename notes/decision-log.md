@@ -28,7 +28,7 @@ This also gives a ready record for the AI-use disclosure in the reports: what Cl
 
 - Stage 0 (measurement gate): not started.
 - Stage 1 (Q1: keep vs discard the rewrite): not started.
-- Data: Memora weekly split downloaded and inspected (Oct 15). Exploration scripts E01–E09 written, committed and run on the EVO-X2 (Oct 16, code commit `bb38eda`, scripts clean); stamped outputs are in `notes/evidence/` (commit `72e7b8f`).
+- Data: Memora weekly split downloaded and inspected (Oct 15). Exploration scripts E01–E11 written, committed and run on the EVO-X2 (Oct 16, code commit `bb38eda`, scripts clean); stamped outputs are in `notes/evidence/` (commit `72e7b8f`).
 - Compute: local models only; no API keys set up yet.
 
 ## 2. Decision log (newest last)
@@ -77,6 +77,7 @@ State these openly in the reports. *Written by Claude, Oct 16 · review: pending
 - **FAMA** (Memora's headline metric, per the evals README, R02): per question, `FAMA = max(0, MPA − λ·(1 − FAA))`, where MPA is the share of "should mention" sub-questions answered correctly, FAA the share of "should not mention" sub-questions answered correctly, and λ = N_forget / (N_presence + N_forget). A Table 3 cell is the mean per-question FAMA × 100. Reasoning questions have no forget sub-questions, so λ = 0 for them. Memora's judging is a majority vote of three OpenRouter judges (`openai/gpt-4.1`, `anthropic/claude-haiku-4.5`, `google/gemini-2.5-flash`). Track 1 puts the whole history in the model's context (`qwen/qwen3-32b`, `anthropic/claude-sonnet-4.5`, `google/gemini-3-pro-preview`, `openai/gpt-5.2`, each with reasoning on and off); Track 2 evaluates memory agents (a_mem, langmem, mem_0, memobase, memos, nemori) answered by `gpt-4o-mini`. Read, not run. (R02, A8)
 - **History length:** one weekly persona's full history is about 62–74k tokens (estimate: characters / 4; mean about 68k), over 145–163 sessions of at most about 900 tokens each. A full-history baseline therefore needs a model context comfortably above about 74k tokens plus the prompt; check the tokenizer and the `llama-server` context setting. (E09)
 - The first count of evidence items (34 remembered, 252 forgotten) was an undercount: the evidence blocks take many shapes (`memory_items`, `content_data`, `session_history`, `goal_value`, …) and the counter matched only one of them. (E02, A5)
+- **Other benchmarks considered as the main dataset (Oct 17; not a decision):** LoCoMo: 10 conversations of about 18k tokens, 1,986 questions, no add/update/delete information, 444 questions without an answer field (E10). LongMemEval: 500 questions, each with its own mostly separate history (about 122k tokens in the S file, about 6.6k in the oracle file), 78 knowledge-update questions, and `has_answer` turns that locate the evidence; answers are free-form text. Ingesting every S history separately would be about 500 × 122k ≈ 61 million tokens, roughly 90 times Memora's 683k tokens for all ten weekly personas (E11, E09). Both ask each question once, like Memora. (E10, E11, R03, R04) [Proposed: Claude · Written: Claude, 2026-10-17 · Review: pending]
 - Full write-up: the project doc `memora-findings.md`.
 
 ## 5. Open questions and next steps
@@ -92,6 +93,7 @@ State these openly in the reports. *Written by Claude, Oct 16 · review: pending
 - [ ] Measure real token counts with the tokenizer and set the `llama-server` context (`-c`) above the largest persona history (E09 estimates about 74k tokens) plus prompts; check the KV cache memory this needs on the EVO-X2.
 - [ ] Implement `fama()` from the formula in R02 with a unit test, and implement the yes/no sub-question judging protocol against a local judge (A8).
 - [ ] Stage 0: build the no-rewrite harness (drift should be near zero) and hand-label about 50 items to validate the judge.
+- [ ] Decide the role of each benchmark: Memora as the main dataset (operations log, small histories), a LongMemEval subset (oracle or S) as main or as the external check, LoCoMo or neither. Needs: how many LongMemEval questions can be code-graded (numbers, names) rather than judge-graded; why 21 questions have no `has_answer` turn; what ingesting 500 separate histories would cost on the EVO-X2. Log the choice as a new decision.
 - [ ] Check whether the `goal` sessions (30 in total) are worth using.
 - [ ] Wait for the AWS credit details (Lecture 7) and decide whether to use any paid API.
 
@@ -142,6 +144,8 @@ Each piece of evidence is a script in `scripts/explore/` whose output is saved i
 | E07 | `E07_flagged_by_operation.py` | Which flagged turns are facts to remember, and which are instructions to forget? | Of 1,613: add sessions 1,125, update sessions 229, delete sessions 259, none in `no_memory`; update turns state changes ("from $800,000 to $850,000") | A2 | Sam, Oct 16 (EVO-X2, `bb38eda`) | D10 | Run on EVO-X2 |
 | E08 | `E08_eval_rubric_counts.py` | How big is Memora's scored rubric? | 735 sub-questions (479 memory_presence, 256 forgetting_absence); reasoning questions presence only; stated totals match in all 150 questions | A7 | Sam, Oct 16 (EVO-X2, `bb38eda`) | — | Run on EVO-X2 |
 | E09 | `E09_history_length.py` | How long is each persona's full history? | About 62–74k tokens per persona (characters / 4 estimate), 145–163 sessions each, longest session about 900 tokens | — | Sam, Oct 16 (EVO-X2, `bb38eda`) | — | Run on EVO-X2; token counts are estimates |
+| E10 | `E10_locomo_structure.py` | What does LoCoMo contain? | 10 conversations of 11–22k tokens (mean about 18k), 19–32 sessions each; 1,986 questions in 5 numbered categories (meaning not documented in the README we read); 444 of the 446 category-5 questions have no `answer` field; 1,982 questions list evidence turn IDs, 9 references match no turn ID; no add/update/delete information | R04 | Sam, Oct 17 (EVO-X2, `59c3d81`) | — | Run on EVO-X2; data sha256 `79fa87e9…` (matches Claude's earlier download) |
+| E11 | `E11_longmemeval_structure.py` | What does LongMemEval contain? | 500 questions: temporal-reasoning 133, multi-session 133, knowledge-update 78, single-session-user 70, single-session-assistant 56, single-session-preference 30 (30 abstention). `oracle` file: about 6.6k tokens of evidence-only history per question. `S` file: about 122k tokens per question (mean 122,324; range 113–128k), 38–62 sessions (mean 47.7), about 494 turns; 19,195 distinct session IDs across 500 questions, so histories are mostly separate. Overall mean 1.9 answer sessions and 1.8 `has_answer` turns per question; knowledge-update questions have 2.0 and 1.8. 21 questions have no `has_answer` turn (not yet explained) | R03 | Sam, Oct 17 (EVO-X2, `66e5d60`) | — | Run on EVO-X2; sha256 `821a2034…` (oracle), `d6f21ea9…` (S). Bug fixed Oct 17: the first run (`59c3d81`) truncated means and medians to integers; fixed in place and re-run, counts unchanged. M file (2.7 GB) not downloaded |
 
 **Reference documents** (read, not run; they can be wrong too, so claims that rest on them are assumptions):
 
@@ -149,6 +153,8 @@ Each piece of evidence is a script in `scripts/explore/` whose output is saved i
 |---|---|---|
 | R01 | Memora `data/README.md` (pasted by Sam, Oct 15 and Oct 16) | Layout; meaning of `share_memory` (including "forgetting sessions"); that the `evaluation` block is the scored rubric |
 | R02 | Memora `evals/README.md` (pasted by Sam, Oct 16) | FAMA formula; judges and answering models; what the evaluation scripts need (an OpenRouter key) |
+| R03 | LongMemEval README (github.com/xiaowu0162/LongMemEval, summarised by Claude via web fetch, Oct 17; data from Hugging Face `xiaowu0162/longmemeval-cleaned`) | File variants (oracle, S, M), field names, question types, `has_answer`, MIT license |
+| R04 | LoCoMo README (github.com/snap-research/locomo, summarised by Claude via web fetch, Oct 17) | Data path `data/locomo10.json`, fields (`qa`, `evidence`, `event_summary`); license not read |
 
 ## 10. Assumptions register
 
