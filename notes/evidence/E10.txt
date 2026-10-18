@@ -1,0 +1,40 @@
+# Evidence E10
+script:       scripts/explore/E10_locomo_structure.py
+run at:       2026-10-17T21:59:49-07:00
+memrecon:     59c3d81 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+file: data/locomo/locomo10.json  2805274 bytes  sha256 79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4
+conversations: 10
+
+sample_id  sessions  turns  ~tokens questions
+conv-26          19    419    14422       199
+conv-30          19    369    10896       105
+conv-41          32    663    22434       193
+conv-42          29    629    17960       260
+conv-43          29    680    21574       242
+conv-44          28    675    20056       158
+conv-47          31    689    20236       190
+conv-48          30    681    18314       239
+conv-49          25    509    15608       196
+conv-50          30    568    20184       204
+
+all conversations: about 181684 tokens (characters / 4); mean about 18168
+questions: 1986
+by category (number only; meaning not documented in the README we read):
+  category 1: 282   without an 'answer' field: 0
+  category 2: 321   without an 'answer' field: 0
+  category 3: 96   without an 'answer' field: 0
+  category 4: 841   without an 'answer' field: 0
+  category 5: 446   without an 'answer' field: 444
+questions with no evidence listed: 4 of 1986
+number of evidence references per question: {0: 4, 1: 1559, 2: 239, 3: 83, 4: 58, 5: 20, 6: 6, 7: 7, 8: 2, 9: 2, 10: 2, 11: 2, 17: 1, 19: 1}
+evidence references that do not match any turn id exactly: 9
+
+example questions (first of each category):
+  [cat 2] When did Caroline go to the LGBTQ support group? -> '7 May 2023'  evidence=['D1:3']
+  [cat 3] What fields would Caroline be likely to pursue in her educaton? -> 'Psychology, counseling certification'  evidence=['D1:9', 'D1:11']
+  [cat 1] What did Caroline research? -> 'Adoption agencies'  evidence=['D2:8']
+  [cat 4] What did the charity race raise awareness for? -> 'mental health'  evidence=['D2:2']
+  [cat 5] What did Caroline realize after her charity race? -> 'self-care is important'  evidence=['D2:3']
