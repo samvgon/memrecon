@@ -53,7 +53,7 @@ Stages 0–1 target the midway report and Stages 2–3 the final. Stretch goals:
 
 ## Compute and costs
 
-- Runs on the GMKtec EVO-X2 (Ubuntu, 128 GB unified memory, reached over SSH). Local inference is llama.cpp's `llama-server` (OpenAI-compatible, port 8080). Check which models are actually installed before assuming; earlier plans were Qwen3-30B-A3B-Instruct-2507 Q4_K_M as the default, Qwen3-8B Q4_K_M, and nomic-embed-text-v1.5 Q8_0 for embeddings.
+- Runs on the GMKtec EVO-X2 (Ubuntu, 128 GB unified memory, reached over SSH). Local inference is llama.cpp's `llama-server` (OpenAI-compatible, port 8080). Current setup (Nov 5, pending Sam's review: D15–D17 in the decision log): agent Qwen3.6-35B-A3B (unsloth `UD-Q4_K_M`) on port 8080, judge Gemma 4 26B-A4B-it (unsloth `UD-Q4_K_M`) on port 8081, nomic-embed-text-v1.5 Q8_0 for embeddings, Qwen3-8B Q4_K_M as the stretch second size. **Both chat models think by default: every call must send `chat_template_kwargs: {"enable_thinking": false}`.** Check the servers are running before assuming.
 - **Local models only for now. Never make a paid API call unless Sam explicitly says so in that session.** No API keys are set up yet. If a key is ever added, it goes in `.env` (git-ignored), never in code or the repo.
 - One weekly persona's full history is about 62–74k tokens (E09 estimate, characters / 4). The full-history baseline needs the `llama-server` context (`-c`) comfortably above that plus the prompt; check the real tokenizer count and the memory the KV cache needs.
 - Make the endpoint configurable: read base URL, model name and key from environment variables, defaulting to `http://localhost:8080/v1` with a dummy key. Switching to OpenRouter or Gemini later should be a `.env` change only.
