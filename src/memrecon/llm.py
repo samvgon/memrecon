@@ -128,7 +128,7 @@ def _prefix(role: str) -> str:
     return role.upper().replace("-", "_")
 
 
-FIELDS = ("KIND", "PROVIDER", "FILE", "NAME", "PORT", "CTX", "URL", "HOST", "KEY_ENV")
+FIELDS = ("KIND", "PROVIDER", "FILE", "NAME", "PORT", "CTX", "URL", "HOST", "KEY_ENV", "QUERY_PREFIX", "DOC_PREFIX")
 
 
 def roles(config: str | Path | None = None) -> dict[str, dict[str, str]]:

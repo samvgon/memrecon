@@ -19,6 +19,7 @@ Some agent-memory systems rewrite a memory when they recall it, so it fits the t
 | `scripts/make_split.py` | Recreates or checks the frozen development/test persona split (`notes/split.json`). |
 | `scripts/explore/` | Numbered data-exploration scripts (E01–E12); their saved outputs are in `notes/evidence/`. See its README. |
 | `src/memrecon/llm.py` | The only way experiment code calls a model. |
+| `src/memrecon/embed.py`, `src/memrecon/retrieval.py` | Embeddings (cached) and retrieval: which memories are relevant to a turn. |
 | `src/memrecon/memory.py` | The memory store: memories, their lineage and depth, snapshots and the event file. |
 | `src/memrecon/monitor.py` | Readers for the monitor, and the memory guard runs call before each unit of work. |
 | `src/memrecon/fama.py` | Memora's FAMA score. |

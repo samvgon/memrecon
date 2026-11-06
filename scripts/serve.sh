@@ -80,7 +80,7 @@ for v in KIND MODEL ALIAS PORT CTX; do
 done
 case "$KIND" in
   chat) FLAGS=(-c "$CTX" "${CHAT_FLAGS[@]}") ;;
-  embed) FLAGS=(--embedding -c "$CTX" -np 1 -ngl 99 --metrics) ;;
+  embed) FLAGS=(--embedding -c "$CTX" -b "$CTX" -ub "$CTX" -np 1 -ngl 99 --metrics) ;;  # embeddings need each input to fit in one batch
   *) echo "unknown KIND '$KIND' for $role (expected chat or embed)" >&2; exit 1 ;;
 esac
 
