@@ -45,19 +45,24 @@ Then choose **one** way to run the models: locally (A) or hosted (B).
 The project's runs use a GMKtec EVO-X2 (128 GB unified memory, Ubuntu) with llama.cpp. The two model files are about 39 GB together, and the agent's long context needs more memory on top of that, so plan for a machine with well over 48 GB of GPU-usable memory.
 
 1. **Build llama.cpp** at the commit used here (`9e2a04a`, build 717), with the GPU backend for your machine (this project uses Vulkan):
+
    ```bash
    git clone https://github.com/ggml-org/llama.cpp ~/llama.cpp
    cd ~/llama.cpp && git checkout 9e2a04a
    cmake -B build -DGGML_VULKAN=ON && cmake --build build -j
    ```
+
    `scripts/serve.sh` expects `~/llama.cpp/build/bin/llama-server`; set `LLAMA_SERVER` to use another path.
 2. **Download the model files** into the Hugging Face cache, at the exact revisions used. `config/models.env` points at these paths.
+
    ```bash
    uvx --from huggingface_hub hf download unsloth/Qwen3.6-35B-A3B-GGUF Qwen3.6-35B-A3B-UD-Q4_K_M.gguf --revision a483e9e6cbd595906af30beda3187c2663a1118c
    uvx --from huggingface_hub hf download unsloth/gemma-4-26B-A4B-it-GGUF gemma-4-26B-A4B-it-UD-Q4_K_M.gguf --revision c099eb48e663fd284577b04978a94ffccb261841
    ```
+
    Check each file against the sha256 in the table below (`sha256sum <file>`). The embedding model and the small agent are only needed later; their files are listed in `config/models.env`.
 3. **Start the servers** (each runs in its own tmux session and logs to `~/logs/<role>.log`):
+
    ```bash
    scripts/serve.sh agent
    scripts/serve.sh judge
@@ -72,12 +77,15 @@ For anyone without the local setup. **These calls cost money** (the two models a
 ```bash
 cp .env.example .env
 ```
+
 Then in `.env`, set:
-```
+
+```text
 MEMRECON_MODELS=config/models.openrouter.env
 OPENROUTER_API_KEY=<your key>
 MEMRECON_ALLOW_PAID=1
 ```
+
 and check: `uv run python scripts/check_models.py`. No servers are needed. `.env` is git-ignored; never commit a key. To cap spending, also set `MEMRECON_BUDGET_USD` (e.g. `5`): the client stops making paid calls once the recorded spend reaches it. `uv run python -m memrecon.llm` shows what has been spent.
 
 Hosted results will be **close to but not identical with** local ones: OpenRouter's hosts don't run the same 4-bit files (and don't state their precision), the serving software differs, and seeds may be ignored. Each role is pinned to one hosting company (DeepInfra) with no fallback, so a run doesn't switch hosts midway; if it is down, change `_HOST` in `config/models.openrouter.env`. Every saved call records which host served it.
