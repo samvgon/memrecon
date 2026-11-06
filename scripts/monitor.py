@@ -36,13 +36,24 @@ LEDGER = RESULTS / "raw_calls" / "ledger.jsonl"
 WINDOW_S = 300
 
 SHOWN = [  # llama-server metric -> label; whichever exist on this build are shown
+    # (build 717 reports throughput and counts but no KV-cache metrics; checked Nov 6)
     ("llamacpp:prompt_tokens_seconds", "prompt tok/s"),
     ("llamacpp:predicted_tokens_seconds", "gen tok/s"),
     ("llamacpp:requests_processing", "busy"),
     ("llamacpp:requests_deferred", "queued"),
+    ("llamacpp:prompt_tokens_total", "prompt tok total"),
+    ("llamacpp:tokens_predicted_total", "gen tok total"),
     ("llamacpp:kv_cache_usage_ratio", "KV used"),
     ("llamacpp:kv_cache_tokens", "KV tokens"),
 ]
+
+
+def fmt_metric(name, v):
+    if name.endswith("ratio"):
+        return f"{v * 100:.0f}%"
+    if name.endswith("_seconds"):  # throughput gauges
+        return f"{v:,.1f}"
+    return f"{v:,.0f}"
 
 
 class LedgerTail:
@@ -93,8 +104,9 @@ def render(tail, disk_cache, raw_metrics):
     else:
         out.append("  system memory: not available here (no /proc/meminfo)")
     for g in gpu_memory():
+        free = (g["vram_total"] - g["vram_used"]) if g["vram_total"] is not None and g["vram_used"] is not None else None
         out.append(
-            f"  GPU {g['card']}: VRAM {fmt_gb(g['vram_used'])}/{fmt_gb(g['vram_total'])} GB, "
+            f"  GPU {g['card']}: VRAM {fmt_gb(g['vram_used'])}/{fmt_gb(g['vram_total'])} GB ({fmt_gb(free)} GB free), "
             f"GTT (system memory used by the GPU) {fmt_gb(g['gtt_used'])}/{fmt_gb(g['gtt_total'])} GB"
         )
 
@@ -114,7 +126,7 @@ def render(tail, disk_cache, raw_metrics):
         for name, label in SHOWN:
             if name in m:
                 v = m[name]
-                parts.append(f"{label} {v * 100:.0f}%" if name.endswith("ratio") else f"{label} {v:,.0f}" if v >= 10 else f"{label} {v:.1f}")
+                parts.append(f"{label} {fmt_metric(name, v)}")
         out.append(f"  {role:<12} port {port}: healthy | " + (" | ".join(parts) or "metrics on, none of the usual names"))
         if raw_metrics:
             out += [f"      {k} = {v:g}" for k, v in sorted(m.items()) if k.startswith("llamacpp:")]

@@ -91,6 +91,19 @@ if tmux has-session -t "$role" 2>/dev/null; then
   exit 1
 fi
 
+# Warn if the GPU's dedicated memory looks too small for this model file (the
+# server also needs room for its KV cache, so this is only a lower bound).
+need=$(stat -c %s "$MODEL" 2>/dev/null || stat -f %z "$MODEL")
+for dev in /sys/class/drm/card*/device; do
+  if [ -r "$dev/mem_info_vram_total" ] && [ -r "$dev/mem_info_vram_used" ]; then
+    free=$(( $(cat "$dev/mem_info_vram_total") - $(cat "$dev/mem_info_vram_used") ))
+    if [ "$free" -lt "$need" ]; then
+      awk -v card="$(basename "$(dirname "$dev")")" -v f="$free" -v n="$need" 'BEGIN {
+        printf "warning: %s has %.1f GB of GPU memory free, but the model file alone is %.1f GB\n", card, f / 2^30, n / 2^30 }' >&2
+    fi
+  fi
+done
+
 mkdir -p "$LOGS"
 cmd=("$LLAMA_SERVER" -m "$MODEL" --alias "$ALIAS" --port "$PORT" "${FLAGS[@]}")
 {
