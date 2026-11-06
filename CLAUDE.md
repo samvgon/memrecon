@@ -18,7 +18,7 @@ Each question is conditioned on the last. Stage 1 is informative whether or not 
 
 One memory agent: it ingests sessions into memory, retrieves memories to answer each query, and rewrites what it retrieves for the task. **Only the write policy varies**; everything else (model, prompts, retrieval, budget) is held fixed. The write policy decides what is stored.
 
-Every memory carries a **rewrite counter** and an **archived original**, kept for scoring whether or not the policy uses them. Each recall rewrites the latest version, so rewrite depth accumulates.
+Every memory carries its **depth** (rewriting generations: log 0, note 1, each kept rewrite + 1; primary for the analysis) and **`since_user`** (the same, restarted at a user's change), its version history and its lineage (sources, parents, superseded/forgotten), kept for scoring and never shown to the model (D27, D28, D33). Each recall rewrites the latest version, so depth accumulates under keep and replace.
 
 ## Staged plan
 
@@ -76,6 +76,7 @@ Assume any run can be killed at any moment (SSH drop, power cut, network loss, a
 - **Unit of work = one persona × policy × seed × session.** Each unit writes its result to its own file as soon as it finishes. Write to a temp file, flush, then rename, so a crash never leaves a half-written file.
 - **Resumable by default.** On startup, skip any unit whose valid output already exists. Unit IDs come from a hash of the config, so reruns are idempotent. Every runner must support this.
 - **Save raw output before parsing.** Write each agent and judge response (request and response) to disk before any parsing or scoring, so a parsing bug never forces a rerun.
+- **The audit log is append-only (D30).** Never overwrite or delete a raw call, an attempt, a ledger row, a snapshot or an event; a failed or rejected attempt is renamed `<key>.attempt<N>.json` before a retry. "Audit log" means these harness records; the "log" arm means memories that are the user's own words.
 - **Snapshot memory state after every session**, including rewrite counters and archived originals.
 - **Cache model calls** by a hash of prompt, model, and settings. This is a resume aid, not proof of reproducibility, because local models are not perfectly deterministic.
 - **Long jobs run inside `tmux`** (or a systemd service), never in a bare SSH session. Log to a file as well as the terminal.

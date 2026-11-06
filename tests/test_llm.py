@@ -440,8 +440,9 @@ def test_failed_calls_are_in_the_ledger(server, make_client):
     client = make_client()
     with pytest.raises(ModelCallError):
         client.chat(MSG)
-    assert read_ledger(client.raw_dir)[0]["http_status"] == 500
-    assert "failed or cut off" in report(client.raw_dir)
+    row = read_ledger(client.raw_dir)[0]
+    assert (row["http_status"], row["outcome"]) == (500, "http_error")
+    assert "rejected" in report(client.raw_dir)
 
 
 def test_hosted_cost_recorded_and_budget_stops(server, tmp_path, monkeypatch):
@@ -477,3 +478,65 @@ def test_paid_call_without_reported_cost_is_flagged(server, tmp_path, monkeypatc
     client.chat(MSG)
     assert read_ledger(client.raw_dir)[0]["cost_usd"] is None
     assert "no cost reported" in report(client.raw_dir)
+
+
+# --- every attempt kept; outcomes in the ledger ---------------------------------
+
+
+def test_retry_keeps_the_earlier_attempt(server, make_client):
+    server.replies.append(reply("The budget is 100,0", finish="length"))
+    client = make_client()
+    with pytest.raises(OutputTruncated):
+        client.chat(MSG)
+    result = client.chat(MSG)  # retried; the cut-off attempt must survive
+    folder = result.raw_path.parent
+    attempt = folder / f"{result.key}.attempt1.json"
+    assert attempt.exists()
+    assert "100,0" in json.loads(attempt.read_text())["response_text"]
+    assert json.loads(result.raw_path.read_text())["response_text"] != json.loads(attempt.read_text())["response_text"]
+
+
+def test_attempts_are_numbered(server, make_client):
+    server.replies.extend([reply("", finish="stop"), reply("", finish="stop")])
+    client = make_client()
+    for _ in range(3):
+        client.chat(MSG)  # empty, empty, then the default good answer
+    key = client.chat(MSG).key  # now a cache hit
+    folder = client.path_for(key).parent
+    assert sorted(p.name for p in folder.glob(f"{key}*")) == [f"{key}.attempt1.json", f"{key}.attempt2.json", f"{key}.json"]
+
+
+def test_fresh_call_keeps_the_cached_answer_too(server, make_client):
+    client = make_client()
+    first = client.chat(MSG)
+    client.chat(MSG, use_cache=False)
+    assert (first.raw_path.parent / f"{first.key}.attempt1.json").exists()
+
+
+@pytest.mark.parametrize(
+    "response,outcome",
+    [
+        (reply("51"), "ok"),
+        (reply(""), "empty"),
+        (reply("51", finish="length"), "truncated"),
+        (ok_response(content="", reasoning="thinking"), "reasoning"),
+        ((200, "not json"), "unreadable"),
+        ((500, "{}"), "http_error"),
+    ],
+)
+def test_ledger_records_outcome(server, make_client, response, outcome):
+    server.replies.append(response)
+    client = make_client()
+    try:
+        client.chat(MSG)
+    except ModelCallError:
+        pass
+    assert read_ledger(client.raw_dir)[-1]["outcome"] == outcome
+
+
+def test_meta_goes_into_the_ledger_not_the_cache_key(server, make_client):
+    client = make_client()
+    a = client.chat(MSG, meta={"memory_tokens": 412, "persona": "creative_designer"})
+    b = client.chat(MSG, meta={"memory_tokens": 999})
+    assert a.key == b.key and b.cached
+    assert read_ledger(client.raw_dir)[0]["meta"] == {"memory_tokens": 412, "persona": "creative_designer"}

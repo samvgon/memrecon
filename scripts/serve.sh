@@ -11,13 +11,14 @@
 # session named after the role and appends its output to ~/logs/<role>.log.
 # Models are loaded by path, so nothing is downloaded, and each gets a fixed
 # --alias: the model name the client sends and every saved call records.
+# --metrics turns on each server's /metrics page, which scripts/monitor.py reads (D31).
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIG="$REPO/config/models.env"
 LLAMA_SERVER="${LLAMA_SERVER:-$HOME/llama.cpp/build/bin/llama-server}"
 LOGS="$HOME/logs"
-CHAT_FLAGS=(-np 1 -ngl 99 --jinja --no-mmproj --no-reasoning-preserve)
+CHAT_FLAGS=(-np 1 -ngl 99 --jinja --no-mmproj --no-reasoning-preserve --metrics)
 
 [ -f "$CONFIG" ] || { echo "missing $CONFIG" >&2; exit 1; }
 # shellcheck source=/dev/null
@@ -79,7 +80,7 @@ for v in KIND MODEL ALIAS PORT CTX; do
 done
 case "$KIND" in
   chat) FLAGS=(-c "$CTX" "${CHAT_FLAGS[@]}") ;;
-  embed) FLAGS=(--embedding -c "$CTX" -np 1 -ngl 99) ;;
+  embed) FLAGS=(--embedding -c "$CTX" -np 1 -ngl 99 --metrics) ;;
   *) echo "unknown KIND '$KIND' for $role (expected chat or embed)" >&2; exit 1 ;;
 esac
 

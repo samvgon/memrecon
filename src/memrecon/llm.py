@@ -17,14 +17,17 @@ Every call goes through ModelClient.chat, which:
 - raises OutputTruncated instead of returning an answer cut off at the
   output limit (a cut-off rewrite would look like memory drift);
 - appends every call that reaches a model (not cache hits) to a ledger,
-  results/raw_calls/ledger.jsonl, with tokens, time and cost;
+  results/raw_calls/ledger.jsonl, with tokens, time, cost and outcome
+  (ok, or why it was rejected);
   `uv run python -m memrecon.llm` prints a spending and token report;
 - writes the raw request and the raw response text to disk *before*
   anything parses them, so a parsing bug never forces a rerun;
 - caches each call under a hash of the full request (model name, messages and
   every setting), so a resumed or repeated run reuses the saved response
-  instead of calling the model again. Cut-off, empty and failed answers are
-  saved for inspection but never reused from the cache.
+  instead of calling the model again. Cut-off, empty, failed and rejected
+  answers are never reused from the cache, and are never overwritten: before
+  a retry writes its file, the earlier attempt is renamed
+  `<key>.attempt<N>.json`, so the audit log keeps every attempt as it was.
 
 The cache is a resume aid, not proof of reproducibility: models are not
 perfectly deterministic, even at temperature 0.
@@ -221,6 +224,23 @@ def _atomic_write_json(path: Path, record: dict) -> None:
     os.replace(tmp, path)
 
 
+def _preserve_attempt(path: Path) -> Path:
+    """Rename an existing raw-call file to the next free <key>.attempt<N>.json, and return the new path."""
+    n = 1
+    while (target := path.with_name(f"{path.stem}.attempt{n}{path.suffix}")).exists():
+        n += 1
+    os.replace(path, target)
+    return target
+
+
+def _outcome(error: Exception) -> str:
+    if isinstance(error, ThinkingError):
+        return "reasoning"
+    if isinstance(error, OutputTruncated):
+        return "truncated"
+    return "http_error" if "HTTP" in str(error) else "unreadable"
+
+
 def cache_key(body: dict) -> str:
     """sha256 of the request body (model name, messages and every setting), canonical JSON."""
     canonical = json.dumps(body, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
@@ -315,8 +335,22 @@ class ModelClient:
     def path_for(self, key: str) -> Path:
         return self.raw_dir / self.ep.role / key[:2] / f"{key}.json"
 
-    def chat(self, messages: list[dict], *, use_cache: bool = True, tag: str | None = None, **settings) -> ChatResult:
-        """One model call. `tag` labels the call in the ledger (e.g. "stage0-control"); it is not part of the cache key."""
+    def chat(
+        self,
+        messages: list[dict],
+        *,
+        use_cache: bool = True,
+        tag: str | None = None,
+        meta: dict | None = None,
+        **settings,
+    ) -> ChatResult:
+        """One model call.
+
+        `tag` labels the call in the ledger (e.g. "stage0-control"); `meta` adds
+        facts about the call to its ledger row, e.g. {"memory_tokens": 412,
+        "persona": ..., "session": ...}, which scripts/monitor.py shows.
+        Neither is part of the cache key.
+        """
         body = self.request_body(messages, **settings)
         key = cache_key(body)
         path = self.path_for(key)
@@ -328,7 +362,7 @@ class ModelClient:
                 if result.content:
                     return result
             except (json.JSONDecodeError, ModelCallError):
-                pass  # unreadable, failed, cut-off or empty answer on disk: call again and overwrite it
+                pass  # unreadable, failed, cut-off, rejected or empty answer on disk: call again
 
         self._check_allowed()
         record = {
@@ -350,12 +384,25 @@ class ModelClient:
                 "finished_at": _now(),
             }
         )
+        if path.exists():
+            _preserve_attempt(path)  # never overwrite an earlier attempt
         _atomic_write_json(path, record)  # raw response saved before any parsing
-        self._log(record, tag)
-        return self._parse(record, key, path, cached=False)
+        try:
+            result = self._parse(record, key, path, cached=False)
+        except ModelCallError as e:
+            self._log(record, tag, outcome=_outcome(e), meta=meta)
+            raise
+        self._log(record, tag, outcome="ok" if result.content else "empty", meta=meta)
+        return result
 
-    def _log(self, record: dict, tag: str | None) -> None:
-        """Append a ledger row for a call that reached the model."""
+    def _log(self, record: dict, tag: str | None, outcome: str, meta: dict | None = None) -> None:
+        """Append a ledger row for a call that reached the model.
+
+        `outcome` is "ok", "empty", or why the answer was rejected: "reasoning",
+        "truncated", "http_error" or "unreadable". Rejected calls still cost
+        money, so they count towards the budget; cost evaluations of the
+        systems should leave them out or report them separately.
+        """
         usage, finish, served = {}, None, record["provider"]
         try:
             data = json.loads(record["response_text"])
@@ -379,10 +426,12 @@ class ModelClient:
                 "key": record["key"],
                 "http_status": record["http_status"],
                 "finish_reason": finish,
+                "outcome": outcome,
                 "prompt_tokens": usage.get("prompt_tokens"),
                 "completion_tokens": usage.get("completion_tokens"),
                 "cost_usd": cost,
                 "latency_s": record["latency_s"],
+                **({"meta": meta} if meta else {}),
             },
         )
 
@@ -497,13 +546,16 @@ def report(raw_dir: str | Path = REPO_ROOT / "results" / "raw_calls") -> str:
             g["unpriced"] += 1
         else:
             g["usd"] += row["cost_usd"]
-        if row.get("http_status") != 200 or row.get("finish_reason") == "length":
+        outcome = row.get("outcome")
+        if outcome is None:  # ledger rows written before outcomes were recorded
+            outcome = "ok" if row.get("http_status") == 200 and row.get("finish_reason") != "length" else "rejected"
+        if outcome not in ("ok", "empty"):
             g["failed"] += 1
     lines = [f"{'role':<12} {'served by':<24} {'tag':<16} {'calls':>6} {'prompt tok':>11} {'output tok':>11} {'USD':>11}"]
     for (role, served, _model, tag), g in sorted(groups.items()):
         lines.append(
             f"{role:<12} {served:<24} {tag or '-':<16} {g['calls']:>6} {g['prompt']:>11} {g['completion']:>11} {g['usd']:>11.6f}"
-            + (f"  ({g['failed']} failed or cut off)" if g["failed"] else "")
+            + (f"  ({g['failed']} rejected: failed, cut off or reasoning)" if g["failed"] else "")
             + (f"  ({g['unpriced']} paid calls with no cost reported)" if g["unpriced"] else "")
         )
     lines.append(f"total spend: ${total_spend(raw_dir):.6f}   (ledger: {ledger_path(raw_dir)})")
