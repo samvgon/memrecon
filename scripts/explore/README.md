@@ -28,5 +28,6 @@ Every finding about the data that a decision relies on must come from a script i
 | E11 | LongMemEval (`data/longmemeval/*.json`): question types, history lengths, answer sessions and `has_answer` turns. Prints each file's sha256. Written from the README before the data was seen. |
 | E12 | After a fact is introduced, how often do later sessions mention it again (strict string match, user turns, excluding update/delete of the same fact)? Lower bound on natural recall opportunities. |
 | E13 | Is file order the same as date order (assumption A6), and are session IDs and turn numbers unique and consecutive? Needed before applying operations in order and pointing memories at source turns. |
+| E14 | How many code-gradable probe candidates (numbers, quoted titles, names, hashtags, qualifiers, the record's own value) do the flagged turns of add and update sessions give, per persona, and how many belong to facts never changed later? Sizes the probe pool for the power estimate (D10). Candidates found by pattern, not checked probes. |
 
 `common.py` holds the shared loaders and the version helpers. `../make_split.py` recreates or checks the frozen persona split.
