@@ -1,0 +1,76 @@
+# Evidence E14
+script:       scripts/explore/E14_probe_candidates.py
+run at:       2026-11-06T14:56:58-08:00
+memrecon:     81d9867 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+persona                set         facts  w/ elements        clean        turns  turns w/ el     elements     clean el
+academic_researcher    test           82           69           48          132           94          144           68
+business_executive     test           79           70           49          134          113          232           98
+content_writer         test           84           72           49          136          105          176           91
+creative_designer      test           81           72           50          130          102          186           81
+financial_analyst      dev            86           74           54          134          105          192          101
+management_consultant  dev            88           78           55          142          114          194          102
+marketing_manager      test           85           75           57          136          103          193           96
+sales_manager          dev            82           72           45          138          103          170           73
+software_engineer      test           89           79           56          136          113          212           90
+startup_founder        test           83           74           55          136          108          185           92
+
+TOTAL dev                            256          224          154          414          322          556          276
+TOTAL test                           583          511          364          940          738         1328          616
+TOTAL all                            839          735          518         1354         1060         1884          892
+
+facts: add/update sessions with flagged turns; clean: never updated or deleted later (identity as in E12);
+elements: code-gradable candidates found by pattern (see the docstring); goal facts are not identity-matched.
+
+Elements by kind (all personas):
+  number              626
+  quoted              173
+  name                714
+  hashtag              58
+  qualifier            25
+  record value        288
+  goal facts with elements (identity not matched): 30
+
+20 random flagged turns from development personas, with the candidates found:
+- financial_analyst session 56 (activity, add): The title is "AI-Driven Credit Risk Scoring Model Enhancement."
+    -> [('quoted', '"AI-Driven Credit Risk Scoring Model Enhancement."')]
+- sales_manager session 31 (activity, add): Recent studies show significant growth opportunities in emerging healthcare markets, driven by demand for digital solutions and specialized medical services, wi
+    -> none
+- sales_manager session 76 (preference, update): Speaking of clear communication, I've actually started really liking Guns N' Roses lately, which is a big change for me. I used to not be a fan at all!
+    -> [('name', "Guns N' Roses"), ('record value', "Guns N' Roses")]
+- sales_manager session 108 (activity, update): I actually just remembered that my colleague's birthday is next Tuesday, not this Friday as I originally thought.
+    -> [('name', 'Friday'), ('name', 'Tuesday'), ('record value', "Colleague's birthday")]
+- sales_manager session 54 (preference, add): Speaking of connections and access, I've been thinking a lot about travel lately, and I really like South America as a region to explore.
+    -> [('name', 'South America'), ('record value', 'South America')]
+- management_consultant session 142 (activity, add): It really does; I just spent $5.72 on coffee, and even that simple transaction has a whole economic system behind it.
+    -> [('number', '$5.72')]
+- financial_analyst session 145 (activity, add): Let's use #IndustryInsights, #FinancialPlanning, #ROI, and #StrategicFinance.
+    -> [('hashtag', '#IndustryInsights'), ('hashtag', '#FinancialPlanning'), ('hashtag', '#ROI'), ('hashtag', '#StrategicFinance')]
+- management_consultant session 4 (activity, add): The agenda items included a discussion on vendor selection for the enterprise-wide AI platform and an assessment of initial ROI and impact on production efficie
+    -> [('name', 'ROI')]
+- sales_manager session 89 (activity, update): Yes, please update the `key_points` with: 'Review of initial pilot program successes and challenges in select regions.'
+    -> [('quoted', "'Review of initial pilot program successes and challenges in select regions.'")]
+- financial_analyst session 149 (preference, update): That makes me think about authors; I used to like Malcolm Gladwell, but I'm really into Mary Roach now. Her books are just so much more engaging for me!
+    -> [('name', 'Malcolm Gladwell'), ('name', 'Mary Roach'), ('record value', 'Mary Roach')]
+- management_consultant session 17 (preference, add): I absolutely love experiencing cultural ceremonies when I travel; they're so vibrant and eye-opening!
+    -> [('record value', 'cultural ceremonies')]
+- sales_manager session 89 (activity, update): Please add 'Marketing Director (Automotive Sector)' to the `recipient_list`.
+    -> [('quoted', "'Marketing Director (Automotive Sector)'"), ('name', 'Automotive Sector'), ('name', 'Marketing Director')]
+- financial_analyst session 28 (activity, add): Speaking of self-assessment, I need to remember to call my parents later today.
+    -> none
+- sales_manager session 60 (activity, add): Speaking of understanding, I just spent $9.34 on coffee, so I definitely understand the need for a caffeine boost right now.
+    -> [('number', '$9.34')]
+- management_consultant session 98 (preference, add): Speaking of fascinating topics, I actually really enjoy reading books about technology.
+    -> [('record value', 'technology')]
+- management_consultant session 31 (activity, add): I need to plan weekend activities.
+    -> [('record value', 'Plan weekend activities')]
+- management_consultant session 107 (activity, add): The key points will be the successful completion of the initial three-month pilot phase for the FinTech innovation enterprise, strong user engagement and positi
+    -> [('name', 'FinTech')]
+- sales_manager session 67 (activity, add): This post is specifically for LinkedIn.
+    -> [('name', 'LinkedIn')]
+- management_consultant session 66 (activity, add): The deliverables include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the Pan-European Digita
+    -> [('name', 'API Strategy Document'), ('name', 'Detailed Integration Blueprint'), ('name', 'Financial Impact Assessment'), ('name', 'Investment Roadmap'), ('name', 'Pan-European Digital Health Ecosystem'), ('name', 'Target Operating Model')]
+- management_consultant session 66 (activity, add): The key stakeholders involved are the IT Infrastructure & Security Teams and National Health Ministries Representatives.
+    -> [('name', 'IT Infrastructure & Security Teams'), ('name', 'National Health Ministries Representatives')]
