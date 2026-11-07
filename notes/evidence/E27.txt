@@ -1,0 +1,299 @@
+# Evidence E27
+script:       scripts/explore/E27_handcheck_sample.py
+run at:       2026-11-07T13:55:49-08:00
+memrecon:     eed92b5 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+926 rows from 315 sessions; 37 sessions picked
+
+per stratum: rows (or sessions) found, sessions in the sample that show it, sessions picked for it
+  status new                                   found  771, shown in  21, picked for it 0
+  status added                                 found   29, shown in   3, picked for it 1
+  status updated                               found    7, shown in   3, picked for it 3
+  status replaced                              found    7, shown in   3, picked for it 0
+  status removed                               found   34, shown in   5, picked for it 3
+  status done                                  found   23, shown in   6, picked for it 3
+  status no longer                             found   55, shown in   7, picked for it 3
+  who: user and others                         found   48, shown in   4, picked for it 0
+  who: someone else                            found    4, shown in   3, picked for it 3
+  kind number                                  found  123, shown in   9, picked for it 0
+  kind date                                    found   84, shown in   7, picked for it 0
+  kind name                                    found  153, shown in  16, picked for it 0
+  kind title                                   found   63, shown in   9, picked for it 0
+  kind item                                    found  228, shown in  17, picked for it 0
+  kind task                                    found  143, shown in  14, picked for it 0
+  kind preference                              found  132, shown in   6, picked for it 1
+  qualifier on the hedge list (graded)         found   17, shown in   4, picked for it 2
+  qualifier off the list (not graded)          found   45, shown in   6, picked for it 0
+  date resolved to a day                       found   64, shown in   4, picked for it 3
+  date not resolved                            found   20, shown in   3, picked for it 2
+  number with a unit                           found  117, shown in   9, picked for it 0
+  document update                              found   17, shown in   4, picked for it 0
+  document delete                              found   16, shown in   4, picked for it 1
+  preference update, item switched             found   14, shown in   3, picked for it 2
+  preference update, like/dislike flipped      found   12, shown in   3, picked for it 2
+  flagged line with no rows                    found    2, shown in   2, picked for it 2
+  random                                       found  284, shown in   6, picked for it 6
+
+- financial_analyst session 6 (activity, add, said on 2025-06-01) [picked for: who: someone else]
+    6. For the meeting notes, the title was "Strategic AI Integration Financial Review - North American Market Expansion."
+        * Strategic AI Integration Financial Review - North American Market Expansion |  | title | user | title | new |  | 
+    8. The agenda for our meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory compliance, and a review of current AI-driven drug discovery project budgets and spend.
+        * cost-benefit analysis of proposed AI-powered supply chain optimization tools |  | agenda item | user and others | item | new |  | 
+        * risk assessment of financial implications for AI regulatory compliance |  | agenda item | user and others | item | new |  | 
+        * review of current AI-driven drug discovery project budgets and spend |  | agenda item | user and others | item | new |  | 
+    10. We approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+        * reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D |  | decision | user and others | task | new |  | 
+        * within the next three months |  | timeframe | user and others | date | new |  | 
+    12. The action items include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 weeks.
+        * Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month |  | action item | someone else | task | new |  | 
+        * CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 weeks |  | action item | someone else | task | new |  | 
+- management_consultant session 61 (activity, add, said on 2025-06-03) [picked for: who: someone else]
+    6. The meeting was about "Fintech Core System Integration - Phase 1 Review & Next Steps."
+        * Fintech Core System Integration - Phase 1 Review & Next Steps | about | title | user | title | new |  | 
+    8. The agenda included a discussion of identified technical roadblocks and mitigation strategies, planning for Phase 2 rollout of account management and fraud detection modules, and analysis of initial pilot user feedback and performance metrics.
+        * discussion of identified technical roadblocks and mitigation strategies |  | agenda item | user | item | new |  | 
+        * planning for Phase 2 rollout of account management and fraud detection modules |  | agenda item | user | item | new |  | 
+        * analysis of initial pilot user feedback and performance metrics |  | agenda item | user | item | new |  | 
+    10. We decided to schedule a dedicated technical deep-dive session on the data migration strategy for the upcoming period and approved the proposed change request for integrating the new KYC vendor's enhanced identity verification service.
+        * schedule a dedicated technical deep-dive session on the data migration strategy for the upcoming period |  | decision | user and others | task | new |  | 
+        * approved the proposed change request for integrating the new KYC vendor's enhanced identity verification service |  | decision | user and others | task | new |  | 
+    12. Sofia Rodriguez needs to consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting. I also need to prepare a comparative analysis of potential fraud detection systems for review in 2 weeks.
+        * Sofia Rodriguez |  | name | user | name | new |  | 
+        * consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting |  | task | someone else | task | new |  | 
+        * prepare a comparative analysis of potential fraud detection systems for review in 2 weeks |  | task | user | task | new |  | 
+- sales_manager session 4 (activity, add, said on 2025-06-01) [picked for: who: someone else]
+    7. The meeting was titled "Strategic Account Review: Global Compliance Solutions for Key Manufacturing Client."
+        * Strategic Account Review: Global Compliance Solutions for Key Manufacturing Client |  | title | user | title | new |  | 
+    9. The agenda items included identifying potential risks and mitigation strategies for upcoming contract renewals, and addressing recent regulatory changes impacting the manufacturing sector.
+        * identifying potential risks and mitigation strategies for upcoming contract renewals |  | agenda item | user | item | new |  | 
+        * addressing recent regulatory changes impacting the manufacturing sector |  | agenda item | user | item | new |  | 
+    11. We decided to initiate discussions with legal and product teams regarding proactive solutions for anticipated regulatory shifts.
+        * initiate discussions with legal and product teams regarding proactive solutions for anticipated regulatory shifts |  | decision | user and others | task | new |  | 
+    13. Sales Rep A needs to schedule a technical deep-dive with the client's compliance team within seven days, and I will review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days.
+        * Sales Rep A needs to schedule a technical deep-dive with the client's compliance team within seven days |  | task | someone else | task | new |  | 
+        * review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days |  | task | user | task | new |  | 
+- management_consultant session 129 (activity, update, said on 2025-06-06) [picked for: status updated]
+    5. Yes, please update the budget from $900,000 to $1,100,000.
+        * $900,000 | from | budget | user | number | replaced | 900000 $ | 
+        * $1,100,000 |  | budget | user | number | updated | 1.1e+06 $ | 
+- management_consultant session 55 (activity, update, said on 2025-06-03) [picked for: status updated]
+    5. Please update the success metrics to include 'Client Net Promoter Score (NPS) for onboarding experience'.
+        * Client Net Promoter Score (NPS) for onboarding experience |  | success measure | user | item | added |  | 
+    7. Yes, please update the budget for this proposal from $1,050,000 to $900,000.
+        * $900,000 |  | budget | user | number | updated | 900000 $ | 
+        * $1,050,000 | from | budget | user | number | replaced | 1.05e+06 $ | 
+- financial_analyst session 89 (activity, update, said on 2025-06-04) [picked for: status updated]
+    5. Yes, the budget should be updated from $1,700,000 to $1,550,000.
+        * $1,700,000 | from | budget | user | number | replaced | 1.7e+06 $ | 
+        * $1,550,000 |  | budget | user | number | updated | 1.55e+06 $ | 
+    7. Yes, please add 'Data Science Lead' to the stakeholders.
+        * Data Science Lead |  | key stakeholders | user | item | added |  | 
+    9. Please add 'Final project report including impact analysis and recommendations for future enhancements' to the deliverables.
+        * Final project report including impact analysis and recommendations for future enhancements |  | key deliverables | user | item | added |  | 
+- financial_analyst session 127 (activity, add, said on 2025-06-06) [picked for: qualifier on the hedge list (graded)]
+    6. It's for LinkedIn.
+        * LinkedIn |  | platform | user | name | new |  | 
+    8. This will be an Insight Post.
+        * Insight Post |  | content type | user | title | new |  | 
+    10. The main message is about exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance.
+        * exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance | about | main message | user | title | new |  | 
+    12. Let's use #SupplyChainOptimization, #AIManufacturing, #FinancialAnalysis, #FinancialPlanning, and #EuropeanMarket.
+        * #SupplyChainOptimization |  | hashtag | user | item | new |  | 
+        * #AIManufacturing |  | hashtag | user | item | new |  | 
+        * #FinancialAnalysis |  | hashtag | user | item | new |  | 
+        * #FinancialPlanning |  | hashtag | user | item | new |  | 
+        * #EuropeanMarket |  | hashtag | user | item | new |  | 
+- financial_analyst session 56 (activity, add, said on 2025-06-03) [picked for: qualifier on the hedge list (graded)]
+    6. The title is "AI-Driven Credit Risk Scoring Model Enhancement."
+        * AI-Driven Credit Risk Scoring Model Enhancement |  | title | user | title | new |  | 
+    8. We're proposing an initiative to significantly enhance our long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accuracy and reduced default rates in our fintech lending products.
+        * enhance our long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accuracy and reduced default rates in our fintech lending products |  | project description | user and others | item | new |  | 
+    10. The proposed budget for this project is $1,700,000.
+        * $1,700,000 |  | budget | user and others | number | new | 1.7e+06 $ | 
+    12. We're looking at a 15-month timeline, structured into three distinct phases over the next period.
+        * 15-month timeline |  | timeline | user and others | number | new | 15 -month timeline | 
+    14. The project will be led by Dr. Anya Sharma, our Senior Financial Analyst.
+        * Dr. Anya Sharma |  | project leader | user and others | name | new |  | 
+    16. Our key stakeholders include the Head of Lending Operations, Head of Product Development, and the Chief Risk Officer (CRO).
+        * Head of Lending Operations |  | key stakeholders | user and others | item | new |  | 
+        * Head of Product Development |  | key stakeholders | user and others | item | new |  | 
+        * Chief Risk Officer (CRO) |  | key stakeholders | user and others | item | new |  | 
+    18. Our main objectives are to increase credit risk model predictive accuracy by at least 15% within the next 12 months, and reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.
+        * increase credit risk model predictive accuracy by at least 15% within the next 12 months | at least | objective | user and others | item | new |  | 
+        * reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment |  | objective | user and others | item | new |  | 
+    20. The key deliverables will be a developed and validated AI-driven credit risk scoring model prototype within nine months, a detailed performance monitoring dashboard with automated alert system for model drift, and a full model integration plan and API documentation for existing lending platforms.
+        * developed and validated AI-driven credit risk scoring model prototype within nine months |  | key deliverables | user and others | item | new |  | 
+        * detailed performance monitoring dashboard with automated alert system for model drift |  | key deliverables | user and others | item | new |  | 
+        * full model integration plan and API documentation for existing lending platforms |  | key deliverables | user and others | item | new |  | 
+    22. For risk analysis, we're looking at the availability of specialized AI/ML engineering talent for implementation, which is a medium risk, and model explainability and interpretability for regulatory scrutiny, also a medium risk.
+        * availability of specialized AI/ML engineering talent for implementation |  | risk analysis | user and others | item | new |  | 
+        * model explainability and interpretability for regulatory scrutiny |  | risk analysis | user and others | item | new |  | 
+- management_consultant session 103 (activity, add, said on 2025-06-05) [picked for: date not resolved]
+    17. I should also try to schedule some exercise time this week.
+        * schedule some exercise time |  | task | user | task | new |  | 
+        * this week |  | timeframe | user | date | new |  | 
+- financial_analyst session 27 (activity, add, said on 2025-06-02) [picked for: date not resolved]
+    7. The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase.
+        * preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase |  | purpose | user | title | new |  | 
+    9. The recipients for this email are the Regional Leadership Team and the Head of Innovation.
+        * Regional Leadership Team |  | recipients | user | name | new |  | 
+        * Head of Innovation |  | recipients | user | name | new |  | 
+    11. For key points, I want to include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts.
+        * identified areas for further cost optimization in infrastructure and data processing |  | key points | user | item | new |  | 
+        * recommendations for scaling the pilot to additional regions with potential budgetary impacts |  | key points | user | item | new |  | 
+    13. I'd like the recipients to review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week.
+        * review the attached preliminary financial report |  | action | user | task | new |  | 
+        * be prepared to discuss these findings at our strategy meeting next week |  | action | user | task | new |  | 
+        * next week |  | date | user | date | new |  | 
+- financial_analyst session 45 (activity, delete, said on 2025-06-03) [picked for: status done]
+    8. I finished reviewing the audit findings.
+        * reviewing the audit findings |  | task | user | task | done |  | 
+- management_consultant session 9 (preference, add, said on 2025-06-01) [picked for: status done]
+    16. That reminds me, I recently rewatched "The Apartment" and I really love that movie.
+        * "The Apartment" |  | movie | user | title | new |  | 
+        * rewatched "The Apartment" |  | task | user | task | done |  | 
+        * really love that movie |  | preference | user | preference | new |  | 
+    18. I just adore the witty dialogue and the charming performances by Jack Lemmon and Shirley MacLaine! It's such a heartwarming story.
+        * witty dialogue |  | liked feature | user | preference | new |  | 
+        * charming performances |  | liked feature | user | preference | new |  | 
+        * Jack Lemmon |  | actor | user | name | new |  | 
+        * Shirley MacLaine |  | actor | user | name | new |  | 
+        * heartwarming story |  | liked feature | user | preference | new |  | 
+- financial_analyst session 154 (activity, delete, said on 2025-06-07) [picked for: status done]
+    13. I'm glad I finished reading financial news.
+        * reading financial news |  | task | user | task | done |  | 
+- financial_analyst session 32 (activity, update, said on 2025-06-02) [picked for: status added]
+    5. Please update the objectives to include: 'Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months.'
+        * Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months. |  | main objectives | user | item | added |  | 
+- sales_manager session 63 (activity, delete, said on 2025-06-03) [picked for: status removed]
+    12. I've actually completed "Prepare proposal documents," so you can remove that from my to-do list.
+        * Prepare proposal documents |  | task | user | title | done |  | 
+        * remove that from my to-do list |  | task | user | task | removed |  | 
+- management_consultant session 91 (activity, delete, said on 2025-06-04) [picked for: status removed]
+    5. Please remove "Highlighted potential cost savings through proactive threat mitigation over the next period." from the key points.
+        * Highlighted potential cost savings through proactive threat mitigation over the next period. |  | key point | user | item | removed |  | 
+    7. Yes, please remove 'Head of Regional Manufacturing' from the recipient list.
+        * Head of Regional Manufacturing |  | recipient | user | name | removed |  | 
+- financial_analyst session 43 (activity, delete, said on 2025-06-02) [picked for: status removed]
+    5. Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold." from the key decisions.
+        * Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold. |  | decision | user | item | removed |  | 
+- sales_manager session 74 (preference, delete, said on 2025-06-03) [picked for: status no longer]
+    13. Speaking of changes, I used to really like the idea of traveling to South America, but I'm actually not that keen on it anymore. I've just grown more interested in other places.
+        * South America |  | liked region | user | name | no longer |  | 
+    15. I've actually become really fascinated with East Asian cultures lately, like Japan and South Korea, so my travel preferences have shifted there.
+        * East Asian cultures |  | liked region | user | name | new |  | 
+        * Japan |  | liked region | user | name | new |  | 
+        * South Korea |  | liked region | user | name | new |  | 
+- sales_manager session 59 (preference, update, said on 2025-06-03) [picked for: status no longer]
+    14. Speaking of differences, I used to really like Guns N' Roses, but honestly, I'm just not into their music anymore. My taste has definitely shifted.
+        * Guns N' Roses |  | liked artist | user | name | no longer |  | 
+        * their music |  | preference | user | preference | no longer |  | 
+- financial_analyst session 47 (preference, update, said on 2025-06-03) [picked for: status no longer]
+    12. Speaking of fascinating topics, I used to really like Ta-Nehisi Coates, but lately, I've been much more into Michio Kaku's books. His way of making complex science understandable is just incredible!
+        * Ta-Nehisi Coates | used to really like | liked author | user | name | no longer |  | 
+        * Michio Kaku's books | lately, I've been much more into | liked author | user | name | new |  | 
+- management_consultant session 78 (activity, add, said on 2025-06-04) [picked for: date resolved to a day]
+    13. It's also interesting how traditions can intersect with daily life, like how I just spent $8.39 on coffee this morning.
+        * $8.39 |  | expense | user | number | new | 8.39 $ | 
+        * coffee |  | item | user | item | new |  | 
+        * this morning |  | time | user | date | new |  | 2025-06-04
+- management_consultant session 6 (activity, add, said on 2025-06-01) [picked for: date resolved to a day]
+    18. It really is; speaking of daily things, I just spent $5.65 on breakfast this morning.
+        * $5.65 |  | expense | user | number | new | 5.65 $ | 
+        * breakfast |  | item | user | item | new |  | 
+        * this morning |  | date | user | date | new |  | 2025-06-01
+- sales_manager session 10 (activity, add, said on 2025-06-01) [picked for: date resolved to a day]
+    14. That's really cool! Speaking of security, I have a colleague's birthday on July 29th that I need to remember.
+        * colleague's birthday |  | event | user | name | new |  | 
+        * July 29th |  | date | user | date | new |  | 2025-07-29
+- financial_analyst session 96 (preference, add, said on 2025-06-05) [picked for: kind preference]
+    10. That reminds me, I really dislike music from the 1990s. I just can't get into it.
+        * music from the 1990s |  | disliked music | user | preference | new |  | 
+- sales_manager session 25 (activity, delete, said on 2025-06-01) [picked for: document delete]
+    5. Please remove "Discuss roadmap for next phase of solution deployment" from the agenda items.
+        * Discuss roadmap for next phase of solution deployment |  | agenda item | user | item | removed |  | 
+    7. Yes, please remove 'David Chen (Product Lead)' from the attendees.
+        * David Chen (Product Lead) |  | attendee | user | name | removed |  | 
+- financial_analyst session 140 (preference, update, said on 2025-06-06) [picked for: preference update, item switched]
+    12. Speaking of meaningful results, I used to love the Swiss Alps, but lately I'm really drawn to the French Riviera for travel. The sunshine and coastline are just calling my name!
+        * Swiss Alps | used to | liked place | user | name | no longer |  | 
+        * French Riviera | really drawn to | liked place | user | name | new |  | 
+- sales_manager session 36 (preference, update, said on 2025-06-02) [picked for: preference update, item switched]
+    13. Speaking of things changing, my music tastes have definitely evolved; I used to be all about Queen, but now I'm really into Guns N' Roses!
+        * Queen |  | liked artist | user | name | no longer |  | 
+        * Guns N' Roses |  | liked artist | user | name | new |  | 
+    15. I guess I just prefer their raw energy and harder rock sound now! Queen is still great, but Axl Rose's vocals are just so powerful.
+        * raw energy and harder rock sound |  | preference | user | preference | new |  | 
+        * Queen |  | liked artist | user | name | new |  | 
+        * Axl Rose |  | liked artist | user | name | new |  | 
+- management_consultant session 156 (preference, update, said on 2025-06-07) [picked for: preference update, like/dislike flipped]
+    11. Speaking of complex interplay, I used to enjoy reading books about technology, but lately, I find myself disliking that topic.
+        * reading books about technology |  | liked books | user | preference | no longer |  | 
+        * technology |  | liked books | user | preference | no longer |  | 
+- management_consultant session 115 (preference, update, said on 2025-06-05) [picked for: preference update, like/dislike flipped]
+    12. Speaking of fascinating things, I actually used to dislike the idea of traveling to Scandinavia, but lately, I've really warmed up to it. I'd love to visit there now!
+        * Scandinavia |  | travel destination | user | name | new |  | 
+        * dislike the idea of traveling to Scandinavia |  | preference | user | preference | no longer |  | 
+        * visit there |  | travel destination | user | task | new |  | 
+    14. Honestly, the stunning fjords and the Northern Lights just look so magical in photos; I can't resist them anymore!
+        * stunning fjords |  | reason for dislike | user | item | new |  | 
+        * Northern Lights |  | reason for dislike | user | item | new |  | 
+- financial_analyst session 48 (activity, add, said on 2025-06-03) [picked for: flagged line with no rows]
+    19. It's really cool. I even managed to hit 10,151 steps today, which is quite a milestone for me.
+- management_consultant session 38 (activity, add, said on 2025-06-02) [picked for: flagged line with no rows]
+    6. The title for this project proposal is "FinTech Digital Onboarding Optimization & Compliance Framework."
+        * FinTech Digital Onboarding Optimization & Compliance Framework |  | title | user | title | new |  | 
+    8. This project is a comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution.
+    10. The estimated budget for this project is $1,050,000.
+        * $1,050,000 | estimated | budget | user | number | new | 1.05e+06 $ | 
+    12. The timeline for this project is over 12 months, with initial implementation in the first 6 months and continuous refinement thereafter.
+        * over 12 months | over | timeline | user | number | new | 12 months | 
+        * initial implementation in the first 6 months |  | timeline | user | number | new | 6 months | 
+    14. Dr. Anya Sharma, a Senior Management Consultant, will be leading this project.
+        * Dr. Anya Sharma |  | leader | user | name | new |  | 
+    16. The key stakeholders include the Chief Compliance Officer, the Head of Digital Transformation, and Client Executive Leadership.
+        * Chief Compliance Officer |  | stakeholder | user | item | new |  | 
+        * Head of Digital Transformation |  | stakeholder | user | item | new |  | 
+        * Client Executive Leadership |  | stakeholder | user | item | new |  | 
+    18. The main objectives are to ensure full adherence to all relevant regional financial regulations for digital client acquisition and to improve client satisfaction scores for onboarding by 25% within the initial 9 months.
+        * ensure full adherence to all relevant regional financial regulations for digital client acquisition |  | objective | user | item | new |  | 
+        * improve client satisfaction scores for onboarding by 25% within the initial 9 months |  | objective | user | item | new |  | 
+    20. The deliverables include a Regional Regulatory Compliance Matrix & Gap Analysis, Training Materials for Operations and Compliance Teams, Performance Monitoring Dashboard Design, and Target State Process Maps for Digital Onboarding with a UX/UI focus.
+        * Regional Regulatory Compliance Matrix & Gap Analysis |  | deliverable | user | item | new |  | 
+        * Training Materials for Operations and Compliance Teams |  | deliverable | user | item | new |  | 
+        * Performance Monitoring Dashboard Design |  | deliverable | user | item | new |  | 
+        * Target State Process Maps for Digital Onboarding with a UX/UI focus |  | deliverable | user | item | new |  | 
+    22. Success will be measured by employee satisfaction with new onboarding tools, estimated cost savings from process automation, and the average onboarding completion time in minutes.
+        * employee satisfaction with new onboarding tools |  | success measure | user | item | new |  | 
+        * estimated cost savings from process automation |  | success measure | user | item | new |  | 
+        * average onboarding completion time in minutes |  | success measure | user | item | new |  | 
+    24. The risk assessment is medium-high, with key risks being integration with legacy systems, evolving regulations, and user adoption challenges. Mitigation includes a phased approach and robust change management.
+        * medium-high |  | risk assessment | user | number | new |  | 
+        * integration with legacy systems |  | risk | user | item | new |  | 
+        * evolving regulations |  | risk | user | item | new |  | 
+        * user adoption challenges |  | risk | user | item | new |  | 
+- sales_manager session 93 (activity, delete, said on 2025-06-04) [picked for: random]
+    5. Please remove 'Legal and Compliance Department' from the stakeholders.
+        * Legal and Compliance Department |  | key stakeholder | user | name | removed |  | 
+- management_consultant session 65 (activity, add, said on 2025-06-03) [picked for: random]
+    12. I definitely feel more fulfilled when I'm active; I walked 5,326 steps today.
+        * 5,326 steps |  | step count | user | number | new | 5326 steps | 
+- financial_analyst session 122 (activity, add, said on 2025-06-06) [picked for: random]
+    10. Speaking of balance, I just spent $41.42 on dinner, so I'm trying to balance my budget too.
+        * $41.42 |  | expense | user | number | new | 41.42 $ | 
+        * dinner |  | item | user | item | new |  | 
+        * balance my budget |  | task | user | task | new |  | 
+- management_consultant session 137 (activity, add, said on 2025-06-06) [picked for: random]
+    13. I need to review the project budget later today.
+        * review the project budget |  | task | user | task | new |  | 
+        * later today |  | time | user | date | new |  | 2025-06-06
+- management_consultant session 45 (activity, delete, said on 2025-06-03) [picked for: random]
+    10. I actually managed to schedule some exercise time earlier.
+        * schedule some exercise time |  | task | user | task | done |  | 
+- sales_manager session 138 (activity, delete, said on 2025-06-06) [picked for: random]
+    12. I'm actually done with "Review competitor analysis" from my work tasks.
+        * Review competitor analysis |  | task | user | task | done |  | 
+
+written: results/probes/E27_handcheck.json
