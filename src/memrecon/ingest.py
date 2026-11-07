@@ -164,6 +164,7 @@ class Ingestor:
         self.note_prompt = note_prompt
         self.log_prompt = log_prompt
         self.tag = tag
+        self.calls: list[dict] = []  # one entry per answer received: session, attempt, tokens, from cache or not
 
     # -- shared --------------------------------------------------------------------
 
@@ -176,6 +177,9 @@ class Ingestor:
             try:
                 result = self.client.chat(messages, max_tokens=limit, tag=self.tag,
                                           meta={"step": "ingest", "persona": self.persona, "session": at.session_id, "attempt": attempt})
+                usage = getattr(result, "usage", None) or {}
+                self.calls.append({"session": at.session_id, "attempt": attempt, "cached": getattr(result, "cached", False),
+                                   "prompt_tokens": usage.get("prompt_tokens"), "completion_tokens": usage.get("completion_tokens")})
             except OutputTruncated:
                 limit *= 2  # retry the same request with twice the room
                 error = f"cut off at {limit // 2} tokens"
