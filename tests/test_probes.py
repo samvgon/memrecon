@@ -144,3 +144,60 @@ def test_grading_view_splits_code_and_judge_probes():
     view = {(e["detail"], e["state"]): e for e in grading_view(build_table(rows))}
     assert view[("$900,000", "true")]["grade"] == "code" and view[("$900,000", "true")]["qualifier"] == "" and view[("$900,000", "true")]["who"] == ""
     assert view[("plan a dream vacation", "true")]["grade"] == "judge" and view[("Count Basie", "no longer")]["grade"] == "judge"
+
+
+# -- version 2: ids, attached_to, named who (D46) ---------------------------------------------------
+
+LINE = "The action items include Legal & Compliance providing a cost projection by the end of next month."
+
+
+def d2(i, detail, field, kind="item", status="new", who="", attached=None, line=3):
+    return {"id": i, "line": line, "detail": detail, "qualifier": "", "field": field, "who": who, "kind": kind, "status": status, "attached_to": attached}
+
+
+def test_prompt_v2_loads():
+    system, user = load_prompt("probe_extract_v2")
+    assert '"attached_to"' in system and "meeting notes title" in system and "someone else" not in system.split("Give each detail a status")[0]
+
+
+def test_v2_checks_ids_links_and_named_who():
+    readable = {3: LINE}
+    ok = answer(d2(1, "Legal & Compliance providing a cost projection", "action item", who="Legal & Compliance"),
+                d2(2, "by the end of next month", "action item deadline", kind="date", attached=1))
+    rows = parse_probe_answer(ok, readable, version=2)
+    assert rows[1]["attached_to"] == 1 and rows[0]["who"] == "Legal & Compliance"
+    with pytest.raises(UnusableAnswer, match="name copied exactly"):
+        parse_probe_answer(answer(d2(1, "a cost projection", "action item", who="Legal team")), readable, version=2)
+    with pytest.raises(UnusableAnswer, match="attached_to"):
+        parse_probe_answer(answer(d2(1, "a cost projection", "action item", attached=7)), readable, version=2)
+    with pytest.raises(UnusableAnswer, match="different whole number"):
+        parse_probe_answer(answer(d2(1, "a cost projection", "action item"), d2(1, "by the end of next month", "deadline", kind="date")), readable, version=2)
+    with pytest.raises(UnusableAnswer, match="exactly the keys"):  # a version 1 answer to the version 2 prompt
+        parse_probe_answer(answer(d("a cost projection", field="action item", kind="item")), readable, version=2)
+
+
+def test_extractor_v2_gives_global_row_ids():
+    s = {**SESSION, "conversation": SESSION["conversation"][:2] + [{"turn": 3, "speaker": "user_agent", "message": LINE, "share_memory": True}]}
+    client = ScriptedClient(answer(d2(1, "a cost projection", "action item", who="Legal & Compliance"),
+                                   d2(2, "by the end of next month", "action item deadline", kind="date", attached=1)))
+    out = ProbeExtractor(client, persona="p", prompt="probe_extract_v2").extract(s, ("content", "notes_1"))
+    assert [(r.row_id, r.attached_to) for r in out.rows] == [("p:7:1", None), ("p:7:2", "p:7:1")]
+
+
+def test_v2_table_updates_only_the_deadline_of_the_same_item():
+    def row(rid, detail, field, status, session, attached=None, kind="item"):
+        r = R(detail, status, session, field=field, kind=kind, record=("content", "notes_1"))
+        r.row_id, r.attached_to = rid, attached
+        return r
+    rows = [row("p:1:1", "sensitivity analysis", "action item", "new", 1), row("p:1:2", "in 10 days", "action item deadline", "new", 1, "p:1:1", "date"),
+            row("p:1:3", "revised forecast", "action item", "new", 1), row("p:1:4", "end of next week", "action item deadline", "new", 1, "p:1:3", "date"),
+            row("p:5:1", "sensitivity analysis", "action item", "new", 5), row("p:5:2", "Friday", "action item deadline", "updated", 5, "p:5:1", "date")]
+    now = {e["detail"] for e in true_at(build_table(rows), 5) if e["field"] == "action item deadline"}
+    assert now == {"Friday", "end of next week"}  # the other item's deadline stays
+
+
+def test_grading_view_recomputes_derived_columns():
+    r = R("18-month timeline", "new", 3, field="project timeline")
+    r.number, r.unit = 18.0, "-month timeline"  # as stored before the parser fix
+    e = grading_view(build_table([r]))[0]
+    assert (e["number"], e["unit"]) == (18.0, "month timeline")

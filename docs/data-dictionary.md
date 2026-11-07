@@ -242,33 +242,38 @@ harness. A version used in a run is never edited; changes go in the next version
 
 ## 6. The drift measure's answer key (probes)
 
-`src/memrecon/probes.py`, prompt `probe_extract_v1.md`, run by the judge (D44, D45). Harness side only.
+`src/memrecon/probes.py`, prompts `probe_extract_v1.md` (E26) and `probe_extract_v2.md` (E28, D46), run by the
+judge (D44–D46). Harness side only.
 
-**Row** (one per extracted detail; stored append-only, never edited; E26 writes them to
-`results/probes/E26_<persona>.jsonl`):
+**Row** (one per extracted detail; stored append-only, never edited; E26 and E28 write them to
+`results/probes/E<n>_<persona>.jsonl`):
 
 | Column | What it is | Comes from |
 |---|---|---|
+| `row_id` | Unique across the answer key: `persona:session:id`, from the number the model gives the detail (version 2; empty for version 1). | harness |
 | `record` | The record the session is about (A10; goals by subcategory). | harness (Memora's log) |
-| `field` | What the detail is (`budget`, `agenda item`, `liked author`); reuses the record's earlier field names, shown as "fields so far". | extractor |
+| `field` | What the detail is, in terms of what it belongs to (`meeting notes title`, `agenda item`, `action item deadline`, `liked author`); reuses the record's earlier field names, shown as "fields so far". | extractor |
 | `detail` | The detail, copied exactly from the line (checked by code). | extractor |
 | `qualifier` | Its qualifier or condition, copied exactly ("about", "at least", "every day"), or empty. | extractor |
-| `who` | `user`, `user and others` ("we"), `someone else`, or empty when nobody did it. | extractor |
+| `who` | Only for something someone did, decided or is to do: `user`, `user and others` ("we"), or, from version 2, the person, team or organisation named in the line, copied exactly (version 1: `someone else`); empty otherwise. | extractor |
 | `kind` | `number`, `date`, `name`, `title`, `item`, `task`, `preference`. | extractor |
 | `status` | `new` (first told), `added` (to something told before), `updated` (replaces an earlier value), `replaced` (the earlier value), `removed`, `done`, `no longer` (the field's claim no longer holds). | extractor |
 | `session`, `line`, `date` | Where it was said, and the conversation date ("said on"). | harness |
 | `number`, `unit` | For kind number: value and unit ("10k steps" → 10000, "steps"). | code |
 | `resolved` | For kind date: the calendar day, from the conversation date, when it names one day ("next Tuesday"); empty for ranges ("next week"). | code |
+| `attached_to` | The `row_id` of the detail this one belongs to (a deadline, timeframe, owner or amount of an action item, decision or task), or empty. Version 2; links reach only details from the same session. | extractor (an id), harness (the row_id) |
 
 **Table entry** (computed from all rows by `build_table`, never stored): the row's columns plus `state`
 (`true` should be in memory, `false` should not, `done`, `no longer`), `from_session` / `from_date` and
-`until_session` / `until_date` (empty while it still holds). `updated` closes the field's earlier values,
-`added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
+`until_session` / `until_date` (empty while it still holds), and `row_id`, `attached_to` and
+`attached_detail` (the text of the row it belongs to). `updated` closes the field's earlier values attached
+to the same thing (unattached values close unattached ones), `added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
 `true_at(entries, session)` gives what holds just after a session.
 
 **Grading view** (`grading_view`, D45): each entry with `grade` (`code` for kinds number, date, name, title,
 item in states true or false; `judge` otherwise), its `qualifier` only if on the hedge list (`HEDGES`), and
-`who` only if not `user`.
+`who` only if not `user`. Number, unit and resolved day are recomputed from the detail by code when
+grading, so rows extracted before a parser fix are graded with the current parser.
 
 **Hand-check store** (the Probe Hand Check page's database): collection `labels`, one document per row
 (`persona~session~line~index`: `verdict` ok/wrong, `note`, and the row's `detail`, `field`, `status`,

@@ -16,7 +16,8 @@ field. Code, not the model, derives from each row:
 
 and `build_table` computes what is true when from all rows, in session order: each entry has the
 detail, its state ("true", "false", "done", "no longer") and the session and date it held from and
-until. "updated" closes the field's earlier values; "added" does not (a list gains an item); "replaced"
+until. "updated" closes the field's earlier values attached to the same thing (version 2's
+attached_to; unattached values close unattached ones); "added" does not (a list gains an item); "replaced"
 and "removed" close the matching value; "done" marks the matching task done; "no longer" closes the
 matching liked item and records it as no longer liked. Nothing in this module is ever shown to the agent.
 """
@@ -33,8 +34,9 @@ from .llm import ModelCallError, OutputTruncated
 PROMPT = "probe_extract_v1"
 KINDS = ("number", "date", "name", "title", "item", "task", "preference")
 STATUSES = ("new", "added", "updated", "replaced", "removed", "done", "no longer")
-WHO = ("user", "user and others", "someone else", "")
+WHO = ("user", "user and others", "someone else", "")  # version 1; version 2 drops "someone else" for a name copied from the line
 KEYS = {"line", "detail", "qualifier", "field", "who", "kind", "status"}
+KEYS_V2 = KEYS | {"id", "attached_to"}
 
 
 @dataclass
@@ -52,6 +54,8 @@ class Row:
     number: float | None = None
     unit: str | None = None
     resolved: str | None = None
+    row_id: str = ""  # unique across the answer key: persona:session:id (version 2); empty for version 1 rows
+    attached_to: str | None = None  # row_id of the detail this one belongs to (version 2)
 
     def to_json(self) -> dict:
         d = asdict(self)
@@ -132,16 +136,20 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
 # -- extraction ----------------------------------------------------------------------------------
 
 
-def parse_probe_answer(reply: str, readable: dict[int, str]) -> list[dict]:
+def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1) -> list[dict]:
     """The details, each checked: keys, allowed values, a line that was to be read, and the detail and
-    qualifier copied exactly from that line. The same row twice is unusable."""
+    qualifier copied exactly from that line. The same row twice is unusable.
+    Version 2 also checks ids (1, 2, ... each once), attached_to (null or another detail's id) and a named
+    "who" copied exactly from the detail's line."""
     data = extract_block(reply, "details")
     if set(data) != {"details"} or not isinstance(data["details"], list):
         raise UnusableAnswer('The object must be {"details": [...]}.')
+    keys = KEYS_V2 if version >= 2 else KEYS
     out, seen = [], set()
     for item in data["details"]:
-        if not isinstance(item, dict) or set(item) != KEYS:
-            raise UnusableAnswer('Each detail must have exactly the keys "line", "detail", "qualifier", "field", "who", "kind" and "status".')
+        if not isinstance(item, dict) or set(item) != keys:
+            names = '"id", "line", "detail", "qualifier", "field", "who", "kind", "status" and "attached_to"' if version >= 2 else '"line", "detail", "qualifier", "field", "who", "kind" and "status"'
+            raise UnusableAnswer(f"Each detail must have exactly the keys {names}.")
         line = item["line"]
         if not isinstance(line, int) or isinstance(line, bool):
             raise UnusableAnswer(f'"line" must be a number without quotes, one of {sorted(readable)}; got {json.dumps(line)}.')
@@ -160,13 +168,24 @@ def parse_probe_answer(reply: str, readable: dict[int, str]) -> list[dict]:
             raise UnusableAnswer(f'"kind" must be one of {", ".join(KINDS)}.')
         if item["status"] not in STATUSES:
             raise UnusableAnswer(f'"status" must be one of {", ".join(STATUSES)}.')
-        if item["who"] not in WHO:
+        if version >= 2:
+            if item["who"] not in ("user", "user and others", "") and item["who"] not in readable[line]:
+                raise UnusableAnswer(f'"who" must be "user", "user and others", "", or a name copied exactly from its line; line {line} does not contain "{item["who"]}".')
+        elif item["who"] not in WHO:
             raise UnusableAnswer('"who" must be "user", "user and others", "someone else" or "".')
         key = (line, item["detail"], item["status"], item["field"])
         if key in seen:
             raise UnusableAnswer("The same detail appears more than once; list each detail once.")
         seen.add(key)
         out.append(item)
+    if version >= 2:
+        ids = [it["id"] for it in out]
+        if not all(isinstance(i, int) and not isinstance(i, bool) and i > 0 for i in ids) or len(ids) != len(set(ids)):
+            raise UnusableAnswer('Each "id" must be a different whole number: 1, 2, 3 and so on.')
+        for it in out:
+            a = it["attached_to"]
+            if a is not None and (not isinstance(a, int) or isinstance(a, bool) or a not in ids or a == it["id"]):
+                raise UnusableAnswer(f'"attached_to" must be null or the id of another detail in this answer; detail {it["id"]} has {json.dumps(a)}.')
     return out
 
 
@@ -202,13 +221,18 @@ class ProbeExtractor:
         fields = self.fields.get(record, [])
         user = template.format(date=session.get("date", ""), lines=", ".join(str(n) for n in sorted(readable)),
                                fields=", ".join(fields) if fields else "(none)", conversation=conversation)
-        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable), sid)
+        version = int(self.prompt.rsplit("_v", 1)[1]) if "_v" in self.prompt else 1
+        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable, version), sid)
         if items is None:
             return ProbeOutcome(sid, False, attempts, [], error)
         rows = []
+        rid = lambda i: f"{self.persona}:{sid}:{i}"  # noqa: E731
         for it in items:
             row = Row(record, it["field"].strip(), it["detail"], it["qualifier"], it["who"], it["kind"], it["status"],
                       sid, it["line"], session.get("date", ""))
+            if version >= 2:
+                row.row_id = rid(it["id"])
+                row.attached_to = rid(it["attached_to"]) if it["attached_to"] is not None else None
             if row.kind == "number":
                 row.number, row.unit = split_number(row.detail)
             if row.kind == "date":
@@ -273,6 +297,7 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
     is kept as an entry of its own (a value that should not be, or a task done, from that session).
     """
     entries: list[dict] = []
+    detail_of = {r.row_id: r.detail for r in rows if r.row_id}
 
     def open_entries(row, any_record=False):
         return [e for e in entries if e["until_session"] is None and e["state"] in ("true", "done")
@@ -285,8 +310,12 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
                    "until_session": None, "until_date": None, "status": row.status}
             entries.append(new)
 
+    def parent(row):
+        return norm(detail_of.get(row.attached_to, "")) if row.attached_to else ""
+
     def add(row, state):
         entries.append({"record": row.record, "field": row.field, "detail": row.detail, "qualifier": row.qualifier,
+                        "row_id": row.row_id, "attached_to": row.attached_to, "attached_detail": detail_of.get(row.attached_to) if row.attached_to else None,
                         "who": row.who, "kind": row.kind, "number": row.number, "unit": row.unit, "resolved": row.resolved,
                         "status": row.status, "state": state, "from_session": row.session, "from_date": row.date,
                         "until_session": None, "until_date": None})
@@ -295,8 +324,9 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
         if row.status in ("new", "added"):
             add(row, "true")
         elif row.status == "updated":
+            # closes the field's earlier values attached to the same thing (or, unattached, the unattached ones)
             for e in open_entries(row):
-                if e["field"] == row.field and e["state"] == "true":
+                if e["field"] == row.field and e["state"] == "true" and norm(e.get("attached_detail") or "") == parent(row):
                     close(e, row)
             add(row, "true")
         else:
@@ -338,12 +368,18 @@ def grading_view(entries: list[dict]) -> list[dict]:
     (should not). Each keeps its qualifier only when it is a real hedge or limit, and its "who" only when
     it is not "user" (we, someone else). Secondary probes (graded by the judge): kinds task and
     preference, and every entry in state "done" or "no longer" (the field is kept: "no longer" means the
-    field's claim no longer holds).
+    field's claim no longer holds). Number, unit and resolved day are recomputed from the detail here, so
+    rows extracted before a parser fix are graded with the current parser.
     """
     out = []
     for e in entries:
         primary = e["kind"] in PRIMARY_KINDS and e["state"] in ("true", "false")
-        out.append({**e, "grade": "code" if primary else "judge",
+        derived = {}
+        if e["kind"] == "number":  # recomputed with the current parser, whatever the row stored
+            derived["number"], derived["unit"] = split_number(e["detail"])
+        if e["kind"] == "date":
+            derived["resolved"] = resolve_date(e["detail"], e.get("from_date") or "")
+        out.append({**e, **derived, "grade": "code" if primary else "judge",
                     "qualifier": graded_qualifier(e.get("qualifier") or ""),
                     "who": e.get("who") if e.get("who") not in ("user", None) else ""})
     return out
