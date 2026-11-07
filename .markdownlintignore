@@ -1,3 +1,0 @@
-# Prompt files are sent to the model exactly as written, so they are not documentation
-# and are not linted (fixing a warning would change what the model sees).
-src/memrecon/prompts/

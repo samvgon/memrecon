@@ -219,3 +219,9 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
     v1 = ScriptedClient(said_not_did, note_reply())
     Ingestor(v1, MemoryStore("p")).ingest_note(SESSION)
     assert v1.calls[1]["messages"][-1]["content"].endswith("following the instructions exactly.")
+
+
+def test_lint_comments_are_never_sent():
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2"):
+        system, user = load_prompt(name)
+        assert "markdownlint" not in system + user

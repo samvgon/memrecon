@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file -->
 <!--
 Ingestion prompt for the note arm, version 2 (D38, pending Sam's review).
 Changes from v1, from E16 and E17 on the development personas: memories at whatever size is natural,
