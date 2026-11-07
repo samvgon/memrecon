@@ -16,8 +16,8 @@ field. Code, not the model, derives from each row:
 
 and `build_table` computes what is true when from all rows, in session order: each entry has the
 detail, its state ("true", "false", "done", "no longer") and the session and date it held from and
-until. "updated" closes the field's earlier values attached to the same thing (version 2's
-attached_to; unattached values close unattached ones); "added" does not (a list gains an item); "replaced"
+until. A linked "updated" (version 2's attached_to) closes the field's earlier values linked to the
+same thing; an unlinked one closes all the field's earlier values; "added" does not (a list gains an item); "replaced"
 and "removed" close the matching value; "done" marks the matching task done; "no longer" closes the
 matching liked item and records it as no longer liked. Nothing in this module is ever shown to the agent.
 """
@@ -324,9 +324,10 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
         if row.status in ("new", "added"):
             add(row, "true")
         elif row.status == "updated":
-            # closes the field's earlier values attached to the same thing (or, unattached, the unattached ones)
+            # a linked update closes the field's earlier values linked to the same thing (one action item's
+            # deadline, not another's); an unlinked one closes every earlier value of the field, as in version 1
             for e in open_entries(row):
-                if e["field"] == row.field and e["state"] == "true" and norm(e.get("attached_detail") or "") == parent(row):
+                if e["field"] == row.field and e["state"] == "true" and (not row.attached_to or norm(e.get("attached_detail") or "") == parent(row)):
                     close(e, row)
             add(row, "true")
         else:

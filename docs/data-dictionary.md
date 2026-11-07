@@ -266,8 +266,9 @@ judge (D44–D46). Harness side only.
 **Table entry** (computed from all rows by `build_table`, never stored): the row's columns plus `state`
 (`true` should be in memory, `false` should not, `done`, `no longer`), `from_session` / `from_date` and
 `until_session` / `until_date` (empty while it still holds), and `row_id`, `attached_to` and
-`attached_detail` (the text of the row it belongs to). `updated` closes the field's earlier values attached
-to the same thing (unattached values close unattached ones), `added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
+`attached_detail` (the text of the row it belongs to). A linked `updated` closes the field's earlier values
+linked to the same thing (one action item's deadline, not another's); an unlinked one closes all the field's
+earlier values; `added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
 `true_at(entries, session)` gives what holds just after a session.
 
 **Grading view** (`grading_view`, D45): each entry with `grade` (`code` for kinds number, date, name, title,

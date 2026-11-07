@@ -5,7 +5,8 @@ belongs to, gives "who" only for actions, decisions and assignments (named when 
 and numbers its details so a deadline, timeframe, owner or amount can point to its item ("attached_to").
 Does it stay reliable and agree with the log as version 1 did (E26)? How are who, fields and links used?
 How often does an update fall outside the links (an "updated" value with no attachment, in a field whose
-earlier values were attached: the limit that links reach only the same session)? And, for Sam's hand
+earlier values were attached: the limit that links reach only the same session; such an update closes
+every earlier value of the field)? And, for Sam's hand
 check, the same 37 sessions as E27 (results/probes/E27_handcheck.json) with version 2's rows.
 Method: as E26 (sessions in file order, A6; records as A10, goals by subcategory; the flags choose the
 lines to read; the model sees only line numbers). Rows are written to results/probes/E28_<persona>.jsonl;
@@ -224,7 +225,7 @@ for persona, rs in all_rows:
     attached_fields = {(r.record, r.field) for r in rs if r.attached_to}
     loose = [r for r in rs if r.status == "updated" and not r.attached_to and (r.record, r.field) in attached_fields]
     print(f"  {persona}: {len(t)} entries; holding at the end {len(now)}: " + ", ".join(f"{k} {n}" for k, n in Counter(e["state"] for e in now).most_common())
-          + f"; updates with no link in a field whose values are linked: {len(loose)}")
+          + f"; updates with no link in a field whose values are linked (closing every earlier value of the field): {len(loose)}")
     for r in loose[:4]:
         print(f"      session {r.session}: {r.field}: {r.detail}")
 print()

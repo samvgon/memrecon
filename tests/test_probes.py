@@ -201,3 +201,14 @@ def test_grading_view_recomputes_derived_columns():
     r.number, r.unit = 18.0, "-month timeline"  # as stored before the parser fix
     e = grading_view(build_table([r]))[0]
     assert (e["number"], e["unit"]) == (18.0, "month timeline")
+
+
+def test_v2_unlinked_update_closes_a_linked_old_value():
+    def row(rid, detail, field, status, session, attached=None, kind="number"):
+        r = R(detail, status, session, field=field, kind=kind)
+        r.row_id, r.attached_to = rid, attached
+        return r
+    rows = [row("p:1:1", "Atlas", "proposal title", "new", 1, kind="title"), row("p:1:2", "$1,050,000", "project budget", "new", 1, "p:1:1"),
+            row("p:5:1", "$900,000", "project budget", "updated", 5)]  # "update the budget to $900,000", title not restated
+    now = {e["detail"] for e in true_at(build_table(rows), 5) if e["field"] == "project budget"}
+    assert now == {"$900,000"}
