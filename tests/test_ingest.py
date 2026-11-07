@@ -224,7 +224,7 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
 
 
 def test_lint_comments_are_never_sent():
-    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5", "extract_note_v1", "decide_note_v1"):
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5", "extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2"):
         system, user = load_prompt(name)
         assert "markdownlint" not in system + user
 
@@ -276,7 +276,7 @@ class WordRetriever:
 
 
 def test_two_step_prompts_load_without_flags():
-    for name in ("extract_note_v1", "decide_note_v1"):
+    for name in ("extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2"):
         system, user = load_prompt(name)
         assert "share_memory" not in system + user and "<!--" not in system
     assert "{fact}" in load_prompt("decide_note_v1")[1] and "{memories}" not in load_prompt("extract_note_v1")[1]
@@ -367,3 +367,12 @@ def test_extracted_facts_are_read_strictly():
     with pytest.raises(UnusableAnswer, match="user's lines"):
         parse_extract_answer('<facts>{"facts": [{"fact": "x", "lines": [2]}]}</facts>', lines)
     assert parse_extract_answer(facts_reply(), lines) == []
+
+
+def test_two_step_v2_prompts():
+    e, _ = load_prompt("extract_note_v2")
+    d, _ = load_prompt("decide_note_v2")
+    assert "for a document, give its title" in e and "not an \"add\"" in d
+    client = ScriptedClient(facts_reply("The user likes jazz."))
+    out = Ingestor(client, MemoryStore("p"), WordRetriever(), extract_prompt="extract_note_v2", decide_prompt="decide_note_v2").ingest_two_step(SESSION)
+    assert out.ok and "for a document, give its title" in client.calls[0]["messages"][0]["content"]
