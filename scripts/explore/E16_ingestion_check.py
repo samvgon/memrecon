@@ -24,6 +24,8 @@ sessions, no model). All calls are cached, so a rerun or a resumed run reuses th
   anything reaches the threshold.
 Pilot: set MEMRECON_E16_PILOT=N to ingest only the first N sessions of the first persona and print
 timings; that output is not evidence. Progress goes to results/e16_progress.log.
+  Memories per session: each Memora add/update session is about one item, so a session that gives
+  2 or more memories shows the model splitting one item (D36 asks for one memory per item).
 Limits: string matching misses paraphrased details (a weekday turned into a date counts as lost), so
 survival is a lower bound; the related-memory step uses no threshold; one model and one prompt version.
 """
@@ -192,6 +194,15 @@ for arm in ("note", "log"):
     for s, o in report[arm]["outcomes"]:
         if not o.ok:
             print(f"    failed: session {s['session_id']}: {o.error}")
+    # one memory per item (D36): how many memories does a session that tells about one item produce?
+    per = defaultdict(list)
+    for s, o in report[arm]["outcomes"]:
+        if s.get("operation") in ("add", "update") and flagged_turns(s):
+            per[s.get("session_type")].append(len(o.created))
+    print("    memories per add/update session (one item each in Memora): "
+          + "; ".join(f"{t} n={len(c)}: 0 {sum(x == 0 for x in c)}, 1 {sum(x == 1 for x in c)}, 2+ {sum(x >= 2 for x in c)}" for t, c in sorted(per.items())))
+    other = [len(o.created) for s, o in report[arm]["outcomes"] if s.get("operation") not in ("add", "update")]
+    print(f"    memories made in other sessions (delete and small talk): {sum(other)}")
 print()
 
 print("DETAIL SURVIVAL (candidate elements of each fact's flagged turns found in the memories made from that session)")
