@@ -1,0 +1,217 @@
+# Evidence E20
+script:       scripts/explore/E20_ingestion_v5.py
+run at:       2026-11-06T22:57:47-08:00
+memrecon:     a6d5a10 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; wall time 1034 s
+
+1. RELIABILITY
+  v1: 476 sessions, 0 failed, attempts {1: 474, 2: 2}, 0 fresh calls, 478 from cache
+      output tokens per answer: p50 48 p90 103 p99 323 max 540; seconds per session: median 0.0, total 0
+  v2: 476 sessions, 0 failed, attempts {1: 462, 2: 14}, 0 fresh calls, 490 from cache
+      output tokens per answer: p50 54 p90 157 p99 344 max 470; seconds per session: median 0.0, total 0
+  v5: 476 sessions, 2 failed, attempts {1: 467, 2: 7, 3: 2}, 477 fresh calls, 10 from cache
+      output tokens per answer: p50 50 p90 159 p99 344 max 390; seconds per session: median 1.7, total 1031
+      failed: financial_analyst session 11: "lines" must list one or more numbers of the user's lines in the conversation.
+      failed: management_consultant session 137: "lines" must list one or more numbers of the user's lines in the conversation.
+  (attempts > 1: the first answer was unusable or cut off; the reasons are in the attempt files of the audit log)
+
+2. GRANULARITY (Memora's add/update sessions are about one record each)
+  v1: sessions with the same memory twice: 13; words per memory: p50 16 p90 45 max 208
+      activity    n= 176: 0   3 | 1 141 | 2-4  28 | 5+   4 | mean 1.41
+      goal        n=   8: 0   0 | 1   6 | 2-4   2 | 5+   0 | mean 1.25
+      preference  n=  72: 0   0 | 1  66 | 2-4   6 | 5+   0 | mean 1.08
+  v2: sessions with the same memory twice: 0; words per memory: p50 17 p90 104 max 254
+      activity    n= 176: 0   8 | 1 135 | 2-4  33 | 5+   0 | mean 1.14
+      goal        n=   8: 0   0 | 1   7 | 2-4   1 | 5+   0 | mean 1.12
+      preference  n=  72: 0   0 | 1  67 | 2-4   5 | 5+   0 | mean 1.07
+  v5: sessions with the same memory twice: 0; words per memory: p50 16 p90 90 max 254
+      activity    n= 176: 0   5 | 1 140 | 2-4  30 | 5+   1 | mean 1.18
+      goal        n=   8: 0   0 | 1   7 | 2-4   1 | 5+   0 | mean 1.12
+      preference  n=  72: 0   1 | 1  62 | 2-4   9 | 5+   0 | mean 1.11
+
+3. DETAIL SURVIVAL AND INVENTED NUMBERS
+  v1: all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with a number in neither the conversation nor the memories replaced: 0 of 398
+  v2: all  95.1% of 556 | hashtag 100.0% | name  94.5% | number  97.1% | qualifier  62.5% | quoted  92.5% | record value  96.6% | memories with a number in neither the conversation nor the memories replaced: 0 of 347
+  v5: all  92.3% of 556 | hashtag 100.0% | name  88.5% | number  95.9% | qualifier  62.5% | quoted  92.5% | record value  95.4% | memories with a number in neither the conversation nor the memories replaced: 0 of 368
+
+4. UPDATE RECOGNITION (memories of the record's earlier sessions, active just before the session)
+  v1 update sessions n=31: earlier memory shown 100.0%, replaced any 100.0%, replaced all  58.1%, shown but none replaced 0
+     delete sessions n=58: shown  98.3%, forgot any   6.9%, changed any  91.4%, all retired  79.3%, none retired   1.7%
+     at the end: 73 records with an update or delete; 14 still have memories from before it (51 memories; upper bound, see Limits)
+  v2 update sessions n=31: earlier memory shown 100.0%, replaced any  96.8%, replaced all  90.3%, shown but none replaced 1
+     delete sessions n=55: shown 100.0%, forgot any   0.0%, changed any  98.2%, all retired  96.4%, none retired   1.8%
+     at the end: 73 records with an update or delete; 2 still have memories from before it (2 memories; upper bound, see Limits)
+  v5 update sessions n=29: earlier memory shown 100.0%, replaced any  96.6%, replaced all  96.6%, shown but none replaced 1
+     delete sessions n=57: shown 100.0%, forgot any   0.0%, changed any 100.0%, all retired  93.0%, none retired   0.0%
+     at the end: 73 records with an update or delete; 3 still have memories from before it (7 memories; upper bound, see Limits)
+
+5. FINISHED TASKS (update/delete sessions whose flagged turns say finished, completed, done with, ...)
+  v1: n=16: forgot 0, changed 14, new memory only 1, nothing 1
+  v2: n=16: forgot 0, changed 15, new memory only 1, nothing 0
+  v5: n=16: forgot 0, changed 16, new memory only 0, nothing 0
+
+6. WORDING (pattern counts over all memories made)
+  v1: 398 memories; working-out 4; earlier version kept ('used to', 'previously', ...) 28; from sessions where the user said we/our/us: 154, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 13; date left relative ('next month', 'tomorrow', ...) 36
+      relative: The user approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+      relative: The action items from the meeting include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 
+      relative: The action items from the meeting include conducting a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigned to the Senior Financial Analyst, and preparing a revised forecast incorporating the approved capital reallocation, due by the end of next wee
+  v2: 347 memories; working-out 1; earlier version kept ('used to', 'previously', ...) 18; from sessions where the user said we/our/us: 116, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 19; date left relative ('next month', 'tomorrow', ...) 26
+      relative: The user worked on meeting notes titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory compliance, and a r
+      relative: The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'. The agenda items included an Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment for the Next Operating Period, and a Discus
+      relative: The user updated the meeting notes titled 'Financial Performance Review & Strategic Capital Allocation'. The changes included the agenda items: Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment for the Next Operating Period, and a Discussi
+  v5: 368 memories; working-out 2; earlier version kept ('used to', 'previously', ...) 13; from sessions where the user said we/our/us: 128, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 9; date left relative ('next month', 'tomorrow', ...) 43
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+
+7. RETRIEVAL (top 3): a record's latest memory found by its next update/delete's flagged turns, vs small talk recalling anything
+  threshold  v1 found  v1 small  v2 found  v2 small  v5 found  v5 small
+       0.60     83.8%     48.0%     80.0%     43.2%     85.4%     48.9%
+       0.65     77.7%     14.1%     71.5%     10.2%     76.9%     17.9%
+       0.70     63.8%      1.4%     55.4%      1.2%     57.7%      3.3%
+       0.75     36.2%      0.2%     26.9%      0.1%     32.3%      0.3%
+  v1: 130 turns; words in the record's shortest memory at 0.70: found median 18, missed median 22
+  v2: 130 turns; words in the record's shortest memory at 0.70: found median 22.5, missed median 86.0
+  v5: 130 turns; words in the record's shortest memory at 0.70: found median 23, missed median 101.0
+
+8. CHANGES THAT REPLACE A MEMORY OF ANOTHER RECORD (preference sessions are expected; the rest is folding)
+  v1: 144 memories replaced; of another record in preference sessions 20, elsewhere 21
+  v2: 159 memories replaced; of another record in preference sessions 16, elsewhere 52
+  v5: 177 memories replaced; of another record in preference sessions 25, elsewhere 52
+
+9. ADD/UPDATE SESSIONS WITH FLAGGED TURNS THAT SAVED NOTHING
+  v1: 3
+    - financial_analyst session 30: Speaking of planning, I still need to plan my weekend activities.
+    - sales_manager session 102: Well, I definitely need to plan my vacation time soon.
+    - sales_manager session 112: Speaking of work, I need to review the competitor analysis for my project.
+  v2: 8
+    - financial_analyst session 30: Speaking of planning, I still need to plan my weekend activities.
+    - financial_analyst session 92: I actually need to call my parents today, so that's on my mind.
+    - financial_analyst session 115: Definitely, especially when I have to review audit findings for work, it keeps me up.
+    - sales_manager session 18: I also need to plan my vacation time soon.
+    - sales_manager session 50: Yes, I actually need to schedule my workout session.
+    - sales_manager session 109: Speaking of challenges, I still need to plan my weekend sports activities.
+    - sales_manager session 112: Speaking of work, I need to review the competitor analysis for my project.
+    - sales_manager session 140: It's similar in a way to how I need to plan my vacation time this year.
+  v5: 6
+    - financial_analyst session 11: The meeting was about the Financial Performance Review & Strategic Capital Allocation. / The agenda items included an Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment  / We mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold and approved reall / The action items include conducting a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigne
+    - financial_analyst session 30: Speaking of planning, I still need to plan my weekend activities.
+    - management_consultant session 50: Exactly! Speaking of groundbreaking things, I was just thinking about my trip to Barcelona and how much I loved the Sagrada Familia – it's t / I loved how it blends nature and spirituality; the way the light streams through the stained glass is just breathtaking.
+    - management_consultant session 137: I need to review the project budget later today.
+    - sales_manager session 109: Speaking of challenges, I still need to plan my weekend sports activities.
+    - sales_manager session 140: It's similar in a way to how I need to plan my vacation time this year.
+
+10. RETENTION: records added and never updated or deleted (candidate elements kept at ingestion vs in active memories at the end)
+  v1: 136 records, 200 elements; kept at ingestion  96.5%, still active at the end  84.5%; records that lost an element after it was saved 14; with no active memory at the end 1
+  v2: 136 records, 200 elements; kept at ingestion  96.0%, still active at the end  79.0%; records that lost an element after it was saved 20; with no active memory at the end 1
+  v5: 136 records, 200 elements; kept at ingestion  95.5%, still active at the end  77.0%; records that lost an element after it was saved 19; with no active memory at the end 4
+
+SIDE BY SIDE: 6 random add/update sessions (the user's flagged turns, then each version's memories)
+- financial_analyst session 140 (preference, update). User: Speaking of meaningful results, I used to love the Swiss Alps, but lately I'm really drawn to the French Riviera for travel. The sunshine and coastline are just
+    v1 * The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
+    v2 * The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
+    v2 * The user has changed their mind about the Swiss Alps and is no longer drawn to them, preferring the French Riviera for its sunshine and coastline.
+    v5 * The user used to like the Swiss Alps but is now really drawn to the French Riviera for travel, preferring its sunshine and coastline.
+- management_consultant session 78 (activity, add). User: It's also interesting how traditions can intersect with daily life, like how I just spent $8.39 on coffee this morning.
+    v1 * The user spent $8.39 on coffee this morning.
+    v2 * The user spent $8.39 on coffee on 2025-06-04.
+    v5 * The user spent $8.39 on coffee.
+- financial_analyst session 93 (preference, add). User: That reminds me of how Malcolm Gladwell uses analogies in his books, like in *The Tipping Point* which I really enjoyed.
+    v1 * The user really enjoyed Malcolm Gladwell's book *The Tipping Point*.
+    v2 * The user really enjoyed Malcolm Gladwell's book *The Tipping Point*.
+    v5 * The user really enjoyed Malcolm Gladwell's book *The Tipping Point*.
+- management_consultant session 141 (activity, update). User: Please update the budget from $1,100,000 to $950,000. / Yes, please update the stakeholders to include the Customer Experience Department.
+    v1 * The user's project "FinTech Digital Onboarding Optimization & Compliance Framework" has an estimated budget of $950,000.
+    v1 * The key stakeholders in the user's project "FinTech Digital Onboarding Optimization & Compliance Framework" include the Chief Compliance Officer, the Head of Digital Transformation, Client Executive Leadership, and the Customer Experience Department.
+    v2 * The user is creating a new project proposal titled "FinTech Digital Onboarding Optimization & Compliance Framework." The project is a comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution. The estimated budget is $950,000. The timeline is over 12 months, wi
+    v5 * The user is creating a new project proposal titled "FinTech Digital Onboarding Optimization & Compliance Framework." The project is a comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution. The estimated budget is $950,000. The timeline is over 12 months, wi
+- management_consultant session 1 (activity, add). User: I just grabbed a coffee for $4.98.
+    v1 * The user spent $4.98 on a coffee.
+    v2 * The user bought a coffee for $4.98 on 2025-06-01.
+    v5 * The user bought a coffee for $4.98.
+- financial_analyst session 21 (preference, add). User: Speaking of frameworks, it reminds me of how a good director can really shape a film; I actually really like J.J. Abrams' work! / I love how he blends action, mystery, and character development, especially in movies like *Super 8* and *Star Trek*. He just knows how to keep you on the edge 
+    v1 * The user likes J.J. Abrams' work, specifically appreciating how he blends action, mystery, and character development, especially in movies like *Super 8* and *Star Trek*.
+    v2 * The user enjoys the work of director J.J. Abrams, specifically appreciating how he blends action, mystery, and character development in films such as *Super 8* and *Star Trek*.
+    v5 * The user likes J.J. Abrams' work, specifically appreciating how he blends action, mystery, and character development in movies like *Super 8* and *Star Trek*.
+
+v5 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)
+- financial_analyst session 94 (preference). User: Speaking of unexpected influences, I've actually changed my mind about the Swiss Alps; I used to dislike them, but now I really like them! / I recently saw some incredible documentaries on them, and the sheer beauty and opportunities for hiking really won me over!
+    shown   * The user no longer enjoys temperate climates and now prefers tropical weather, loving the warmth and constant sunshine which puts them in a good mood.
+    written * The user used to dislike the Swiss Alps but now really likes them, having been won over by incredible documentaries showcasing their beauty and opportunities for hiking.
+
+v5 DELETE SESSIONS (5 at random)
+- management_consultant session 106: forgot 0, changed 2. User: Actually, I no longer need to track "Schedule exercise time" from my to-do list; I've already handled it.
+    written * The user has scheduled their exercise time for the week.
+- financial_analyst session 52: forgot 0, changed 1. User: Oh, I actually can't make it to my best friend's birthday this year. I'm going to miss it.
+    written * The user cannot attend their best friend's birthday on August 21st this year.
+- financial_analyst session 59: forgot 0, changed 1. User: I called my parents.
+    written * The user has called their parents.
+- financial_analyst session 72: forgot 0, changed 1. User: Speaking of movies, I used to really like Rian Johnson's work, but after "The Last Jedi," I'm just not a fan anymore.
+    written * The user no longer enjoys Rian Johnson's work, specifically after watching "The Last Jedi", whereas previously they had shifted their preference to his work.
+- management_consultant session 45: forgot 0, changed 1. User: I actually managed to schedule some exercise time earlier.
+    written * The user has scheduled their exercise time for the week.
+
+FINISHED TASKS, both versions (4 at random)
+- sales_manager session 160. User: Oh, I actually just finished preparing those client success stories.
+    v1 changed
+      * The user has finished preparing client success stories.
+    v2 changed
+      * The user has finished preparing client success stories.
+    v5 changed
+      * The user has finished preparing client success stories.
+- sales_manager session 28. User: I completed planning my vacation time for the year. I no longer need to track "Plan vacation time" on my to-do list.
+    v1 changed
+      * The user has completed planning their vacation time for the year.
+    v2 changed
+      * The user has completed planning their vacation time for the year and no longer needs to track this task on their to-do list.
+    v5 changed
+      * The user has completed planning their vacation time for the year.
+- management_consultant session 144. User: I finished the client assessment report.
+    v1 changed
+      * The user has finished the client assessment report.
+    v2 changed
+      * The user has finished the client assessment report.
+    v5 changed
+      * The user has finished the client assessment report.
+- management_consultant session 90. User: I actually just finished up the client assessment report.
+    v1 changed
+      * The user has finished the client assessment report.
+    v2 changed
+      * The user has finished the client assessment report.
+    v5 changed
+      * The user has finished the client assessment report.
+
+v5 CHANGES THAT FOLDED A MEMORY OF ANOTHER RECORD, not preference sessions (5 at random)
+- management_consultant session 97 (activity, add). User: That's true. Speaking of expenses, I just spent $13.47 on breakfast this morning.
+    replaced * The user spent $9.94 on breakfast.
+    with     * The user wants to spend under $45 per week on breakfast to save money and eat healthier. The user spent $13.47 on breakfast.
+- management_consultant session 70 (activity, add). User: Speaking of contributions, I just spent $9.94 on breakfast this morning.
+    replaced * The user wants to spend under $45 per week on breakfast to save money and eat healthier. The user spent $8.83 on breakfast.
+    with     * The user wants to spend under $45 per week on breakfast to save money and eat healthier. The user spent $9.94 on breakfast.
+- sales_manager session 42 (activity, add). User: That's smart advice. I just spent $7.01 on coffee, so I'm trying to be more mindful of small purchases.
+    replaced * The user has set a personal goal to keep their coffee spending under $50 per week.
+    with     * The user has set a personal goal to keep their coffee spending under $50 per week. The user spent $7.01 on coffee.
+- sales_manager session 104 (no_memory, None). User: (no flagged turns)
+    replaced * The user is interested in learning about technological advancements, specifically asking about common applications of AI in everyday life.
+    with     * The user is interested in learning about technological advancements, specifically asking about recent developments in AI technology, impactful applications, challenges such as bias in data and potential for misuse, and the role of explainable AI in addressing these issues.
+- sales_manager session 105 (activity, add). User: That's right! Speaking of patterns, I just spent $4.84 on coffee this morning.
+    replaced * The user spent $3.91 on coffee on 2025-06-04.
+    with     * The user has set a personal goal to keep their coffee spending under $50 per week. The user spent $7.72 on coffee on 2025-06-02, $9.34 on coffee on 2025-06-03, $3.91 on coffee on 2025-06-04, and $4.84 on coffee on 2025-06-05.
+
+v5 RECORDS THAT LOST AN ELEMENT AFTER IT WAS SAVED (5 at random)
+- management_consultant session 93: lost ['$7.82']. User: Speaking of specialists, I just spent $7.82 on a coffee.
+    now * The user spent $7.31 on a coffee.
+- sales_manager session 83: lost ['$4.32']. User: I actually just spent $4.32 on a coffee this morning.
+    now * The user has set a personal goal to keep their coffee spending under $50 per week. The user spent $7.72 on coffee on 2025-06-02, $9.34 on coffee on 2025-06-03, $3.91 on coffee on 2025-06-04, $4.84 on coffee on 2025-06-05, $6.78 on coffee on 2025-06-06, and $9.33 on coffee on 2025-06-07.
+- sales_manager session 11: lost ['Queen', 'Queen']. User: Well, speaking of things that bring joy, I've always loved listening to Queen; their music just always puts me in a good mood! / Their powerful vocals and incredible anthems always get me energized! It's just so uplifting.
+    now * The user is no longer into post-rock music, having grown bored with its repetition, and has moved on to enjoying indie folk and alternative country.
+- financial_analyst session 93: lost ['*The Tipping Point*', 'The Tipping Point']. User: That reminds me of how Malcolm Gladwell uses analogies in his books, like in *The Tipping Point* which I really enjoyed.
+    now * The user used to really like Malcolm Gladwell's books because he has interesting ways of explaining complex ideas, but now prefers Mary Roach's books because they are more engaging, humorous, and dive deep into quirky, specific topics, whereas Gladwell feels too broad and theoretical.
+- sales_manager session 67: lost ['#CustomerCentric', '#HealthcareInnovation', '#EuropeanPharma']. User: This post is specifically for LinkedIn. / It's a thought leadership post focusing on industry trends. / The main message is that in pharmaceuticals, trust is our most valuable asset. Building deep, long-term customer relationships isn't just go / For hashtags, I'd suggest #CustomerCentric, #HealthcareInnovation, and #EuropeanPharma.
+    now * The user has completed preparing proposal documents for work and has structured content for a new LinkedIn thought leadership social media post focusing on mobile-first strategy in travel, rather than pharmaceuticals. The main message is about being delighted to see their mobile-first strategy conti
