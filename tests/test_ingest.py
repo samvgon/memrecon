@@ -382,9 +382,11 @@ def test_a_replace_with_identical_text_is_no_rewrite():
     store = MemoryStore("p")
     old = store.note("The user likes jazz music.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
     client = ScriptedClient(facts_reply("The user likes jazz music."), decision("replace", [1], "The user likes jazz music."))
-    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    ing = Ingestor(client, store, WordRetriever())
+    out = ing.ingest_two_step(SESSION)
     assert out.decisions == {"none (identical replace)": 1} and out.superseded == [] and out.created == []
     assert store.get(old).retired is None and store.get(old).depth == 1
+    assert ing.decision_log[0]["unchanged"] == [old]  # the harness log keeps which memory came back unchanged
 
 
 def test_decide_v3_shows_the_other_facts_and_v2_does_not():

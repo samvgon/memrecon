@@ -371,6 +371,7 @@ class Ingestor:
             action, ids, memory = decision
             if action == "replace" and len(ids) == 1 and memory == self.store.get(ids[0]).text:
                 # a rewrite with no change is not a rewrite (D42): the memory stays as it was, depth unchanged
+                entry["unchanged"] = ids  # harness log only: the memory the model returned unchanged
                 action, ids, memory = "none", [], ""
                 entry["action"] = "none (identical replace)"
             entry["action"] = entry["action"] or action
