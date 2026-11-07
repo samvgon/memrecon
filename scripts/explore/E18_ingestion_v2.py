@@ -6,7 +6,8 @@ ingest_note_v1 (as in E16) and ingest_note_v2, on
       length, time;
   (2) granularity: memories per add/update session, words per memory, the same memory twice in one answer;
   (3) detail survival and invented numbers (E16's method, with numbers compared by value, since v2
-      allows "10k" to be written "10,000");
+      allows "10k" to be written "10,000"; a number is invented if it is in neither the conversation nor
+      the memories the session replaced);
   (4) update recognition: in an update session, were the memories of the record's earlier sessions shown
       to the model (the related memories), and did it replace them? in a delete session, did it forget
       or change them? and at the end of the replay, how many memories of a record from before its last
@@ -221,7 +222,11 @@ for v in VERSIONS:
                 for kind, value in probe_elements(t["message"], record_value(s)):
                     total[kind] += 1
                     kept[kind] += element_kept(kind, value, joined)
-        source = values(" ".join(t.get("message", "") for t in s.get("conversation", [])))
+        # an updated memory carries details forward from the memories it replaces, so those count as source
+        # too (fix, Nov 6: the first run compared with the conversation only, which counted carried-forward
+        # numbers as invented)
+        replaced = " ".join(text(v, p, m) for m in o.superseded)
+        source = values(" ".join(t.get("message", "") for t in s.get("conversation", [])) + " " + replaced)
         for tx in texts:
             extra = sorted(x for x in values(tx) if x not in source)
             if extra:
@@ -230,7 +235,7 @@ for v in VERSIONS:
                     ex.append((p, s["session_id"], extra, tx[:200]))
     print(f"  {SHORT[v]}: all {pct(sum(kept.values()), sum(total.values()))} of {sum(total.values())} | "
           + " | ".join(f"{kind} {pct(kept[kind], total[kind])}" for kind in sorted(total))
-          + f" | memories with a number not in the conversation: {invented} of {n_mem}")
+          + f" | memories with a number in neither the conversation nor the memories replaced: {invented} of {n_mem}")
     for p, sid, extra, tx in ex:
         print(f"      {p} session {sid} {extra}: {tx}")
 print()
