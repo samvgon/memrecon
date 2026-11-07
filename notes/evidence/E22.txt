@@ -1,0 +1,320 @@
+# Evidence E22
+script:       scripts/explore/E22_two_step_v2.py
+run at:       2026-11-07T01:10:05-08:00
+memrecon:     ccc2914 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; wall time 1545 s
+
+1. RELIABILITY
+  v1: 476 sessions, 0 failed, attempts {1: 474, 2: 2}, 0 fresh calls, 478 from cache
+      output tokens per answer: p50 48 p90 103 p99 323 max 540; seconds per session: median 0.0, total 0
+  v5: 476 sessions, 2 failed, attempts {1: 467, 2: 7, 3: 2}, 0 fresh calls, 487 from cache
+      output tokens per answer: p50 50 p90 159 p99 344 max 390; seconds per session: median 0.0, total 0
+      failed: financial_analyst session 11: "lines" must list one or more numbers of the user's lines in the conversation.
+      failed: management_consultant session 137: "lines" must list one or more numbers of the user's lines in the conversation.
+  2s1: 476 sessions, 0 failed, attempts {1: 461, 2: 15}, 0 fresh calls, 1481 from cache
+      output tokens per answer: p50 33 p90 66 p99 181 max 441; seconds per session: median 0.0, total 0
+  2s2: 476 sessions, 0 failed, attempts {1: 460, 2: 15, 3: 1}, 1342 fresh calls, 23 from cache
+      output tokens per answer: p50 34 p90 70 p99 255 max 432; seconds per session: median 2.7, total 1543
+  (attempts > 1: the first answer was unusable or cut off; the reasons are in the attempt files of the audit log)
+
+2. GRANULARITY (Memora's add/update sessions are about one record each)
+  v1: sessions with the same memory twice: 13; words per memory: p50 16 p90 45 max 208
+      activity    n= 176: 0   3 | 1 141 | 2-4  28 | 5+   4 | mean 1.41
+      goal        n=   8: 0   0 | 1   6 | 2-4   2 | 5+   0 | mean 1.25
+      preference  n=  72: 0   0 | 1  66 | 2-4   6 | 5+   0 | mean 1.08
+  v5: sessions with the same memory twice: 0; words per memory: p50 16 p90 90 max 254
+      activity    n= 176: 0   5 | 1 140 | 2-4  30 | 5+   1 | mean 1.18
+      goal        n=   8: 0   0 | 1   7 | 2-4   1 | 5+   0 | mean 1.12
+      preference  n=  72: 0   1 | 1  62 | 2-4   9 | 5+   0 | mean 1.11
+  2s1: sessions with the same memory twice: 0; words per memory: p50 15 p90 32 max 96
+      activity    n= 176: 0   0 | 1 130 | 2-4  29 | 5+  17 | mean 1.88
+      goal        n=   8: 0   0 | 1   8 | 2-4   0 | 5+   0 | mean 1.00
+      preference  n=  72: 0   0 | 1  36 | 2-4  32 | 5+   4 | mean 1.79
+  2s2: sessions with the same memory twice: 0; words per memory: p50 15 p90 33 max 195
+      activity    n= 176: 0   0 | 1 136 | 2-4  31 | 5+   9 | mean 1.70
+      goal        n=   8: 0   0 | 1   8 | 2-4   0 | 5+   0 | mean 1.00
+      preference  n=  72: 0   0 | 1  43 | 2-4  28 | 5+   1 | mean 1.50
+
+3. DETAIL SURVIVAL AND INVENTED NUMBERS
+  v1: all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with a number in neither the conversation nor the memories replaced: 0 of 398
+  v5: all  92.3% of 556 | hashtag 100.0% | name  88.5% | number  95.9% | qualifier  62.5% | quoted  92.5% | record value  95.4% | memories with a number in neither the conversation nor the memories replaced: 0 of 368
+  2s1: all  97.3% of 556 | hashtag 100.0% | name  95.9% | number  98.8% | qualifier  62.5% | quoted 100.0% | record value  98.9% | memories with a number in neither the conversation nor the memories replaced: 0 of 570
+  2s2: all  97.1% of 556 | hashtag 100.0% | name  95.9% | number  97.7% | qualifier  62.5% | quoted 100.0% | record value 100.0% | memories with a number in neither the conversation nor the memories replaced: 0 of 513
+
+4. UPDATE RECOGNITION (memories of the record's earlier sessions, active just before the session)
+  v1 update sessions n=31: earlier memory shown 100.0%, replaced any 100.0%, replaced all  58.1%, shown but none replaced 0
+     delete sessions n=58: shown  98.3%, forgot any   6.9%, changed any  91.4%, all retired  79.3%, none retired   1.7%
+     at the end: 73 records with an update or delete; 14 still have memories from before it (51 memories; upper bound, see Limits)
+  v5 update sessions n=29: earlier memory shown 100.0%, replaced any  96.6%, replaced all  96.6%, shown but none replaced 1
+     delete sessions n=57: shown 100.0%, forgot any   0.0%, changed any 100.0%, all retired  93.0%, none retired   0.0%
+     at the end: 73 records with an update or delete; 3 still have memories from before it (7 memories; upper bound, see Limits)
+  2s1 update sessions n=31: earlier memory shown 100.0%, replaced any  74.2%, replaced all  38.7%, shown but none replaced 8
+     delete sessions n=59: shown 100.0%, forgot any   0.0%, changed any  94.9%, all retired  59.3%, none retired   5.1%
+     at the end: 73 records with an update or delete; 26 still have memories from before it (104 memories; upper bound, see Limits)
+  2s2 update sessions n=31: earlier memory shown 100.0%, replaced any  93.5%, replaced all  41.9%, shown but none replaced 2
+     delete sessions n=59: shown 100.0%, forgot any   0.0%, changed any  94.9%, all retired  62.7%, none retired   5.1%
+     at the end: 73 records with an update or delete; 23 still have memories from before it (73 memories; upper bound, see Limits)
+
+5. FINISHED TASKS (update/delete sessions whose flagged turns say finished, completed, done with, ...)
+  v1: n=16: forgot 0, changed 14, new memory only 1, nothing 1
+  v5: n=16: forgot 0, changed 16, new memory only 0, nothing 0
+  2s1: n=16: forgot 0, changed 16, new memory only 0, nothing 0
+  2s2: n=16: forgot 0, changed 16, new memory only 0, nothing 0
+
+6. WORDING (pattern counts over all memories made)
+  v1: 398 memories; working-out 4; earlier version kept ('used to', 'previously', ...) 28; from sessions where the user said we/our/us: 154, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 13; date left relative ('next month', 'tomorrow', ...) 36
+      relative: The user approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+      relative: The action items from the meeting include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 
+      relative: The action items from the meeting include conducting a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigned to the Senior Financial Analyst, and preparing a revised forecast incorporating the approved capital reallocation, due by the end of next wee
+  v5: 368 memories; working-out 2; earlier version kept ('used to', 'previously', ...) 13; from sessions where the user said we/our/us: 128, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 9; date left relative ('next month', 'tomorrow', ...) 43
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+      relative: The user is working on meeting notes for a meeting titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory c
+  2s1: 570 memories; working-out 2; earlier version kept ('used to', 'previously', ...) 31; from sessions where the user said we/our/us: 244, of which say 'and others' (or team, family...) 3
+      change described ('updated', 'the changes', ...) 21; date left relative ('next month', 'tomorrow', ...) 46
+      relative: The user's meeting resulted in the approval of the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+      relative: The user's meeting action items include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 we
+      relative: The user has an action item for the Senior Financial Analyst to conduct a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days.
+  2s2: 513 memories; working-out 3; earlier version kept ('used to', 'previously', ...) 37; from sessions where the user said we/our/us: 202, of which say 'and others' (or team, family...) 1
+      change described ('updated', 'the changes', ...) 14; date left relative ('next month', 'tomorrow', ...) 43
+      relative: The user is working on meeting notes titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda for this meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulator
+      relative: The user is working on meeting notes titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda for this meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulator
+      relative: The user has an action item to conduct a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigned to the Senior Financial Analyst.
+
+7. RETRIEVAL (top 3): a record's latest memory found by its next update/delete's flagged turns, vs small talk recalling anything
+  threshold  v1 found  v1 small  v5 found  v5 small 2s1 found 2s1 small 2s2 found 2s2 small
+       0.60     83.8%     48.0%     85.4%     48.9%     90.8%     58.0%     89.2%     56.0%
+       0.65     77.7%     14.1%     76.9%     17.9%     87.7%     20.4%     84.6%     19.8%
+       0.70     63.8%      1.4%     57.7%      3.3%     73.8%      4.0%     68.5%      4.1%
+       0.75     36.2%      0.2%     32.3%      0.3%     41.5%      0.8%     37.7%      0.8%
+  v1: 130 turns; words in the record's shortest memory at 0.70: found median 18, missed median 22
+  v5: 130 turns; words in the record's shortest memory at 0.70: found median 23, missed median 101.0
+  2s1: 130 turns; words in the record's shortest memory at 0.70: found median 12.5, missed median 15.5
+  2s2: 130 turns; words in the record's shortest memory at 0.70: found median 13, missed median 18
+
+8. CHANGES THAT REPLACE A MEMORY OF ANOTHER RECORD (preference sessions are expected; the rest is folding)
+  v1: 144 memories replaced; of another record in preference sessions 20, elsewhere 21
+  v5: 177 memories replaced; of another record in preference sessions 25, elsewhere 52
+  2s1: 187 memories replaced; of another record in preference sessions 22, elsewhere 36
+  2s2: 190 memories replaced; of another record in preference sessions 26, elsewhere 29
+
+9. ADD/UPDATE SESSIONS WITH FLAGGED TURNS THAT SAVED NOTHING
+  v1: 3
+    - financial_analyst session 30: Speaking of planning, I still need to plan my weekend activities.
+    - sales_manager session 102: Well, I definitely need to plan my vacation time soon.
+    - sales_manager session 112: Speaking of work, I need to review the competitor analysis for my project.
+  v5: 6
+    - financial_analyst session 11: The meeting was about the Financial Performance Review & Strategic Capital Allocation. / The agenda items included an Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment  / We mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold and approved reall / The action items include conducting a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigne
+    - financial_analyst session 30: Speaking of planning, I still need to plan my weekend activities.
+    - management_consultant session 50: Exactly! Speaking of groundbreaking things, I was just thinking about my trip to Barcelona and how much I loved the Sagrada Familia – it's t / I loved how it blends nature and spirituality; the way the light streams through the stained glass is just breathtaking.
+    - management_consultant session 137: I need to review the project budget later today.
+    - sales_manager session 109: Speaking of challenges, I still need to plan my weekend sports activities.
+    - sales_manager session 140: It's similar in a way to how I need to plan my vacation time this year.
+  2s1: 0
+  2s2: 0
+
+10. RETENTION: records added and never updated or deleted (candidate elements kept at ingestion vs in active memories at the end)
+  v1: 136 records, 200 elements; kept at ingestion  96.5%, still active at the end  84.5%; records that lost an element after it was saved 14; with no active memory at the end 1
+  v5: 136 records, 200 elements; kept at ingestion  95.5%, still active at the end  77.0%; records that lost an element after it was saved 19; with no active memory at the end 4
+  2s1: 136 records, 200 elements; kept at ingestion  96.5%, still active at the end  84.5%; records that lost an element after it was saved 11; with no active memory at the end 0
+  2s2: 136 records, 200 elements; kept at ingestion  96.5%, still active at the end  86.5%; records that lost an element after it was saved 9; with no active memory at the end 0
+
+11. TWO-STEP DECISIONS (candidate threshold 0.00, top 5 per fact)
+ 2s1:
+  579 facts from 476 sessions; decision calls failing 3 times: 1
+  add 408, replace 157, none 9, add (no candidate) 4, add (decision failed) 1
+    in add sessions: add 328, replace 37, add (no candidate) 3, none 1
+    in delete sessions: replace 75, add 14, none 5
+    in none sessions: add 12, add (no candidate) 1
+    in update sessions: add 54, replace 45, none 3, add (decision failed) 1
+  candidates shown: 437 of the fact's own record, 2392 of other records (or of a session about no record)
+  threshold  own record kept  others kept
+       0.50           100.0%        98.7%
+       0.60            98.9%        87.8%
+       0.70            83.5%        40.4%
+       0.75            58.4%        20.8%
+       0.80            33.4%        11.2%
+       0.85            13.5%         5.7%
+       0.90             3.7%         1.1%
+  similarity: own record median 0.77, others median 0.68
+  replacements: activity / other record 36, activity / own record 77, preference / other record 22, preference / own record 52
+
+ 2s2:
+  519 facts from 476 sessions; decision calls failing 3 times: 6
+  add 342, replace 161, none 6, add (decision failed) 6, add (no candidate) 4
+    in add sessions: add 302, replace 26, add (no candidate) 3, none 1
+    in delete sessions: replace 77, add 7, none 4, add (decision failed) 3
+    in none sessions: add 9, add (no candidate) 1
+    in update sessions: replace 58, add 24, add (decision failed) 3, none 1
+  candidates shown: 382 of the fact's own record, 2154 of other records (or of a session about no record)
+  threshold  own record kept  others kept
+       0.50           100.0%        98.6%
+       0.60            99.5%        85.3%
+       0.70            81.7%        37.4%
+       0.75            58.1%        19.5%
+       0.80            30.6%        11.1%
+       0.85            11.0%         5.9%
+       0.90             3.1%         1.2%
+  similarity: own record median 0.77, others median 0.68
+  replacements: activity / other record 29, activity / own record 88, preference / other record 26, preference / own record 47
+
+SIDE BY SIDE: 6 random add/update sessions (the user's flagged turns, then each version's memories)
+- financial_analyst session 126 (activity, add). User: It's definitely mind-boggling! I also need to plan my vacation budget this week.
+    v1 * The user needs to plan their vacation budget this week.
+    v5 * The user is interested in understanding the concept of quantum entanglement and enjoys learning about it through analogies.
+    2s1 * The user needs to plan their vacation budget this week.
+    2s2 * The user needs to plan their vacation budget this week.
+- management_consultant session 66 (activity, add). User: It's called "Pan-European Digital Health Ecosystem Integration Strategy." / This project is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and impr / The proposed budget for this project is €750,000. / We're looking at a timeline of 18 months, with a phased rollout over the first year and optimization planned for the subsequent six months. / Dr. Elara Vance, our Senior Management Consultant, will be leading this project. / The key stakeholders involved are the IT Infrastructure & Security Teams and National Health Ministries Representatives. / The main objectives are to establish clear ROI metrics for digital health investments across the continent and to identify and evaluate key integration points f / The deliverables include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the Pan-European Digita / The potential risks include high complexity due to regulatory divergence across countries, data privacy concerns, and the need for extensive stakeholder alignme / Our methodology leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach for foundational strat
+    v1 * The user is working on a project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy."
+    v1 * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination.
+    v1 * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" has a proposed budget of €750,000.
+    v1 * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" has a timeline of 18 months, with a phased rollout over the first year and optimization planned for the subsequent six months.
+    v1 * Dr. Elara Vance, a Senior Management Consultant, will be leading the user's project "Pan-European Digital Health Ecosystem Integration Strategy."
+    v1 * The key stakeholders in the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include the IT Infrastructure & Security Teams and National Health Ministries Representatives.
+    v1 * The main objectives of the user's project "Pan-European Digital Health Ecosystem Integration Strategy" are to establish clear ROI metrics for digital health investments across the continent and to identify and evaluate key integration points for existing national digital health platforms.
+    v1 * The deliverables for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the Pan-European Digital Health Ecosystem, and a Detailed Integration Blueprint and API Strategy Document.
+    v1 * The potential risks for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include high complexity due to regulatory divergence across countries, data privacy concerns, and the need for extensive stakeholder alignment, with mitigation strategies involving a dedicated legal and compliance workstream and a robust communication plan.
+    v1 * The methodology for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach for foundational strategic planning and compliance, including comprehensive stakeholder workshops, expert interviews, and a robust change management program.
+    v5 * The user is creating a new project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy." The project is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination. The proposed budget is €750,000. The timeline is 18 months, with a phased rollout over the first year a
+    2s1 * The user is working on a project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy."
+    2s1 * The user's project is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination.
+    2s1 * The user's project has a proposed budget of €750,000.
+    2s1 * The user's project has a timeline of 18 months, with a phased rollout over the first year and optimization planned for the subsequent six months.
+    2s1 * Dr. Elara Vance, the user's Senior Management Consultant, will be leading the user's project.
+    2s1 * The key stakeholders involved in the user's project are the IT Infrastructure & Security Teams and National Health Ministries Representatives.
+    2s1 * The main objectives of the user's project are to establish clear ROI metrics for digital health investments across the continent and to identify and evaluate key integration points for existing national digital health platforms.
+    2s1 * The deliverables for the user's project include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the Pan-European Digital Health Ecosystem, and a Detailed Integration Blueprint and API Strategy Document.
+    2s1 * The potential risks for the user's project include high complexity due to regulatory divergence across countries, data privacy concerns, and the need for extensive stakeholder alignment, with mitigation strategies involving a dedicated legal and compliance workstream and a robust communication plan.
+    2s1 * The user's methodology leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach for foundational strategic planning and compliance, including comprehensive stakeholder workshops, expert interviews, and a robust change management program.
+    2s2 * The user is working on a project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy." The main objectives of the user's project are to ensure full adherence to all relevant regional financial regulations for digital client acquisition and to improve client satisfaction scores for onboarding by 25% within the initial 9 months. The user's project is a comprehensive initiativ
+    2s2 * The project proposal is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination.
+    2s2 * The proposed budget for the project is €750,000.
+    2s2 * The project timeline is 18 months, with a phased rollout over the first year and optimization planned for the subsequent six months.
+    2s2 * Dr. Elara Vance, the user's Senior Management Consultant, will be leading the project.
+    2s2 * The key stakeholders involved in the project are the IT Infrastructure & Security Teams and National Health Ministries Representatives.
+    2s2 * The main objectives of the project are to establish clear ROI metrics for digital health investments across the continent and to identify and evaluate key integration points for existing national digital health platforms.
+    2s2 * The key deliverables for the project include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the Pan-European Digital Health Ecosystem, and a Detailed Integration Blueprint and API Strategy Document.
+    2s2 * The potential risks for the project include high complexity due to regulatory divergence across countries, data privacy concerns, and the need for extensive stakeholder alignment, with mitigation strategies involving a dedicated legal and compliance workstream and a robust communication plan.
+    2s2 * The project methodology leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach for foundational strategic planning and compliance, including comprehensive stakeholder workshops, expert interviews, and a robust change management program.
+- financial_analyst session 20 (activity, add). User: Speaking of tracking, I just spent $73.78 on groceries.
+    v1 * The user spent $73.78 on groceries on 2025-06-01.
+    v5 * The user spent $73.78 on groceries on 2025-06-01.
+    v5 * The user has set a goal to keep their lunch spending under $60 per week to help save money and eat healthier. The user spent $73.78 on groceries on 2025-06-01.
+    2s1 * The user is catching up on emails and planning out the rest of the week.
+    2s1 * The user finds breaking larger goals into smaller steps to be an effective strategy.
+    2s1 * The user spent $73.78 on groceries.
+    2s2 * The user is catching up on emails and planning out the rest of the week.
+    2s2 * The user finds breaking larger goals into smaller steps to be a really effective strategy.
+    2s2 * The user spent $73.78 on groceries.
+- sales_manager session 89 (activity, update). User: Please update the `key_points` to include: 'Discussion of competitive landscape and our unique value proposition for fleet and individual consumers.' / Please add 'Marketing Director (Automotive Sector)' to the `recipient_list`. / Yes, please update the `key_points` with: 'Review of initial pilot program successes and challenges in select regions.'
+    v1 * The user needs to write an email to Regional Sales Directors for EMEA, APAC, and the Americas, the Product Development Lead for Charging Solutions, and the Marketing Director (Automotive Sector), outlining strategies for scaling new electric vehicle charging infrastructure solutions across key international markets and soliciting feedback for refinement. The key points to cover include the propose
+    v5 * The user is drafting an email to Regional Sales Directors for EMEA, APAC, and the Americas, the Product Development Lead for Charging Solutions, and the Marketing Director (Automotive Sector). The email outlines strategies for scaling new electric vehicle charging infrastructure solutions across key international markets and solicits feedback for refinement. The key points include a proposed phase
+    2s1 * The user is updating an email titled 'To outline strategies for scaling our new electric vehicle charging infrastructure solutions across key international markets and solicit feedback for refinement.'
+    2s1 * The key points to cover in the email include the proposed phased rollout plan for global market penetration focusing on high-growth automotive markets, resource allocation and support requirements for sales teams in new territories, strategic partnerships and government incentive programs to accelerate adoption, and discussion of competitive landscape and our unique value proposition for fleet and
+    2s1 * The user added 'Marketing Director (Automotive Sector)' to the `recipient_list` of the email.
+    2s1 * The user updated the `key_points` of the email to include 'Review of initial pilot program successes and challenges in select regions.'
+    2s2 * The user updated the email titled 'To outline strategies for scaling our new electric vehicle charging infrastructure solutions across key international markets and solicit feedback for refinement.' by adding 'Discussion of competitive landscape and our unique value proposition for fleet and individual consumers.' and 'Review of initial pilot program successes and challenges in select regions.' to
+- management_consultant session 12 (activity, add). User: Speaking of interesting developments, I just spent $5.88 on a coffee, which feels like a small investment in my own personal exploration this morning.
+    v1 * The user spent $5.88 on a coffee.
+    v5 * The user spent $5.88 on a coffee.
+    2s1 * The user spent $5.88 on a coffee on 2025-06-01.
+    2s2 * The user spent $5.88 on a coffee on 2025-06-01.
+- financial_analyst session 106 (preference, add). User: Exactly! Speaking of learning, I really enjoyed reading "Thinking, Fast and Slow" by Daniel Kahneman. It made me think about how we make decisions.
+    v1 * The user really enjoyed reading "Thinking, Fast and Slow" by Daniel Kahneman.
+    v5 * The user really enjoyed reading "Thinking, Fast and Slow" by Daniel Kahneman.
+    2s1 * The user really enjoyed reading "Thinking, Fast and Slow" by Daniel Kahneman.
+    2s2 * The user really enjoyed reading "Thinking, Fast and Slow" by Daniel Kahneman.
+
+two-step v2 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)
+- sales_manager session 89 (activity). User: Please update the `key_points` to include: 'Discussion of competitive landscape and our unique value proposition for fleet and individual consumers.' / Please add 'Marketing Director (Automotive Sector)' to the `recipient_list`. / Yes, please update the `key_points` with: 'Review of initial pilot program successes and challenges in select regions.'
+    shown   * The user is organizing content for an email write-up regarding strategies for scaling new electric vehicle charging infrastructure solutions across key international markets and soliciting feedback for refinement.
+    shown   * The recipients of the email are the Regional Sales Directors for EMEA, APAC, and the Americas, as well as the Product Development Lead for Charging Solutions.
+    shown   * The user wants the email to cover a proposed phased rollout plan for global market penetration focusing on high-growth automotive markets, resource allocation and support requirements for sales teams in new territories, and strategic partnerships and government incentive programs to accelerate adopt
+    written * The user updated the email titled 'To outline strategies for scaling our new electric vehicle charging infrastructure solutions across key international markets and solicit feedback for refinement.' by adding 'Discussion of competitive landscape and our unique value proposition for fleet and individ
+- sales_manager session 21 (activity). User: I need to update my colleague's birthday; it's actually next Tuesday, not this Friday.
+    shown   * The user has a colleague's birthday on July 29th that they need to remember.
+    written * The user needs to update their colleague's birthday to next Tuesday.
+
+two-step v2 DELETE SESSIONS (5 at random)
+- financial_analyst session 154: forgot 0, changed 1. User: I'm glad I finished reading financial news.
+    written * The user has finished reading financial news.
+- management_consultant session 29: forgot 0, changed 1. User: I actually just finished planning my vacation days.
+    written * The user has finished planning their vacation days.
+- financial_analyst session 51: forgot 0, changed 1. User: You know, speaking of music, I actually don't really like Count Basie anymore. My tastes have really shifted since I last listened to him.
+    written * The user no longer likes Count Basie, as their tastes have shifted since they last listened to him.
+- management_consultant session 45: forgot 0, changed 1. User: I actually managed to schedule some exercise time earlier.
+    written * The user has scheduled some exercise time earlier.
+- sales_manager session 28: forgot 0, changed 1. User: I completed planning my vacation time for the year. I no longer need to track "Plan vacation time" on my to-do list.
+    written * The user has completed planning their vacation time for the year and no longer needs to track "Plan vacation time" on their to-do list.
+
+FINISHED TASKS, both versions (4 at random)
+- management_consultant session 51. User: I just finished updating the consulting framework.
+    v1 changed
+      * The user has finished updating the consulting framework for a project.
+    v5 changed
+      * The user has finished updating the consulting framework.
+    2s1 changed
+      * The user has finished updating the consulting framework.
+    2s2 changed
+      * The user has finished updating the consulting framework.
+- sales_manager session 144. User: Yes, I do! I also just finished planning my vacation time.
+    v1 new only
+      * The user has finished planning their vacation time.
+    v5 changed
+      * The user has planned their vacation time.
+    2s1 changed
+      * The user has finished planning their vacation time.
+    2s2 changed
+      * The user has finished planning their vacation time.
+- management_consultant session 153. User: I actually finished scheduling all my medical appointments.
+    v1 changed
+      * The user has finished scheduling all their medical appointments.
+    v5 changed
+      * The user has finished scheduling all their medical appointments.
+    2s1 changed
+      * The user has finished scheduling all their medical appointments.
+    2s2 changed
+      * The user has finished scheduling all their medical appointments.
+- sales_manager session 63. User: I've actually completed "Prepare proposal documents," so you can remove that from my to-do list.
+    v1 changed
+      * The user has completed the task of preparing proposal documents for work.
+    v5 changed
+      * The user has completed preparing proposal documents for work.
+    2s1 changed
+      * The user has completed the task "Prepare proposal documents" and asked for it to be removed from their to-do list.
+    2s2 changed
+      * The user has completed the task "Prepare proposal documents" and it has been removed from their to-do list.
+
+two-step v2 CHANGES THAT FOLDED A MEMORY OF ANOTHER RECORD, not preference sessions (5 at random)
+- sales_manager session 61 (activity, add). User: The title of this new project proposal is "Regional 5G Enterprise Solutions Expansion Initiative." / This project proposes accelerating the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus / The proposed budget for this initiative is $10,700,000. / This project is planned to unfold over the next 18 months, structured into three distinct phases of six months each. / Javier Mendoza, our Regional Sales Director, will be leading this project. / The key stakeholders involved are Product Development - Enterprise Solutions and the Finance Department. / The main objectives are to establish our company as the leading provider of enterprise 5G solutions in the region and to enhance market pene / The key deliverables for this project include a dedicated regional sales enablement toolkit for 5G offerings, a comprehensive regional marke / The revenue targets are to secure recurring revenue streams from 70% of new enterprise clients within 6 months of contract signing. / Recent studies indicate a rapidly expanding demand for private 5G networks and enhanced connectivity solutions among regional enterprises. C
+    replaced * The key stakeholders involved in the user's project are the Executive Leadership Team, Legal and Compliance Department, and Product Development Leadership.
+    with     * The user's project proposes accelerating the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus on B2B revenue growth and market share capture.
+- management_consultant session 66 (activity, add). User: It's called "Pan-European Digital Health Ecosystem Integration Strategy." / This project is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data inter / The proposed budget for this project is €750,000. / We're looking at a timeline of 18 months, with a phased rollout over the first year and optimization planned for the subsequent six months. / Dr. Elara Vance, our Senior Management Consultant, will be leading this project. / The key stakeholders involved are the IT Infrastructure & Security Teams and National Health Ministries Representatives. / The main objectives are to establish clear ROI metrics for digital health investments across the continent and to identify and evaluate key  / The deliverables include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Operating Model (TOM) for the / The potential risks include high complexity due to regulatory divergence across countries, data privacy concerns, and the need for extensive / Our methodology leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach fo
+    replaced * Dr. Anya Sharma, a Senior Management Consultant, will be leading the user's project.
+    with     * Dr. Elara Vance, the user's Senior Management Consultant, will be leading the project.
+- sales_manager session 61 (activity, add). User: The title of this new project proposal is "Regional 5G Enterprise Solutions Expansion Initiative." / This project proposes accelerating the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus / The proposed budget for this initiative is $10,700,000. / This project is planned to unfold over the next 18 months, structured into three distinct phases of six months each. / Javier Mendoza, our Regional Sales Director, will be leading this project. / The key stakeholders involved are Product Development - Enterprise Solutions and the Finance Department. / The main objectives are to establish our company as the leading provider of enterprise 5G solutions in the region and to enhance market pene / The key deliverables for this project include a dedicated regional sales enablement toolkit for 5G offerings, a comprehensive regional marke / The revenue targets are to secure recurring revenue streams from 70% of new enterprise clients within 6 months of contract signing. / Recent studies indicate a rapidly expanding demand for private 5G networks and enhanced connectivity solutions among regional enterprises. C
+    replaced * Success for the user's project will be measured by the cost of customer acquisition for new partners, the number of new healthcare provider partnerships secured, and the total revenue generated from these new partnerships.
+    with     * The user's project proposes accelerating the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus on B2B revenue growth and market share capture.
+- sales_manager session 93 (activity, delete). User: Please remove 'Legal and Compliance Department' from the stakeholders.
+    replaced * The key stakeholders involved in the user's project are Product Development - Enterprise Solutions and the Finance Department.
+    with     * The key stakeholders involved in the user's project are Product Development - Enterprise Solutions and the Finance Department.
+- financial_analyst session 41 (activity, add). User: That's amazing. Speaking of complex data, I walked 11,434 steps today.
+    replaced * The user took 3,000 steps on 2025-06-02.
+    with     * The user took 11,434 steps on 2025-06-02.
+
+two-step v2 RECORDS THAT LOST AN ELEMENT AFTER IT WAS SAVED (5 at random)
+- financial_analyst session 21: lost ["J.J. Abrams'", 'J.J. Abrams', '8', '*Super 8*', '*Star Trek*']. User: Speaking of frameworks, it reminds me of how a good director can really shape a film; I actually really like J.J. Abrams' work! / I love how he blends action, mystery, and character development, especially in movies like *Super 8* and *Star Trek*. He just knows how to k
+    now * The user used to really like Rian Johnson's work, but after watching "The Last Jedi," they are no longer a fan.
+- management_consultant session 42: lost ['"Sapiens."']. User: Speaking of understanding humanity, I really like how Yuval Noah Harari explores these big ideas in his books. Have you read any of his work / I love how he makes complex historical and philosophical ideas so accessible and engaging, especially in "Sapiens."
+    now * The user used to be more into Yuval Noah Harari, but their tastes have evolved away from him.
+- financial_analyst session 127: lost ['European', '#SupplyChainOptimization', '#AIManufacturing', '#FinancialAnalysis', '#EuropeanMarket']. User: It's for LinkedIn. / This will be an Insight Post. / The main message is about exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains an / Let's use #SupplyChainOptimization, #AIManufacturing, #FinancialAnalysis, #FinancialPlanning, and #EuropeanMarket.
+    now * The user is organizing information for a new social media post for LinkedIn. The user is creating an Insight Post for LinkedIn. The engagement goal for the user's post is to generate discussion and establish thought leadership. The user's LinkedIn Insight Post includes details from an internal revie
+- financial_analyst session 135: lost ["Malcolm Gladwell's"]. User: Speaking of understanding things, I really like Malcolm Gladwell's books – he always has such interesting ways of explaining complex ideas. 
+    now * The user used to like Malcolm Gladwell but is now really into Mary Roach, finding her books more engaging due to her humor and deep dives into quirky, specific topics, whereas Gladwell feels too broad and theoretical to the user now.
+- financial_analyst session 93: lost ['*The Tipping Point*', 'The Tipping Point']. User: That reminds me of how Malcolm Gladwell uses analogies in his books, like in *The Tipping Point* which I really enjoyed.
+    now * The user used to like Malcolm Gladwell but is now really into Mary Roach, finding her books more engaging due to her humor and deep dives into quirky, specific topics, whereas Gladwell feels too broad and theoretical to the user now.
