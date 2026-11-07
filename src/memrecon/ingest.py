@@ -12,6 +12,13 @@ Three ways, one per kind of arm:
   append-only. Prompt: prompts/ingest_log_v1.md.
 - **oracle** (`ingest_oracle`): the flagged turns, verbatim, with no model call.
   An upper-bound reference that uses Memora's annotations, labelled as such.
+- **two-step note** (`ingest_two_step`, D40): as in Mem0, step 1 extracts facts
+  from the session without seeing any memory (prompts/extract_note_v1.md);
+  step 2 decides, for each fact, against the stored memories most similar to
+  it (top 5 reaching `candidate_threshold`), whether it is new, replaces some,
+  asks for some to be forgotten, or is already stored (prompts/decide_note_v1.md).
+  A fact with no memory reaching the threshold is added without a call, so a
+  rewrite needs both a similar memory and the model choosing to change it.
 
 Answers are one JSON object between tags, read strictly and never repaired
 (as in the HW1 harness). An unusable answer is a rejected attempt, kept in the
@@ -35,6 +42,8 @@ PROMPTS = Path(__file__).resolve().parent / "prompts"
 MAX_ATTEMPTS = 3
 MAX_RELATED = 10
 RELATED_K = 3
+CANDIDATE_K = 5  # two-step: similar memories shown per fact, as in Mem0
+ACTIONS = ("add", "replace", "forget", "none")
 
 
 def load_prompt(name: str) -> tuple[str, str]:
@@ -130,6 +139,46 @@ def parse_note_answer(reply: str, labels: dict[str, str], lines: dict[int, dict]
     return {"new": new, "change": change, "forget": forget}
 
 
+def parse_extract_answer(reply: str, lines: dict[int, dict]) -> list[tuple[str, list[int]]]:
+    """Two-step, step 1: the facts and the user lines each comes from; the same fact twice is unusable."""
+    data = extract_block(reply, "facts")
+    if set(data) != {"facts"} or not isinstance(data["facts"], list):
+        raise UnusableAnswer('The object must be {"facts": [...]}.')
+    out = []
+    for item in data["facts"]:
+        if not isinstance(item, dict) or set(item) != {"fact", "lines"} or not isinstance(item["fact"], str) or not item["fact"].strip():
+            raise UnusableAnswer('Each item in "facts" must be {"fact": "...", "lines": [...]}.')
+        out.append((item["fact"].strip(), _check_lines(_ints(item["lines"], "lines"), lines)))
+    texts = [t for t, _ in out]
+    if len(texts) != len(set(texts)):
+        raise UnusableAnswer("The same fact appears more than once; write each fact once.")
+    return out
+
+
+def parse_decision(reply: str, labels: dict[str, str]) -> tuple[str, list[str], str]:
+    """Two-step, step 2: (action, IDs of the memories it replaces or forgets, updated memory text)."""
+    data = extract_block(reply, "decision")
+    if set(data) != {"action", "replaces", "memory"}:
+        raise UnusableAnswer('The object must have exactly the keys "action", "replaces" and "memory".')
+    action, memory = data["action"], data["memory"]
+    if action not in ACTIONS:
+        raise UnusableAnswer('"action" must be one of "add", "replace", "forget" or "none".')
+    if not isinstance(memory, str):
+        raise UnusableAnswer('"memory" must be a string.')
+    nums = _ints(data["replaces"], "replaces")
+    shown = sorted(int(k) for k in labels)
+    if action in ("replace", "forget"):
+        if not nums or not set(nums) <= set(shown) or len(nums) != len(set(nums)):
+            raise UnusableAnswer(f'For "{action}", "replaces" must list numbers of the memories shown ({shown}), each once.')
+    elif nums:
+        raise UnusableAnswer(f'For "{action}", "replaces" must be empty.')
+    if action == "replace" and not memory.strip():
+        raise UnusableAnswer('For "replace", "memory" must be the complete updated memory.')
+    if action != "replace" and memory.strip():
+        raise UnusableAnswer(f'For "{action}", "memory" must be empty.')
+    return action, [labels[str(n)] for n in nums], memory.strip()
+
+
 def _check_lines(nums: list[int], lines: dict[int, dict]) -> list[int]:
     bad = [n for n in nums if n not in lines or lines[n].get("speaker") != "user_agent"]
     if not nums or bad:
@@ -164,12 +213,16 @@ class Outcome:
     forgotten: list[str] = field(default_factory=list)
     span_fallbacks: int = 0  # log arm: kept words that were not an exact part of the turn
     error: str | None = None
+    facts: int = 0  # two-step: facts extracted
+    decisions: dict[str, int] = field(default_factory=dict)  # two-step: how each fact was handled
+    decide_failures: int = 0  # two-step: facts whose decision failed 3 times (the fact is then added)
 
 
 class Ingestor:
     def __init__(self, client, store: MemoryStore, retriever=None, persona: str = "", max_tokens: int = 2048,
                  related_threshold: float = 0.0, note_prompt: str = "ingest_note_v1", log_prompt: str = "ingest_log_v1",
-                 tag: str | None = None) -> None:
+                 tag: str | None = None, extract_prompt: str = "extract_note_v1", decide_prompt: str = "decide_note_v1",
+                 candidate_k: int = CANDIDATE_K, candidate_threshold: float = 0.0) -> None:
         self.client = client
         self.store = store
         self.retriever = retriever
@@ -179,11 +232,17 @@ class Ingestor:
         self.note_prompt = note_prompt
         self.log_prompt = log_prompt
         self.tag = tag
+        self.extract_prompt = extract_prompt
+        self.decide_prompt = decide_prompt
+        self.candidate_k = candidate_k
+        self.candidate_threshold = candidate_threshold
+        self.last_shown: set[str] = set()  # memories shown to the model for the last session (harness only)
+        self.decision_log: list[dict] = []  # two-step: one entry per fact of the last session (harness only)
         self.calls: list[dict] = []  # one entry per answer received: session, attempt, tokens, from cache or not
 
     # -- shared --------------------------------------------------------------------
 
-    def _ask(self, system: str, user: str, parse, at: At, remind: bool = False) -> tuple[object | None, int, str | None]:
+    def _ask(self, system: str, user: str, parse, at: At, remind: bool = False, step: str = "ingest") -> tuple[object | None, int, str | None]:
         """Call the model up to MAX_ATTEMPTS times; feed back why an answer was unusable.
 
         remind (on from prompt v2): the feedback also repeats the prompt's answer format. Off for v1
@@ -195,9 +254,9 @@ class Ingestor:
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
                 result = self.client.chat(messages, max_tokens=limit, tag=self.tag,
-                                          meta={"step": "ingest", "persona": self.persona, "session": at.session_id, "attempt": attempt})
+                                          meta={"step": step, "persona": self.persona, "session": at.session_id, "attempt": attempt})
                 usage = getattr(result, "usage", None) or {}
-                self.calls.append({"session": at.session_id, "attempt": attempt, "cached": getattr(result, "cached", False),
+                self.calls.append({"session": at.session_id, "step": step, "attempt": attempt, "cached": getattr(result, "cached", False),
                                    "prompt_tokens": usage.get("prompt_tokens"), "completion_tokens": usage.get("completion_tokens")})
             except OutputTruncated:
                 limit *= 2  # retry the same request with twice the room
@@ -219,6 +278,7 @@ class Ingestor:
         return None, MAX_ATTEMPTS, error
 
     def _related(self, session: dict, at: At) -> tuple[str, dict[str, str]]:
+        self.last_shown = set()
         if self.retriever is None or not self.store.active():
             return "(none)", {}
         self.retriever.sync(self.store)
@@ -229,9 +289,18 @@ class Ingestor:
             for mid, score in self.retriever.search(t.get("message", ""), k=RELATED_K, threshold=self.related_threshold):
                 best[mid] = max(score, best.get(mid, -1.0))
         ids = [mid for mid, _ in sorted(best.items(), key=lambda kv: -kv[1])[:MAX_RELATED]]
+        self.last_shown = set(ids)
         if not ids:
             return "(none)", {}
         return self.store.present(ids, at)
+
+    def _candidates(self, fact: str, exclude: set[str]) -> list[tuple[str, float]]:
+        """Two-step: the stored memories most similar to a fact that reach the threshold (not those in `exclude`)."""
+        if self.retriever is None or not self.store.active():
+            return []
+        self.retriever.sync(self.store)
+        hits = [(mid, s) for mid, s in self.retriever.scores(fact) if mid not in exclude and s >= self.candidate_threshold]
+        return hits[: self.candidate_k]
 
     def _sources(self, session: dict, nums: list[int], lines: dict[int, dict]) -> list[Source]:
         return [Source(self.persona, session["session_id"], lines[n].get("turn", n)) for n in nums]
@@ -260,6 +329,56 @@ class Ingestor:
             ids = [labels[str(n)] for n in answer["forget"]]
             self.store.forget(ids, at)
             out.forgotten += ids
+        return out
+
+    def ingest_two_step(self, session: dict) -> Outcome:
+        """Two-step note ingestion (D40): extract facts, then decide each against its most similar memories."""
+        at = At(session["session_id"], 0)
+        date = session.get("date", "")
+        system, template = load_prompt(self.extract_prompt)
+        conversation, lines = render_conversation(session)
+        user = template.format(date=date, conversation=conversation)
+        self.last_shown, self.decision_log = set(), []
+        facts, attempts, error = self._ask(system, user, lambda r: parse_extract_answer(r, lines), at, remind=True, step="extract")
+        out = Outcome(session["session_id"], ok=facts is not None, attempts=attempts, error=error)
+        if facts is None:
+            return out
+        out.facts = len(facts)
+        dsys, dtemplate = load_prompt(self.decide_prompt)
+        added_here: set[str] = set()  # facts added from this session are not shown to its later facts
+        for text, nums in facts:
+            sources = self._sources(session, nums, lines)
+            cands = self._candidates(text, added_here)
+            entry = {"fact": text, "candidates": cands, "action": None, "ids": []}
+            self.decision_log.append(entry)
+            if not cands:
+                out.created.append(self.store.note(text, sources, at, date=date))
+                added_here.add(out.created[-1])
+                entry["action"] = "add (no candidate)"
+                out.decisions[entry["action"]] = out.decisions.get(entry["action"], 0) + 1
+                continue
+            shown, labels = self.store.present([mid for mid, _ in cands], at)
+            self.last_shown |= set(labels.values())
+            duser = dtemplate.format(date=date, fact=text, memories=shown)
+            decision, _, derr = self._ask(dsys, duser, lambda r: parse_decision(r, labels), at, remind=True, step="decide")
+            if decision is None:
+                out.decide_failures += 1
+                out.error = derr
+                decision = ("add", [], "")  # a fact whose decision failed is kept, never dropped
+                entry["action"] = "add (decision failed)"
+            action, ids, memory = decision
+            entry["action"] = entry["action"] or action
+            entry["ids"] = ids
+            out.decisions[entry["action"]] = out.decisions.get(entry["action"], 0) + 1
+            if action == "add":
+                out.created.append(self.store.note(text, sources, at, date=date))
+                added_here.add(out.created[-1])
+            elif action == "replace":
+                out.created.append(self.store.note(memory, sources, at, supersedes=ids, date=date))
+                out.superseded += ids
+            elif action == "forget":
+                self.store.forget(ids, at)
+                out.forgotten += ids
         return out
 
     def ingest_log(self, session: dict) -> Outcome:

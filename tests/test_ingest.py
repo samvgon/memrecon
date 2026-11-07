@@ -6,6 +6,8 @@ import pytest
 
 from memrecon.ingest import (
     MAX_ATTEMPTS,
+    parse_decision,
+    parse_extract_answer,
     Ingestor,
     UnusableAnswer,
     extract_block,
@@ -222,7 +224,7 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
 
 
 def test_lint_comments_are_never_sent():
-    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5"):
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5", "extract_note_v1", "decide_note_v1"):
         system, user = load_prompt(name)
         assert "markdownlint" not in system + user
 
@@ -248,3 +250,120 @@ def test_prompt_v5_is_v1_with_the_decided_changes():
                  "Add nothing the user did not say"):
         assert kept in v1 and kept in v5
     assert "calendar date" not in v5 and "same memory twice" in v5 and "{memories}" in user
+
+
+# -- two-step ingestion (D40) -------------------------------------------------------------
+
+
+def facts_reply(*facts):
+    return "<facts>" + json.dumps({"facts": [{"fact": f, "lines": [3]} for f in facts]}) + "</facts>"
+
+
+def decision(action, replaces=(), memory=""):
+    return "<decision>" + json.dumps({"action": action, "replaces": list(replaces), "memory": memory}) + "</decision>"
+
+
+class WordRetriever:
+    """Similarity = share of the query's words found in the memory (stands in for embeddings)."""
+
+    def sync(self, store):
+        self.live = [(m.id, m.text) for m in store.active()]
+
+    def scores(self, query):
+        q = set(query.lower().split())
+        out = [(mid, len(q & set(t.lower().split())) / len(q)) for mid, t in self.live]
+        return sorted(out, key=lambda x: -x[1])
+
+
+def test_two_step_prompts_load_without_flags():
+    for name in ("extract_note_v1", "decide_note_v1"):
+        system, user = load_prompt(name)
+        assert "share_memory" not in system + user and "<!--" not in system
+    assert "{fact}" in load_prompt("decide_note_v1")[1] and "{memories}" not in load_prompt("extract_note_v1")[1]
+
+
+def test_a_fact_with_no_similar_memory_is_added_without_a_decision_call():
+    store = MemoryStore("p")
+    client = ScriptedClient(facts_reply("The user spent $11.83 on lunch.", "The user likes jazz."))
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    # the second fact is not shown the first, added from the same conversation
+    assert out.ok and len(client.calls) == 1 and len(out.created) == 2 and out.decisions == {"add (no candidate)": 2}
+    assert client.calls[0]["meta"]["step"] == "extract" and "Existing memories" not in client.calls[0]["messages"][1]["content"]
+
+
+def test_below_the_threshold_nothing_is_shown_or_rewritten():
+    store = MemoryStore("p")
+    old = store.note("The user spent $10.00 on lunch.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    client = ScriptedClient(facts_reply("The user spent $11.83 on lunch today."))
+    out = Ingestor(client, store, WordRetriever(), candidate_threshold=0.99).ingest_two_step(SESSION)
+    assert len(client.calls) == 1 and store.get(old).retired is None and len(out.created) == 1
+
+
+def test_replace_supersedes_and_is_shown_only_similar_memories():
+    store = MemoryStore("p")
+    old = store.note("The user is working on the report 'Q3 Review', due 2025-06-10.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    client = ScriptedClient(facts_reply("The user finished the report 'Q3 Review'."),
+                            decision("replace", [1], "The user has finished the report 'Q3 Review'."))
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    sent = client.calls[1]["messages"][1]["content"]
+    assert "New fact: The user finished the report 'Q3 Review'." in sent and "[1] (2025-05-30)" in sent
+    assert client.calls[1]["meta"]["step"] == "decide"
+    new = store.get(out.created[0])
+    assert out.superseded == [old] and new.depth == 2 and store.get(old).retired == "superseded"
+    assert out.decisions == {"replace": 1}
+
+
+def test_add_none_and_forget_decisions():
+    store = MemoryStore("p")
+    a = store.note("The user spent $10.00 on lunch.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    b = store.note("The user likes jazz music a lot.", [Source("p", 6, 3)], At(6, 0), date="2025-05-31")
+    client = ScriptedClient(facts_reply("The user spent $11.83 on lunch.", "The user likes jazz music.", "The user wants jazz music forgotten."),
+                            decision("add"), decision("none"), decision("forget", [1]))
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    assert out.decisions == {"add": 1, "none": 1, "forget": 1}
+    assert store.get(a).retired is None and store.get(b).retired == "forgotten" and len(out.created) == 1
+
+
+def test_a_memory_changed_earlier_in_the_session_is_shown_to_later_facts():
+    store = MemoryStore("p")
+    store.note("The user's meeting notes 'Sync' have the agenda: budget, hiring, travel.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    client = ScriptedClient(
+        facts_reply("The user removed hiring from the agenda of the meeting notes 'Sync'.", "The user removed travel from the agenda of the meeting notes 'Sync'."),
+        decision("replace", [1], "The user's meeting notes 'Sync' have the agenda: budget, travel."),
+        decision("replace", [1], "The user's meeting notes 'Sync' have the agenda: budget."))
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    assert [m.text for m in store.active()] == ["The user's meeting notes 'Sync' have the agenda: budget."]
+    assert store.active()[0].depth == 3 and len(out.superseded) == 2
+
+
+def test_a_failed_decision_keeps_the_fact():
+    store = MemoryStore("p")
+    store.note("The user spent $10.00 on lunch.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    client = ScriptedClient(facts_reply("The user spent $11.83 on lunch."), "no", "still no", "<decision>{}</decision>")
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    assert out.ok and out.decide_failures == 1 and out.decisions == {"add (decision failed)": 1} and len(store.active()) == 2
+
+
+@pytest.mark.parametrize(
+    "reply,match",
+    [
+        (decision("replace", [], "x"), "must list numbers"),
+        (decision("replace", [2], "x"), "must list numbers"),
+        (decision("replace", [1], ""), "complete updated memory"),
+        (decision("add", [1]), "must be empty"),
+        (decision("add", [], "The user spent $11.83."), "must be empty"),
+        (decision("merge"), "must be one of"),
+    ],
+)
+def test_decisions_are_read_strictly(reply, match):
+    with pytest.raises(UnusableAnswer, match=match):
+        parse_decision(reply, {"1": "m00001"})
+
+
+def test_extracted_facts_are_read_strictly():
+    _, lines = render_conversation(SESSION)
+    with pytest.raises(UnusableAnswer, match="more than once"):
+        parse_extract_answer(facts_reply("x", "x"), lines)
+    with pytest.raises(UnusableAnswer, match="user's lines"):
+        parse_extract_answer('<facts>{"facts": [{"fact": "x", "lines": [2]}]}</facts>', lines)
+    assert parse_extract_answer(facts_reply(), lines) == []
