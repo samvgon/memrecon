@@ -1,0 +1,196 @@
+# Evidence E26
+script:       scripts/explore/E26_probe_extraction.py
+run at:       2026-11-07T13:26:43-08:00
+memrecon:     071182a (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1. RELIABILITY
+  315 sessions, 1 failed, attempts {1: 230, 2: 77, 3: 8}, 397 fresh calls, 1613 s
+    failed: financial_analyst session 48: Each detail must have exactly the keys "line", "detail", "qualifier", "field", "who", "kind" and "status".
+  why answers were sent back: 12 x "line" must be one of the lines to read ([5]); 9 x "line" must be one of the lines to read ([14]); 9 x "line" must be one of the lines to read ([16]); 9 x "line" must be one of the lines to read ([13]); 8 x "line" must be one of the lines to read ([12]); 7 x "line" must be one of the lines to read ([6]); 6 x "line" must be one of the lines to read ([18]); 5 x "line" must be one of the lines to read ([17]); 5 x "line" must be one of the lines to read ([10]); 4 x "line" must be one of the lines to read ([11]); 4 x "line" must be one of the lines to read ([20]); 3 x "who" must be "user", "user and others", "someone else" or "".; 3 x "line" must be one of the lines to read ([15]); 3 x Each detail must have exactly the keys "line", "detail", "qualifier", "field", "who", "kin; 2 x "line" must be one of the lines to read ([19]); 2 x "field" must name what the detail is.; 1 x "line" must be one of the lines to read ([22]); 1 x "line" must be one of the lines to read ([21]); 1 x Each "detail" must be copied exactly from its line
+
+2. ROWS
+  926 rows from 491 flagged turns (1.89 per turn)
+  kind:   item 228, name 153, task 143, preference 132, number 123, date 84, title 63
+  status: new 771, no longer 55, removed 34, added 29, done 23, replaced 7, updated 7
+  who:    user 874, user and others 48, someone else 4
+  with a qualifier: 62: under 8, about 6, a bit 6, soon 5, from 4, used to 3, a bit too 3, later 2, too 2, a little 2, also 1, used to really like 1
+  numbers: 123, parsed 117; units: $ 83, steps 21, None 6, months 5, $ per week 3, 12, and 18-month intervals 1, steps per day 1, -month timeline 1, € 1, -year period 1
+  dates: 84, resolved to a day 64; not resolved: by the end of next week, colleague's birthday, due by the end of next week, last night, morning, my morning, next 18 months, next week, spouse's birthday, this week, this year, within the next few business days, within the next three months
+  145 field names; most used: task 87, expense 72, item 45, date 45, preference 37, time 27, agenda item 23, step count 22, liked feature 21, liked author 20, hashtag 19, decision 16, objective 16, key point 16, liked artist 14
+
+3. AGREEMENT WITH THE LOG (where it can tell; E25)
+  calendar_event add                                      7 of    7 100.0%
+  calendar_event delete                                   1 of    1 100.0%
+  calendar_event update                                   2 of    2 100.0%
+  document: field new value                               4 of    4 100.0%
+  document: field old value                               4 of    4 100.0%
+  document: list item added                              26 of   27  96.3%
+  document: list item removed                            27 of   27 100.0%
+  food_expenses add                                      68 of   68 100.0%
+  goal: amount                                            6 of    8  75.0%
+  preference add: item, as new                           46 of   46 100.0%
+  preference delete: item, as no longer                  16 of   16 100.0%
+  preference update: new item, as new/updated            14 of   14 100.0%
+  preference update: old item, as no longer/replaced     14 of   14 100.0%
+  preference update: same item, now dislike               7 of    7 100.0%
+  preference update: same item, now like                  3 of    5  60.0%
+  step_tracker add                                       20 of   20 100.0%
+  todo_list add                                          38 of   38 100.0%
+  todo_list delete                                       23 of   26  88.5%
+  not matched (up to 4 each):
+    document: list item added: sales_manager session 43: Identification of top performing accounts and areas requiring focused attention.
+    preference update: same item: financial_analyst session 94: Swiss Alps -> like
+    preference update: same item: financial_analyst session 98: Sandra Bullock -> like
+    todo_list delete: financial_analyst session 75: Reconcile account balances
+    todo_list delete: management_consultant session 145: Plan conference attendance
+    todo_list delete: sales_manager session 100: Schedule workout session
+
+4. THE TABLE at the end of each persona's history
+  financial_analyst: 297 entries; holding at the end 275: true 248, no longer 20, done 5, false 2
+  management_consultant: 312 entries; holding at the end 284: true 251, no longer 21, done 9, false 3
+  sales_manager: 299 entries; holding at the end 271: true 233, no longer 21, false 10, done 7
+
+5. HAND-CHECK SAMPLE: 30 sessions at random, each flagged line then its rows
+   (detail | qualifier | field | who | kind | status | number unit | resolved date)
+- management_consultant session 3 (preference, add, 2025-06-01)
+    19. Oh, I absolutely adore Ella Fitzgerald! Her voice is just pure magic and always puts a smile on my face.
+        * Ella Fitzgerald |  | liked artist | user | name | new
+- management_consultant session 5 (goal, add, 2025-06-01)
+    11. You know, speaking of goals, I'm really trying to get more active and want to hit 6,000 steps every day! I think it'll make a huge difference in my energy levels.
+        * 6,000 steps | every day | step count | user | number | new | 6000 steps
+        * get more active |  | goal | user | task | new
+- sales_manager session 19 (activity, add, 2025-06-01)
+    20. Speaking of balance, I just spent $24.47 on dinner, trying to unwind after a long day.
+        * $24.47 |  | expense | user | number | new | 24.47 $
+- sales_manager session 149 (activity, add, 2025-06-07)
+    16. I actually spent $8.13 on lunch earlier today.
+        * $8.13 |  | food expenses | user | number | new | 8.13 $
+        * lunch |  | food expenses | user | item | new
+        * earlier today |  | date | user | date | new | 2025-06-07
+- sales_manager session 100 (activity, delete, 2025-06-04)
+    11. I'm no longer tracking "Schedule workout session" on my to-do list.
+        * Schedule workout session |  | task | user | task | no longer
+- financial_analyst session 43 (activity, delete, 2025-06-02)
+    5. Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold." from the key decisions.
+        * Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold. |  | decision | user | item | removed
+- financial_analyst session 96 (preference, add, 2025-06-05)
+    10. That reminds me, I really dislike music from the 1990s. I just can't get into it.
+        * music from the 1990s |  | disliked music | user | preference | new
+- sales_manager session 50 (activity, add, 2025-06-02)
+    10. Yes, I actually need to schedule my workout session.
+        * schedule my workout session |  | task | user | task | new
+- financial_analyst session 31 (activity, add, 2025-06-02)
+    11. That makes a lot of sense. Speaking of expenses, I just spent $47.15 on dinner tonight.
+        * $47.15 |  | expense | user | number | new | 47.15 $
+        * dinner |  | event | user | item | new
+        * tonight |  | date | user | date | new | 2025-06-02
+- sales_manager session 66 (preference, delete, 2025-06-03)
+    7. You know, speaking of movies, I actually used to really like Gal Gadot. But honestly, I'm not really a fan anymore; her recent roles just haven't resonated with me.
+        * Gal Gadot | used to | liked actor | user | name | no longer
+        * her recent roles | just haven't resonated with me | disliked work | user | item | new
+- financial_analyst session 132 (preference, add, 2025-06-06)
+    15. Speaking of important things to consider, I just finished "Silent Spring" and I really liked it. It's a powerful book that everyone should read.
+        * Silent Spring |  | book | user | title | new
+        * finished "Silent Spring" |  | task | user | task | done
+        * really liked it |  | preference | user | preference | new
+    17. It really opened my eyes to environmental issues and the impact of human actions, making it incredibly relevant even today.
+        * environmental issues |  | topic | user | item | new
+        * impact of human actions |  | topic | user | item | new
+- sales_manager session 17 (preference, add, 2025-06-01)
+    12. That's cool! Speaking of things I like, I really enjoy movies with Ryan Reynolds in them. He's hilarious!
+        * movies with Ryan Reynolds in them |  | liked movies | user | preference | new
+        * Ryan Reynolds |  | liked actor | user | name | new
+- management_consultant session 35 (preference, delete, 2025-06-02)
+    13. Speaking of evolving, I actually used to really like Ella Fitzgerald, but my taste has changed and I don't really listen to her anymore.
+        * Ella Fitzgerald |  | liked artist | user | name | no longer
+    15. I've actually gotten more into instrumental jazz lately, so I just don't find myself reaching for vocalists as much anymore.
+        * instrumental jazz | more into | musical preference | user | preference | new
+- management_consultant session 157 (preference, delete, 2025-06-07)
+    13. Speaking of books, you know, I used to really like Ta-Nehisi Coates, but my feelings have changed. I've found his recent work just doesn't resonate with me anymore.
+        * Ta-Nehisi Coates | used to | liked author | user | name | no longer
+        * his recent work | just | liked author | user | preference | no longer
+- financial_analyst session 22 (goal, add, 2025-06-01)
+    14. Speaking of positive changes, I'm really motivated to start walking 13,000 steps per day to boost my fitness! I think it'll make a huge difference in my energy levels.
+        * 13,000 steps per day |  | step count | user | number | new | 13000 steps per day
+        * boost my fitness |  | goal | user | task | new
+- management_consultant session 21 (activity, add, 2025-06-01)
+    13. I also need to update the consulting framework for a project.
+        * update the consulting framework |  | task | user | task | new
+        * a project |  | project | user | name | new
+- financial_analyst session 107 (activity, add, 2025-06-05)
+    18. Battery storage solutions, for example, could help smooth out the intermittent nature of renewables. I also grabbed a coffee this morning for $9.89.
+        * Battery storage solutions |  | topic | user | title | new
+        * coffee |  | item | user | item | new
+        * this morning |  | time | user | date | new | 2025-06-05
+        * $9.89 |  | expense | user | number | new | 9.89 $
+- financial_analyst session 98 (preference, update, 2025-06-05)
+    10. You know, speaking of changing perspectives, I actually used to not care for Sandra Bullock, but I've really come to enjoy her movies lately. She's got a great range!
+        * Sandra Bullock |  | disliked actor | user | name | no longer
+    12. Honestly, it was watching "The Heat" and "Ocean's 8" that did it for me. She's hilarious and so charismatic!
+        * "The Heat" |  | liked movies | user | title | new
+        * "Ocean's 8" |  | liked movies | user | title | new
+- management_consultant session 13 (activity, add, 2025-06-01)
+    12. It's a lot to ponder, and speaking of activity, I walked 12,372 steps today.
+        * 12,372 steps |  | step count | user | number | new | 12372 steps
+- sales_manager session 145 (preference, add, 2025-06-06)
+    14. Speaking of real-world applications, I was just thinking about how AI could help plan a dream vacation. I'm a big fan of the Mediterranean region.
+        * plan a dream vacation |  | task | user | task | new
+        * Mediterranean region |  | preference | user | name | new
+- sales_manager session 53 (activity, add, 2025-06-02)
+    14. That's really thought-provoking. I need to prepare some proposal documents for work today.
+        * prepare some proposal documents |  | task | user | task | new
+        * today |  | date | user | date | new | 2025-06-02
+- management_consultant session 142 (activity, add, 2025-06-07)
+    20. It really does; I just spent $5.72 on coffee, and even that simple transaction has a whole economic system behind it.
+        * $5.72 |  | expense | user | number | new | 5.72 $
+        * coffee |  | item | user | item | new
+- management_consultant session 123 (activity, update, 2025-06-06)
+    5. I need to update the objectives. Please add: 'Develop a harmonized digital health data model for cross-border patient information exchange.'
+        * Develop a harmonized digital health data model for cross-border patient information exchange. |  | objective | user | item | added
+    7. Yes, please update the stakeholders by adding 'Digital Health Product Owners'.
+        * Digital Health Product Owners |  | stakeholder | user | item | added
+    9. Yes, please update the objectives again by adding: 'Formulate a scalable governance framework for a pan-European digital health ecosystem.'
+        * Formulate a scalable governance framework for a pan-European digital health ecosystem. |  | objective | user | item | added
+- sales_manager session 138 (activity, delete, 2025-06-06)
+    12. I'm actually done with "Review competitor analysis" from my work tasks.
+        * Review competitor analysis |  | task | user | task | done
+- financial_analyst session 24 (activity, add, 2025-06-01)
+    18. I also need to exercise at the gym later.
+        * exercise at the gym | also | task | user | task | new
+- management_consultant session 69 (activity, update, 2025-06-04)
+    5. For the key decisions, please add: 'Prioritize resolution of API latency issues identified in payment gateway integration within the next 7 days.'
+        * Prioritize resolution of API latency issues identified in payment gateway integration within the next 7 days. |  | decision | user | item | added
+    7. Yes, please add 'Resource allocation and timeline adjustments for upcoming period' to the agenda items.
+        * Resource allocation and timeline adjustments for upcoming period |  | agenda item | user | item | added
+    9. Yes, for key decisions, please add: 'Allocate an additional full-time equivalent (FTE) from the internal development team to support Phase 2 integration efforts for the next 4 weeks.'
+        * Allocate an additional full-time equivalent (FTE) from the internal development team to support Phase 2 integration efforts for the next 4 weeks. |  | decision | user | item | added
+- sales_manager session 92 (activity, add, 2025-06-04)
+    6. This post is for LinkedIn.
+        * LinkedIn |  | platform | user | name | new
+    8. It's a Thought Leadership Post.
+        * Thought Leadership Post |  | content type | user | title | new
+    10. The main message is about being delighted to see our mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction, and asking what innovations are driving success in this dynamic landscape.
+        * being delighted to see our mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction, and asking what innovations are driving success in this dynamic landscape | about | main message | user | title | new
+    12. Please include #MobileFirst, #EnterpriseSolutions, #SalesLeadership, and #InnovationInTravel.
+        * #MobileFirst |  | hashtag | user | item | added
+        * #EnterpriseSolutions |  | hashtag | user | item | added
+        * #SalesLeadership |  | hashtag | user | item | added
+        * #InnovationInTravel |  | hashtag | user | item | added
+- financial_analyst session 94 (preference, update, 2025-06-05)
+    18. Speaking of unexpected influences, I've actually changed my mind about the Swiss Alps; I used to dislike them, but now I really like them!
+        * Swiss Alps |  | place | user | name | no longer
+        * dislike them |  | dislike | user | preference | no longer
+        * really like them |  | preference | user | preference | new
+    20. I recently saw some incredible documentaries on them, and the sheer beauty and opportunities for hiking really won me over!
+        * incredible documentaries on them |  | preference | user | item | new
+        * sheer beauty |  | preference | user | preference | new
+        * opportunities for hiking |  | preference | user | preference | new
+- sales_manager session 71 (activity, add, 2025-06-03)
+    12. Speaking of processing, I just spent $24 on dinner.
+        * $24 |  | expense | user | number | new | 24 $
+        * dinner |  | item | user | item | new
+- financial_analyst session 32 (activity, update, 2025-06-02)
+    5. Please update the objectives to include: 'Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months.'
+        * Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months. |  | main objectives | user | item | added

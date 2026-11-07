@@ -1,0 +1,85 @@
+# Evidence E25
+script:       scripts/explore/E25_log_latest_state.py
+run at:       2026-11-07T12:54:26-08:00
+memrecon:     f40f402 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1. FIELDS IN operation_details, by session type / operation / category (all personas, counts only)
+  ('activity', 'add', 'calendar_event')         n=  21  category 21, item{created_at,date,event_name,event_type} 21
+  ('activity', 'add', 'food_expenses')          n= 224  category 224, item{amount,created_at,expense_type} 224
+  ('activity', 'add', 'step_tracker')           n=  70  category 70, item{activity_type,created_at,step_count} 70
+  ('activity', 'add', 'todo_list')              n= 122  category 122, item{created_at,description,task_type} 122
+  ('activity', 'add', None)                     n=  77  content_data{action_items,agenda_items,key_decisions,meeting_title} 11, content_data{agenda_items,attendees,key_decisions,meeting_title} 7, content_data{agenda_items,campaign_metrics,key_decisions,meeting_title} 1, content_data{agenda_items,key_decisions,meeting_title,technical_blockers} 1, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,timeline} 1, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,creative_requirements,deliverables,design_style,objectives,project_description,project_lead,project_title,stakeholders,timeline} 1, content_data{budget,creative_requirements,deliverables,objectives,project_description,project_lead,project_title,stakeholders,technical_specs,timeline} 1, content_data{budget,deliverables,ethical_considerations,objectives,project_description,project_lead,project_title,research_methodology,stakeholders,timeline} 1, content_data{budget,deliverables,ethical_considerations,objectives,project_description,project_lead,project_title,significance_impact,stakeholders,timeline} 1, content_data{budget,deliverables,funding_requirements,growth_projections,objectives,project_description,project_lead,project_title,stakeholders,timeline} 1, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,revenue_targets,stakeholders,timeline} 1, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,market_impact,objectives,project_description,project_lead,project_title,stakeholders,timeline} 2, content_data{budget,deliverables,methodology,objectives,project_description,project_lead,project_title,risk_assessment,stakeholders,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,resources_needed,stakeholders,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_analysis,stakeholders,timeline} 2, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_assessment,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,stakeholders,timeline} 2, content_data{call_to_action,content_type,hashtags,main_message,platform} 1, content_data{call_to_action,email_purpose,key_points,recipient_list} 20, content_data{content_type,executive_insights,hashtags,main_message,platform} 1, content_data{content_type,hashtags,main_message,platform} 15, generation_method 77, item 77, partial_content_generated 77, pool_status 77
+  ('activity', 'delete', 'calendar_event')      n=   3  category 3, item{created_at,date,event_name,event_type} 3
+  ('activity', 'delete', 'todo_list')           n=  92  category 92, item{created_at,description,task_type} 92
+  ('activity', 'delete', None)                  n=  53  completion_threshold 30, content_data{action_items,agenda_items,key_decisions,meeting_title} 8, content_data{agenda_items,attendees,key_decisions,meeting_title} 9, content_data{agenda_items,campaign_metrics,key_decisions,meeting_title} 1, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,timeline} 2, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,creative_requirements,deliverables,design_style,objectives,project_description,project_lead,project_title,stakeholders,timeline} 2, content_data{budget,creative_requirements,deliverables,objectives,project_description,project_lead,project_title,stakeholders,technical_specs,timeline} 1, content_data{budget,deliverables,ethical_considerations,objectives,project_description,project_lead,project_title,research_methodology,stakeholders,timeline} 2, content_data{budget,deliverables,ethical_considerations,objectives,project_description,project_lead,project_title,significance_impact,stakeholders,timeline} 1, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,revenue_targets,stakeholders,timeline} 1, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,market_impact,objectives,project_description,project_lead,project_title,stakeholders,timeline} 1, content_data{budget,deliverables,methodology,objectives,project_description,project_lead,project_title,risk_assessment,stakeholders,timeline} 2, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_analysis,stakeholders,timeline} 2, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 2, content_data{call_to_action,email_purpose,key_points,recipient_list} 16, deletion_method 53, item 53, memory_deletes 53, moved_to_completed 30, pool_status 53, session_history 30, total_sessions_before_completion 30
+  ('activity', 'update', 'calendar_event')      n=  10  category 10, item{created_at,date,event_name,event_type,updated_at} 10
+  ('activity', 'update', None)                  n=  48  completion_threshold 26, content_data{action_items,agenda_items,key_decisions,meeting_title} 7, content_data{agenda_items,attendees,key_decisions,meeting_title} 3, content_data{agenda_items,campaign_metrics,key_decisions,meeting_title} 1, content_data{agenda_items,key_decisions,meeting_title,technical_blockers} 1, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,timeline} 1, content_data{budget,competitive_analysis,deliverables,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,creative_requirements,deliverables,objectives,project_description,project_lead,project_title,stakeholders,technical_specs,timeline} 1, content_data{budget,deliverables,ethical_considerations,objectives,project_description,project_lead,project_title,significance_impact,stakeholders,timeline} 1, content_data{budget,deliverables,funding_requirements,growth_projections,objectives,project_description,project_lead,project_title,stakeholders,timeline} 2, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,revenue_targets,stakeholders,timeline} 1, content_data{budget,deliverables,market_analysis,objectives,project_description,project_lead,project_title,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,market_impact,objectives,project_description,project_lead,project_title,stakeholders,timeline} 3, content_data{budget,deliverables,methodology,objectives,project_description,project_lead,project_title,risk_assessment,stakeholders,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,resources_needed,stakeholders,timeline} 2, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_analysis,stakeholders,timeline} 2, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_assessment,stakeholders,success_metrics,timeline} 3, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,risk_mitigation,stakeholders,success_metrics,timeline} 1, content_data{budget,deliverables,objectives,project_description,project_lead,project_title,stakeholders,timeline} 4, content_data{call_to_action,email_purpose,key_points,recipient_list} 12, conversion_reason 16, deletion_method 2, generation_method 14, item 48, memory_updates 48, moved_to_completed 26, operation_converted 16, pool_status 48, session_count 14, session_history 26, total_sessions_before_completion 26, update_type 34
+  ('goal', 'add', None)                         n=  30  actual_operation 30, item 30, subcategory 30
+  ('no_memory', None, 'calendar_event')         n=   1  category 1, conversion_reason 1, expired_events_count 1, fallback_session_type 1, message 1, operation_converted 1
+  ('no_memory', None, None)                     n= 518  content_data 52, conversion_reason 52, fallback_session_type 52, generation_method 52, item 52, message 52, operation_converted 52, pool_status{all_items_completed,available_pool_exhausted,completed_pool_size,draft_pool_empty,draft_pool_size,total_items_processed} 52
+  ('preference', 'add', None)                   n= 159  fallback_reason 28, item 159, preference 159, subcategory 159
+  ('preference', 'delete', None)                n=  45  item 45, preference 45, subcategory 45
+  ('preference', 'update', None)                n=  78  item 78, old_item 44, old_preference 78, preference 78, subcategory 78, update_type 78
+
+2. DOCUMENTS (development personas): what changes between consecutive content_data, and is it in the flagged turns?
+  ('add', 'first content_data')                                          23
+  ('delete', 'list item removed', 'in flagged turns')                    27
+  ('delete', 'list item removed', 'total')                               27
+  ('delete', 'sessions')                                                 16
+  ('update', 'field new value', 'in flagged turns')                      4
+  ('update', 'field new value', 'total')                                 4
+  ('update', 'field old value', 'in flagged turns')                      4
+  ('update', 'field old value', 'total')                                 4
+  ('update', 'list item added', 'in flagged turns')                      26
+  ('update', 'list item added', 'total')                                 27
+  ('update', 'sessions')                                                 17
+  examples:
+  - financial_analyst session 7 (update). User: I also need to update the agenda items to include 'Discussion on funding allocation for pilot AI initiatives in patient engagement'.
+      list item added    agenda_items: Discussion on funding allocation for pilot AI initiatives in patient engagement
+  - financial_analyst session 32 (update). User: Please update the objectives to include: 'Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months.'
+      list item added    objectives: Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months.
+  - financial_analyst session 38 (delete). User: Please remove "Comprehensive cost-benefit analysis report for proposed infrastructure investments" from the deliverables.
+      list item removed  deliverables: Comprehensive cost-benefit analysis report for proposed infrastructure investments.
+  - financial_analyst session 43 (delete). User: Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold." from the key decisions.
+      list item removed  key_decisions: Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold.
+  - financial_analyst session 58 (delete). User: Please remove 'Recommendations for scaling the pilot to additional regions and potential budgetary impacts.' from the key points. Yes, please remove 'Regional Leadership Team' from the recipient list.
+      list item removed  key_points: Recommendations for scaling the pilot to additional regions and potential budgetary impacts.
+      list item removed  recipient_list: Regional Leadership Team
+  - financial_analyst session 60 (delete). User: Please remove 'Availability of specialized AI/ML engineering talent for implementation (Medium)' from the risk analysis. Yes, also remove 'Reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.' from the objectives.
+      list item removed  objectives: Reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.
+      list item removed  risk_analysis: Availability of specialized AI/ML engineering talent for implementation (Medium).
+
+3. PREFERENCES, TO-DOS, CALENDAR, GOALS (development personas): are the logged items in the flagged turns?
+  ('calendar_event', 'add', 'key value in turns')              7
+  ('calendar_event', 'add', 'n')                               7
+  ('calendar_event', 'delete', 'key value in turns')           1
+  ('calendar_event', 'delete', 'n')                            1
+  ('calendar_event', 'update', 'key value in turns')           2
+  ('calendar_event', 'update', 'n')                            2
+  ('food_expenses', 'add', 'key value in turns')               68
+  ('food_expenses', 'add', 'n')                                68
+  ('goal', 'add', 'amount in turns')                           8
+  ('goal', 'add', 'n')                                         8
+  ('preference', 'add', 'item in turns')                       44
+  ('preference', 'add', 'n')                                   46
+  ('preference', 'add', 'preference dislike')                  9
+  ('preference', 'add', 'preference like')                     37
+  ('preference', 'delete', 'item in turns')                    15
+  ('preference', 'delete', 'n')                                16
+  ('preference', 'delete', 'preference like')                  16
+  ('preference', 'update', 'item in turns')                    25
+  ('preference', 'update', 'n')                                26
+  ('preference', 'update', 'old_item in turns')                13
+  ('preference', 'update', 'preference dislike -> like')       5
+  ('preference', 'update', 'preference like -> dislike')       7
+  ('preference', 'update', 'preference like -> like')          14
+  ('preference', 'update', 'update_type preference_update')    12
+  ('preference', 'update', 'update_type value_update')         14
+  ('step_tracker', 'add', 'key value in turns')                21
+  ('step_tracker', 'add', 'n')                                 21
+  ('todo_list', 'add', 'key value in turns')                   8
+  ('todo_list', 'add', 'n')                                    38
+  ('todo_list', 'delete', 'key value in turns')                8
+  ('todo_list', 'delete', 'n')                                 26
