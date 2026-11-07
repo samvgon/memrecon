@@ -1,17 +1,17 @@
 # Evidence E18
 script:       scripts/explore/E18_ingestion_v2.py
-run at:       2026-11-06T21:59:27-08:00
-memrecon:     df110cb (scripts clean)
+run at:       2026-11-06T22:08:45-08:00
+memrecon:     261b001 (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
-development personas: financial_analyst, management_consultant, sales_manager; wall time 1066 s
+development personas: financial_analyst, management_consultant, sales_manager; wall time 0 s
 
 1. RELIABILITY
   v1: 476 sessions, 0 failed, attempts {1: 474, 2: 2}, 0 fresh calls, 478 from cache
       output tokens per answer: p50 48 p90 103 p99 323 max 540; seconds per session: median 0.0, total 0
-  v2: 476 sessions, 0 failed, attempts {1: 462, 2: 14}, 480 fresh calls, 10 from cache
-      output tokens per answer: p50 54 p90 157 p99 344 max 470; seconds per session: median 1.8, total 1065
+  v2: 476 sessions, 0 failed, attempts {1: 462, 2: 14}, 0 fresh calls, 490 from cache
+      output tokens per answer: p50 54 p90 157 p99 344 max 470; seconds per session: median 0.0, total 0
   (attempts > 1: the first answer was unusable or cut off; the reasons are in the attempt files of the audit log)
 
 2. GRANULARITY (Memora's add/update sessions are about one record each)
@@ -25,16 +25,8 @@ development personas: financial_analyst, management_consultant, sales_manager; w
       preference  n=  72: 0   0 | 1  67 | 2-4   5 | 5+   0 | mean 1.07
 
 3. DETAIL SURVIVAL AND INVENTED NUMBERS
-  v1: all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with a number not in the conversation: 8 of 398
-      financial_analyst session 22 [10000.0]: The user hit their step goal on 2025-06-01 by walking 10,000 steps.
-      financial_analyst session 32 [6.0, 12.0, 15.0, 20.0, 1150000.0]: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
-      financial_analyst session 38 [6.0, 10.0, 12.0, 15.0, 18.0, 20.0, 1150000.0]: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
-      financial_analyst session 43 [2.0, 4.0]: The user approved reallocation of capital from Project Evergreen (Region 4) to Project Horizon (Region 2) due to higher projected ROI.
-  v2: all  95.1% of 556 | hashtag 100.0% | name  94.5% | number  97.1% | qualifier  62.5% | quoted  92.5% | record value  96.6% | memories with a number not in the conversation: 47 of 347
-      financial_analyst session 22 [10000.0]: The user hit their step goal on 2025-06-01 by walking 10,000 steps.
-      financial_analyst session 32 [6.0, 12.0, 15.0, 20.0, 1150000.0]: The user is working on a new project proposal titled 'Regional Logistics Network Optimization Initiative'. The project aims to enhance operational efficiency and cost-effectiveness across the regional
-      financial_analyst session 38 [6.0, 10.0, 12.0, 15.0, 18.0, 20.0, 1150000.0]: The user is working on a new project proposal titled 'Regional Logistics Network Optimization Initiative'. The project aims to enhance operational efficiency and cost-effectiveness across the regional
-      financial_analyst session 43 [2.0, 4.0, 10.0]: The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'. The agenda items included an Evaluation of Proposed Capital Expenditures for Upcomi
+  v1: all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with a number in neither the conversation nor the memories replaced: 0 of 398
+  v2: all  95.1% of 556 | hashtag 100.0% | name  94.5% | number  97.1% | qualifier  62.5% | quoted  92.5% | record value  96.6% | memories with a number in neither the conversation nor the memories replaced: 0 of 347
 
 4. UPDATE RECOGNITION (memories of the record's earlier sessions, active just before the session)
   v1 update sessions n=31: earlier memory shown 100.0%, replaced any 100.0%, replaced all  58.1%, shown but none replaced 0

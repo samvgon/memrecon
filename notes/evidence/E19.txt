@@ -1,0 +1,132 @@
+# Evidence E19
+script:       scripts/explore/E19_v2_followups.py
+run at:       2026-11-06T22:08:53-08:00
+memrecon:     261b001 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; fresh calls (should be 0): v1 0, v2 0
+
+1. WHY A SECOND ATTEMPT WAS NEEDED (feedback sent to the model)
+  v1: 2 retries
+        2  "lines" must list one or more numbers of the user's lines in the conversation.
+  v2: 14 retries
+        6  The same memory appears more than once; write each memory once.
+        5  Each item in "change" must be {"replaces": [...], "memory": "...", "lines": [...]}.
+        2  "lines" must list one or more numbers of the user's lines in the conversation.
+        1  "replaces" must list numbers of the existing memories shown ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).
+
+2. RETRIEVAL (top 3): a record's latest memory found by its next update/delete's flagged turns, vs small talk recalling anything
+  threshold  v1 found v1 small talk  v2 found v2 small talk
+       0.55     86.9%         85.5%     85.4%         82.4%
+       0.60     83.8%         48.0%     80.0%         43.2%
+       0.65     77.7%         14.1%     71.5%         10.2%
+       0.70     63.8%          1.4%     55.4%          1.2%
+       0.75     36.2%          0.2%     26.9%          0.1%
+  v1: 130 turns, 1084 small-talk turns; best similarity to the record's memory: median 0.73; words in the record's shortest memory: found at 0.70 median 18, missed median 22
+  v2: 130 turns, 1078 small-talk turns; best similarity to the record's memory: median 0.71; words in the record's shortest memory: found at 0.70 median 22.5, missed median 86.0
+
+3. CHANGES THAT REPLACE A MEMORY OF ANOTHER RECORD (or in a session about no record)
+  v1: 144 memories replaced; of another record 39; in a session about no record (small talk or unidentified) 2
+  v2: 159 memories replaced; of another record 67; in a session about no record (small talk or unidentified) 1
+  v2, 5 at random:
+  - financial_analyst session 66 (preference, update). User: Speaking of challenges, I used to really like J.J. Abrams' movies, but lately, I'm finding myself much more into Rian Johnson's work. His ap / I think Rian Johnson takes more risks with his narratives, which I find really engaging and thought-provoking. Abrams' films feel a bit more
+      replaced * The user enjoys the work of director J.J. Abrams, specifically appreciating how he blends action, mystery, and character development in films such as *Super 8* and *Star Trek*.
+      with     * The user has shifted their interest from director J.J. Abrams to Rian Johnson, appreciating Johnson's risk-taking approach to storytelling as fresh, engaging, and thought-provoking, while finding Abrams' films more predictable.
+  - sales_manager session 154 (activity, add). User: Speaking of daily routines, I already spent $9.33 on coffee this morning.
+      replaced * The user has set a personal financial goal to keep their coffee spending under $50 per week. On 2025-06-01, the user spent $5.49 on coffee. On 2025-06-02, the user spent $7.72 on coffee. On 2025-06-03, the user spent $9.34 on coffee. On 2025-06-04, the user spent $3.91 on coffee. On 2025-06-05, the 
+      with     * The user has set a personal financial goal to keep their coffee spending under $50 per week. On 2025-06-01, the user spent $5.49 on coffee. On 2025-06-02, the user spent $7.72 on coffee. On 2025-06-03, the user spent $9.34 on coffee. On 2025-06-04, the user spent $3.91 on coffee. On 2025-06-05, the 
+  - management_consultant session 24 (activity, add). User: Speaking of daily life, I actually walked 10,013 steps today, which is a good example of how technology can track personal achievements.
+      replaced * The user wants to hit 6,000 steps every day to improve their energy levels. On 2025-06-01, the user walked 12,372 steps.
+      with     * The user wants to hit 6,000 steps every day to improve their energy levels. On 2025-06-02, the user walked 10,013 steps.
+  - sales_manager session 150 (activity, add). User: Speaking of versatile, I managed to hit 13,865 steps today, which felt pretty synergistic with my fitness goals.
+      replaced * The user has set a new fitness goal to walk 11,000 steps every day to boost their activity level. On 2025-06-06, the user walked 5,739 steps.
+      with     * The user has set a new fitness goal to walk 11,000 steps every day to boost their activity level. On 2025-06-07, the user walked 13,865 steps.
+  - management_consultant session 85 (preference, update). User: Speaking of understanding, I used to really like Victor Fleming's films, but I've recently found a new appreciation for Ernst Lubitsch's wor / Fleming is grand, but Lubitsch's wit and subtle humor just make me smile more these days. His films have a lightness and sophistication I re
+      replaced * The user likes director Victor Fleming's work, noting that he really knew how to tell a story.
+      with     * The user has recently found a new appreciation for Ernst Lubitsch's work, noting that his wit, subtle humor, lightness, and sophistication make them smile more these days, whereas they used to really like Victor Fleming's films but now find Fleming's style grand in comparison.
+
+4. ADD/UPDATE SESSIONS WITH FLAGGED TURNS THAT SAVED NOTHING
+  v1: 3
+    - financial_analyst session 30 (activity, add): Speaking of planning, I still need to plan my weekend activities.
+    - sales_manager session 102 (activity, add): Well, I definitely need to plan my vacation time soon.
+    - sales_manager session 112 (activity, add): Speaking of work, I need to review the competitor analysis for my project.
+  v2: 8
+    - financial_analyst session 30 (activity, add): Speaking of planning, I still need to plan my weekend activities.
+    - financial_analyst session 92 (activity, add): I actually need to call my parents today, so that's on my mind.
+    - financial_analyst session 115 (activity, add): Definitely, especially when I have to review audit findings for work, it keeps me up.
+    - sales_manager session 18 (activity, add): I also need to plan my vacation time soon.
+    - sales_manager session 50 (activity, add): Yes, I actually need to schedule my workout session.
+    - sales_manager session 109 (activity, add): Speaking of challenges, I still need to plan my weekend sports activities.
+    - sales_manager session 112 (activity, add): Speaking of work, I need to review the competitor analysis for my project.
+    - sales_manager session 140 (activity, add): It's similar in a way to how I need to plan my vacation time this year.
+
+5. RELATIVE DATES: memories about documents (their contents) vs other memories
+  v1: documents 19 of 120 memories; other 17 of 278
+      other: The user has an Investment committee session coming up in 4 days from 2025-06-04, which is 2025-06-08.
+      other: The user needs to plan their vacation budget this week.
+      other: The user really enjoyed reading "Silent Spring" by Rachel Carson, finding it a powerful book that everyone should read because it opened their eyes to environmental issues and the impact of human actions, making it incredibly relevant even today.
+      other: The user needs to update their home organization this week.
+      other: The user spent $23.31 on groceries this morning.
+  v2: documents 18 of 59 memories; other 8 of 288
+      other: The user cannot attend their best friend's birthday on August 21st this year.
+      other: The user has an Investment committee session coming up in 4 days, which corresponds to 2025-06-08.
+      other: The user needs to plan their vacation budget this week.
+      other: The user needs to remember to call their parents today (2025-06-07).
+      other: The user needs to update their home organization this week.
+
+6a. "WE": flagged turns of add/update sessions saying we/our, and what v1 and v2 wrote (6 at random)
+  24 sessions
+  - management_consultant session 132. User: The main message is that strategic cost reduction in the energy sector is about optimizing value delivery, not just cutting expenses. We're seeing European energy firms use data to achieve sustainable
+      v1 * The user is creating a LinkedIn Insight Post with the main message that strategic cost reduction in the energy sector is about optimizing value delivery, not just cutting expenses, noting that European energy firms use data to achieve sustainable savings without compromising resilience or growth, an
+      v2 * The user is creating a LinkedIn Insight Post with the main message that strategic cost reduction in the energy sector is about optimizing value delivery, not just cutting expenses, noting that European energy firms are using data to achieve sustainable savings without compromising resilience or grow
+  - management_consultant session 98. User: I love learning about new innovations and how they shape our future, it's just so exciting to see what's next!
+      v1 * The user really enjoys reading books about technology, specifically loving learning about new innovations and how they shape the future.
+      v2 * The user enjoys reading books about technology, specifically liking to learn about new innovations and how they shape the future.
+  - sales_manager session 31. User: This project is a strategic proposal to forge new, high-value partnerships with leading global healthcare providers, with the goal of expanding our market reach and increasing revenue. / Isabella Chen, our Global Sales Director, will be leading this project.
+      v1 * The user is working on a project proposal titled "Global Healthcare Provider Partnership Expansion Initiative," which is a strategic proposal to forge new, high-value partnerships with leading global healthcare providers to expand market reach and increase revenue.
+      v1 * The user's project proposal "Global Healthcare Provider Partnership Expansion Initiative" has a proposed budget of $1,150,000.
+      v1 * The user's project proposal "Global Healthcare Provider Partnership Expansion Initiative" has an initial phase projected to span 12 months, with ongoing engagement planned over a 3-year period.
+      v1 * Isabella Chen, the user's Global Sales Director, will be leading the "Global Healthcare Provider Partnership Expansion Initiative" project.
+      v1 * The key stakeholders for the "Global Healthcare Provider Partnership Expansion Initiative" project are the Executive Leadership Team, Legal and Compliance Department, and Product Development Leadership.
+      v1 * The main objectives for the "Global Healthcare Provider Partnership Expansion Initiative" project are to secure 5 new strategic partnerships with top-tier global healthcare providers within the first year and increase global sales revenue by 15% from new partnerships over the next 18 months.
+      v1 * The key deliverables for the "Global Healthcare Provider Partnership Expansion Initiative" project include signed Memoranda of Understanding (MOUs) or partnership agreements, and detailed partnership proposals tailored to specific healthcare provider needs.
+      v1 * Success for the "Global Healthcare Provider Partnership Expansion Initiative" project will be measured by the cost of customer acquisition for new partners, the number of new healthcare provider partnerships secured, and the total revenue generated from these new partnerships.
+      v1 * Recent studies show significant growth opportunities in emerging healthcare markets, driven by demand for digital solutions and specialized medical services, with a gap in integrated partnership models identified in competitor analysis, according to the user's market analysis for the project proposa
+      v2 * The user is working on a project proposal titled 'Global Healthcare Provider Partnership Expansion Initiative.' The project aims to forge new, high-value partnerships with leading global healthcare providers to expand market reach and increase revenue. The proposed budget is $1,150,000. The initial 
+  - management_consultant session 61. User: We decided to schedule a dedicated technical deep-dive session on the data migration strategy for the upcoming period and approved the proposed change request for integrating the new KYC vendor's enha
+      v1 * The user attended a meeting titled 'Fintech Core System Integration - Phase 1 Review & Next Steps.'
+      v1 * The agenda for the 'Fintech Core System Integration - Phase 1 Review & Next Steps' meeting included a discussion of identified technical roadblocks and mitigation strategies, planning for Phase 2 rollout of account management and fraud detection modules, and analysis of initial pilot user feedback a
+      v1 * Key decisions made in the 'Fintech Core System Integration - Phase 1 Review & Next Steps' meeting included scheduling a dedicated technical deep-dive session on the data migration strategy for the upcoming period and approving the proposed change request for integrating the new KYC vendor's enhanced
+      v1 * Action items from the 'Fintech Core System Integration - Phase 1 Review & Next Steps' meeting include Sofia Rodriguez consolidating and presenting a summary of all pilot user feedback by the next meeting, and the user preparing a comparative analysis of potential fraud detection systems for review i
+      v2 * The user organized meeting notes for the meeting titled "Fintech Core System Integration - Phase 1 Review & Next Steps." The agenda included a discussion of identified technical roadblocks and mitigation strategies, planning for Phase 2 rollout of account management and fraud detection modules, and 
+  - sales_manager session 61. User: Javier Mendoza, our Regional Sales Director, will be leading this project. / The main objectives are to establish our company as the leading provider of enterprise 5G solutions in the region and to enhance market penetration in three high-potential regional sectors like manufa / Recent studies indicate a rapidly expanding demand for private 5G networks and enhanced connectivity solutions among regional enterprises. Competitors are present but lack our integrated service offer
+      v1 * The user's new project proposal is titled "Regional 5G Enterprise Solutions Expansion Initiative."
+      v1 * The user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" proposes accelerating the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus on B2B revenue growth and market share capture.
+      v1 * The user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" has a proposed budget of $10,700,000.
+      v1 * The user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" is planned to unfold over the next 18 months, structured into three distinct phases of six months each.
+      v1 * Javier Mendoza, the Regional Sales Director, will be leading the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative."
+      v1 * The key stakeholders for the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" are Product Development - Enterprise Solutions and the Finance Department.
+      v1 * The main objectives for the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" are to establish the company as the leading provider of enterprise 5G solutions in the region and to enhance market penetration in three high-potential regional sectors: manufacturing, logisti
+      v1 * The key deliverables for the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" include a dedicated regional sales enablement toolkit for 5G offerings, a comprehensive regional market opportunity analysis report, and quarterly performance reviews with strategic adjustmen
+      v1 * The revenue targets for the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" are to secure recurring revenue streams from 70% of new enterprise clients within 6 months of contract signing.
+      v1 * Recent studies indicate a rapidly expanding demand for private 5G networks and enhanced connectivity solutions among regional enterprises, with competitors present but lacking the user's integrated service offering and regional network density, according to the user's market analysis for the project
+      v2 * The user is working on a project proposal titled 'Regional 5G Enterprise Solutions Expansion Initiative.' The project aims to accelerate the adoption and deployment of advanced 5G enterprise solutions across key regional markets, with a focus on B2B revenue growth and market share capture. The propo
+  - financial_analyst session 56. User: We're proposing an initiative to significantly enhance our long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for  / We're looking at a 15-month timeline, structured into three distinct phases over the next period. / The project will be led by Dr. Anya Sharma, our Senior Financial Analyst. / Our key stakeholders include the Head of Lending Operations, Head of Product Development, and the Chief Risk Officer (CRO). / Our main objectives are to increase credit risk model predictive accuracy by at least 15% within the next 12 months, and reduce non-performing loan (NPL) rates by 5-7% over the next two years through  / For risk analysis, we're looking at the availability of specialized AI/ML engineering talent for implementation, which is a medium risk, and model explainability and interpretability for regulatory sc
+      v1 * The user is working on a new project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The project aims to significantly enhance long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accu
+      v2 * The user is working on a new project proposal titled 'AI-Driven Credit Risk Scoring Model Enhancement'. The project aims to significantly enhance long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accu
+
+6b. v2 MEMORIES DESCRIBING A CHANGE OR KEEPING AN EARLIER VERSION (6 at random), with what the user said
+  36 memories
+  - financial_analyst session 134 (preference, update). User: Oh, speaking of communication, my taste in actors has changed a bit; I used to really like Sandra Bullock, but now I'm all about Jodie Foster! Her performances 
+      * The user has changed their mind about Sandra Bullock and is no longer a fan; they now prefer Jodie Foster, finding her performances incredible.
+  - financial_analyst session 38 (activity, delete). User: Please remove "Comprehensive cost-benefit analysis report for proposed infrastructure investments" from the deliverables.
+      * The user is working on a new project proposal titled 'Regional Logistics Network Optimization Initiative'. The project aims to enhance operational efficiency and cost-effectiveness across the regional logistics network through strategic infrastructure upgrades and process re-engineering. The proposed budget is $1,150,000, with a timeline of 18 months and key milestones at 6, 12, and 18-month inter
+  - sales_manager session 120 (preference, delete). User: That's a lot to think about, but speaking of preferences, I actually used to really like post-rock music, but I'm not really into it anymore. I've just moved on / I guess I just got a bit bored with the repetition, and now I'm really digging indie folk and alternative country.
+      * The user used to like post-rock music, appreciating its atmospheric quality, slow build-up, and emotional soundscape that does not rely on traditional lyrics, but is no longer into it because they got bored with the repetition. They are now enjoying indie folk and alternative country.
+  - sales_manager session 3 (activity, add). User: The meeting was for a Strategic Account Review: TelcoConnect Group Integration & Expansion. / The agenda items included identifying key pain points and bottlenecks, discussing resource allocation and support requirements, outlining next steps and ownersh / We decided to schedule a follow-up with the client's Head of Infrastructure to present the updated integration timeline, and prioritize resolving API latency is / The attendees were Maria Rodriguez, our Technical Account Manager; David Chen, our Product Lead; and Aisha Rahman, our Sales Executive.
+      * The user organized meeting notes for a Strategic Account Review regarding TelcoConnect Group Integration & Expansion. The agenda included identifying key pain points and bottlenecks, discussing resource allocation and support requirements, outlining next steps and ownership for critical actions, and presenting the roadmap for the next phase of solution deployment. Key decisions included scheduling
+  - management_consultant session 23 (preference, delete). User: That's really insightful! Speaking of personal preferences, I actually used to love experiencing cultural ceremonies when traveling, but I've found I'm not as k / I think I just started craving a deeper connection with the places I visit, and getting involved directly feels more fulfilling now.
+      * The user used to love experiencing cultural ceremonies when traveling, but has found they are not as keen on them anymore, preferring more interactive experiences these days to feel a deeper connection with the places they visit.
+  - sales_manager session 66 (preference, delete). User: You know, speaking of movies, I actually used to really like Gal Gadot. But honestly, I'm not really a fan anymore; her recent roles just haven't resonated with
+      * The user's movie preferences have shifted; while they previously enjoyed Ryan Reynolds and Gal Gadot, they are no longer a fan of Gal Gadot, finding her recent roles do not resonate with them.
