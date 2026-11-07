@@ -1,0 +1,86 @@
+# Evidence E16
+script:       scripts/explore/E16_ingestion_check.py
+run at:       2026-11-06T16:37:10-08:00
+memrecon:     c58481d (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; wall time 1481 s
+
+INGESTION
+  note: 476 sessions, 0 failed, attempts {1: 474, 2: 2}, memories 398, superseded 144, forgotten 5
+    output tokens per answer: p50 48 p90 103 p99 323 max 540
+    prompt tokens per call:   p50 1501 p90 1749 max 2043
+    seconds per session: median 1.7, total 892 (468 fresh calls, 10 from cache)
+    memories per add/update session (one item each in Memora): activity n=176: 0 3, 1 141, 2+ 32; goal n=8: 0 0, 1 6, 2+ 2; preference n=72: 0 0, 1 66, 2+ 6
+    memories made in other sessions (delete and small talk): 62
+  log: 476 sessions, 0 failed, attempts {1: 476}, memories 518, span fallbacks 0
+    output tokens per answer: p50 33 p90 91 p99 346 max 445
+    prompt tokens per call:   p50 698 p90 868 max 1053
+    seconds per session: median 1.0, total 581 (466 fresh calls, 10 from cache)
+    memories per add/update session (one item each in Memora): activity n=176: 0 1, 1 132, 2+ 43; goal n=8: 0 0, 1 8, 2+ 0; preference n=72: 0 0, 1 35, 2+ 37
+    memories made in other sessions (delete and small talk): 84
+
+DETAIL SURVIVAL (candidate elements of each fact's flagged turns found in the memories made from that session)
+  oracle all 100.0% of 556 | hashtag 100.0% | name 100.0% | number 100.0% | qualifier 100.0% | quoted 100.0% | record value 100.0% | memories with an invented number 0 of 414 | memories from small-talk sessions 0
+  log    all  99.3% of 556 | hashtag 100.0% | name  99.5% | number 100.0% | qualifier  75.0% | quoted  98.1% | record value 100.0% | memories with an invented number 0 of 518 | memories from small-talk sessions 6
+  note   all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with an invented number 14 of 398 | memories from small-talk sessions 3
+      invented? session 22 ['10000']: The user hit their step goal on 2025-06-01 by walking 10,000 steps.
+      invented? session 32 ['15', '6', '1150000', '20', '12']: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      invented? session 38 ['15', '6', '18', '10', '1150000', '20', '12']: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      invented? session 43 ['2', '4']: The user approved reallocation of capital from Project Evergreen (Region 4) to Project Horizon (Region 2) due to higher projected ROI.
+      invented? session 60 ['15', '1700000', '12']: The user is working on a new project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The project aims to significantly enhance long-term credit risk scoring capabilities through the
+      invented? session 64 ['1970']: The user used to love music from the 1970s, but lately they are really into the 2000s, specifically appreciating the great pop and R&B hits from that era.
+      invented? session 77 ['1970']: The user used to love music from the 1970s, but they used to be really into 2000s music, specifically appreciating the great pop and R&B hits from that era. However, they can no longer stand 2000s mus
+      invented? session 21 ['10']: The user has a colleague's birthday on June 10th that they need to remember.
+      invented? session 27 ['50']: The user has set a personal financial goal to keep their coffee spending under $50 per week.
+      invented? session 108 ['10']: The user has a colleague's birthday on June 10th that they need to remember.
+      invented? session 150 ['12595']: The user has a new fitness goal to walk 12,595 steps every day to boost their activity level.
+
+RETRIEVAL (top 3): fact found when the user talks about it, vs small talk recalling anything
+  oracle: 130 fact-turns (0 with the fact not in memory), 1078 small-talk turns
+    similarity of the fact's best memory: median 0.75; small talk's best match: median 0.61
+    threshold    found  small talk
+         0.40    91.5%      100.0%
+         0.50    91.5%       99.4%
+         0.55    91.5%       90.5%
+         0.60    90.8%       63.8%
+         0.65    87.7%       22.5%
+         0.70    73.1%        3.8%
+         0.75    50.8%        0.1%
+         0.80    24.6%        0.0%
+  log: 130 fact-turns (0 with the fact not in memory), 1084 small-talk turns
+    similarity of the fact's best memory: median 0.75; small talk's best match: median 0.61
+    threshold    found  small talk
+         0.40    90.0%      100.0%
+         0.50    90.0%       99.3%
+         0.55    90.0%       89.5%
+         0.60    88.5%       58.7%
+         0.65    86.9%       20.7%
+         0.70    73.8%        4.3%
+         0.75    52.3%        0.6%
+         0.80    26.2%        0.1%
+  note: 130 fact-turns (2 with the fact not in memory), 1084 small-talk turns
+    similarity of the fact's best memory: median 0.73; small talk's best match: median 0.60
+    threshold    found  small talk
+         0.40    87.7%      100.0%
+         0.50    87.7%       97.3%
+         0.55    86.9%       85.5%
+         0.60    83.8%       48.0%
+         0.65    77.7%       14.1%
+         0.70    63.8%        1.4%
+         0.75    36.2%        0.2%
+         0.80    12.3%        0.0%
+  (found = the fact's memory is in the top 3 and reaches the threshold; misses include facts never stored)
+
+10 random note-arm memories with the session they came from:
+- management_consultant session 66 (activity, add), depth 1: Dr. Elara Vance, a Senior Management Consultant, will be leading the user's project "Pan-European Digital Health Ecosystem Integration Strategy."
+- management_consultant session 127 (activity, add), depth 1: The user spent $7.31 on a coffee.
+- management_consultant session 133 (activity, add), depth 1: The user needs to plan for conference attendance this week.
+- management_consultant session 38 (activity, add), depth 1: Dr. Anya Sharma, a Senior Management Consultant, will be leading the user's project "FinTech Digital Onboarding Optimization & Compliance Framework."
+- management_consultant session 96 (activity, add), depth 1: The user has an "Implementation planning" meeting in 3 days from 2025-06-05, which is 2025-06-08.
+- management_consultant session 4 (activity, add), depth 1: The agenda items for the Strategic AI Integration Steering Committee - Phase 1 Review meeting included a discussion on vendor selection for the enterprise-wide AI platform and an assessment of initial ROI and impact on p
+- management_consultant session 111 (preference, update), depth 2: The user used to really like Duke Ellington, but lately is much more into Yo-Yo Ma's cello works, finding the rich, expressive sound of the cello so incredibly soothing and profound.
+- financial_analyst session 4 (activity, add), depth 1: The user spent $9.50 on a coffee on 2025-06-01.
+- management_consultant session 90 (activity, delete), depth 2: The user has finished the client assessment report.
+- sales_manager session 65 (activity, add), depth 2: The user walked 10,800 steps on 2025-06-03.
