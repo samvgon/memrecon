@@ -13,7 +13,8 @@ ingest_note_v1 (as in E16) and ingest_note_v2, on
       update or delete are still active (stale copies)?
   (5) finished tasks: what happens when the user says they finished something (forget, change, or new)?
   (6) wording: working-out left in the text, earlier versions kept in an updated memory ("used to",
-      "previously"), what "we" became;
+      "previously"), a change described instead of the current state ("updated", "the changes"), dates
+      left relative to the conversation ("next month", "tomorrow"), what "we" became;
   (7) retrieval at the chosen threshold (0.70, top 3), E16's method.
 Method: development personas only (notes/split.json). Each persona's sessions are replayed in file order
 (A6) twice, once per prompt version, with the real ingestion code and the agent model, related memories
@@ -60,6 +61,10 @@ FINISHED = re.compile(r"\b(finished|completed|done with|wrapped up|checked off|c
 WORKING = re.compile(r"\b(days? (?:after|from|before|later)|i\.e\.|which is|calculated|counting from)\b|\d\s*[+\-]\s*\d+\s*=", re.I)
 HISTORY = re.compile(r"\b(used to|previously|originally|changed from|was (?:originally|previously)|earlier (?:it|this) was)\b", re.I)
 WE = re.compile(r"\b(we|our|us)\b", re.I)
+RELATIVE = re.compile(r"\b(today|tonight|tomorrow|yesterday|this (?:morning|afternoon|evening|week|weekend|month|year)|"
+                      r"(?:next|last) (?:week|weekend|month|year|monday|tuesday|wednesday|thursday|friday|saturday|sunday)|"
+                      r"in \d+ days|in (?:a|one|two|three) (?:days?|weeks?|months?)|within the next|end of (?:next|this) (?:week|month))\b", re.I)
+NARRATIVE = re.compile(r"\b(updated|the changes?|was changed|has changed|changed (?:it|the)|revised|modified)\b", re.I)
 OTHERS = re.compile(r"\b(and others|with others|and (?:their|his|her) (?:team|colleagues|partner|family|friends))\b", re.I)
 
 
@@ -275,7 +280,8 @@ print()
 
 print("6. WORDING (pattern counts over all memories made)")
 for v in VERSIONS:
-    w = h = we_n = others = 0
+    w = h = we_n = others = rel = nar = 0
+    rel_ex = []
     total = 0
     for p, s, o, _, _ in reports[v]["outcomes"]:
         said_we = any(WE.search(t["message"]) for t in s["conversation"] if t.get("speaker") == "user_agent")
@@ -284,11 +290,18 @@ for v in VERSIONS:
             total += 1
             w += bool(WORKING.search(tx))
             h += bool(HISTORY.search(tx))
+            rel += bool(RELATIVE.search(tx))
+            nar += bool(NARRATIVE.search(tx))
+            if RELATIVE.search(tx) and len(rel_ex) < 3:
+                rel_ex.append(tx[:300])
             if said_we:
                 we_n += 1
                 others += bool(OTHERS.search(tx))
     print(f"  {SHORT[v]}: {total} memories; working-out {w}; earlier version kept ('used to', 'previously', ...) {h}; "
           f"from sessions where the user said we/our/us: {we_n}, of which say 'and others' (or team, family...) {others}")
+    print(f"      change described ('updated', 'the changes', ...) {nar}; date left relative ('next month', 'tomorrow', ...) {rel}")
+    for tx in rel_ex:
+        print(f"      relative: {tx}")
 print()
 
 print(f"7. RETRIEVAL at {THRESHOLD:.2f}, top {K}: a record's latest memory found by the flagged turns of its next update/delete")
@@ -307,7 +320,7 @@ for key in random.sample(pool, min(6, len(pool))):
     for v in VERSIONS:
         _, o, _ = by_session[v][key]
         for m in o.created:
-            print(f"    {SHORT[v]} * {text(v, key[0], m)[:220]}")
+            print(f"    {SHORT[v]} * {text(v, key[0], m)[:400]}")
 print()
 
 print("v2 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)")
@@ -316,9 +329,9 @@ missed = [(p, s, o, shown) for p, s, o, earlier, shown in reports["ingest_note_v
 for p, s, o, shown in random.sample(missed, min(5, len(missed))):
     print(f"- {p} session {s['session_id']} ({s.get('session_type')}). User: " + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for m in sorted(shown):
-        print(f"    shown   * {text('ingest_note_v2', p, m)[:200]}")
+        print(f"    shown   * {text('ingest_note_v2', p, m)[:300]}")
     for m in o.created:
-        print(f"    written * {text('ingest_note_v2', p, m)[:200]}")
+        print(f"    written * {text('ingest_note_v2', p, m)[:300]}")
 print()
 
 print("v2 DELETE SESSIONS (5 at random)")
@@ -327,7 +340,7 @@ for p, s, o in random.sample(dels, min(5, len(dels))):
     print(f"- {p} session {s['session_id']}: forgot {len(o.forgotten)}, changed {len(o.superseded)}. User: "
           + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for m in o.created:
-        print(f"    written * {text('ingest_note_v2', p, m)[:200]}")
+        print(f"    written * {text('ingest_note_v2', p, m)[:300]}")
 print()
 
 print("FINISHED TASKS, both versions (4 at random)")
