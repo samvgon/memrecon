@@ -4,7 +4,7 @@ import json
 import pytest
 
 from memrecon.ingest import UnusableAnswer, load_prompt
-from memrecon.probes import ProbeExtractor, Row, build_table, parse_probe_answer, resolve_date, split_number, true_at
+from memrecon.probes import ProbeExtractor, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, resolve_date, split_number, true_at
 
 SESSION = {
     "session_id": 7,
@@ -49,6 +49,7 @@ def test_prompt_loads_without_flags():
 @pytest.mark.parametrize("detail,expected", [
     ("10k steps", (10000.0, "steps")), ("$1.2 million", (1200000.0, "$")), ("15%", (15.0, "%")),
     ("€750,000", (750000.0, "€")), ("$50 per week", (50.0, "$ per week")), ("Count Basie", (None, None)),
+    ("18-month timeline", (18.0, "month timeline")),
 ])
 def test_split_number(detail, expected):
     assert split_number(detail) == expected
@@ -59,7 +60,7 @@ def test_split_number(detail, expected):
     ("this morning", "2025-06-04"), ("tomorrow", "2025-06-05"), ("in 10 days", "2025-06-14"), ("August 21st", "2025-08-21"),
     ("21 August", "2025-08-21"), ("June 5, 2025", "2025-06-05"), ("2025-07-01", "2025-07-01"), ("next week", None), ("soon", None),
     ("due in 10 days", "2025-06-14"), ("due by the end of next week", None), ("within the next three months", None),
-    ("on August 21st this year", "2025-08-21"), ("may", None),
+    ("on August 21st this year", "2025-08-21"), ("may", None), ("last night", "2025-06-03"),
 ])
 def test_resolve_date(detail, expected):
     assert resolve_date(detail, "2025-06-04") == expected
@@ -127,3 +128,19 @@ def test_table_replaced_removed_done_and_no_longer():
     assert ("Hiring", "true") not in states and ("Buy groceries", "done") in states
     assert ("Count Basie", "no longer") in states and ("Count Basie", "true") not in states  # matched across records
     assert ("not this Friday", "false") in states  # nothing to close: kept as a value that should not be
+
+
+@pytest.mark.parametrize("q,expected", [("about", "about"), ("at least", "at least"), ("every day", "every day"), ("under", "under"),
+                                         ("from", ""), ("also", ""), ("just", ""), ("used to", ""), ("just haven't resonated with me", "")])
+def test_only_real_hedges_are_graded(q, expected):
+    assert graded_qualifier(q) == expected
+
+
+def test_grading_view_splits_code_and_judge_probes():
+    rows = [R("$900,000", "new", 1), R("plan a dream vacation", "new", 1, field="task", kind="task"),
+            R("Count Basie", "new", 1, field="liked artist", kind="name", record=("preference", "count basie")),
+            R("Count Basie", "no longer", 2, field="liked artist", kind="name", record=("preference", "count basie"))]
+    rows[0].who, rows[0].qualifier = "user", "from"
+    view = {(e["detail"], e["state"]): e for e in grading_view(build_table(rows))}
+    assert view[("$900,000", "true")]["grade"] == "code" and view[("$900,000", "true")]["qualifier"] == "" and view[("$900,000", "true")]["who"] == ""
+    assert view[("plan a dream vacation", "true")]["grade"] == "judge" and view[("Count Basie", "no longer")]["grade"] == "judge"

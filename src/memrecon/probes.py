@@ -71,7 +71,7 @@ def split_number(detail: str) -> tuple[float | None, str | None]:
     if not m:
         return None, None
     value = float(m.group("num").replace(",", "")) * _MULT.get((m.group("mult") or "").lower(), 1)
-    rest = m.group("rest").strip(" .,;:")
+    rest = m.group("rest").strip(" .,;:").lstrip("-").strip()  # "18-month timeline" -> "month timeline"
     unit = " ".join(x for x in (m.group("cur") or "", rest) if x)
     return round(value, 6), unit or None
 
@@ -102,7 +102,7 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
         return base.isoformat()
     if re.search(r"\btomorrow\b", t):
         return (base + dt.timedelta(days=1)).isoformat()
-    if re.search(r"\byesterday\b", t):
+    if re.search(r"\b(yesterday|last night)\b", t):
         return (base - dt.timedelta(days=1)).isoformat()
     m = re.search(r"\bin (\d+) days?\b", t)
     if m:
@@ -313,3 +313,37 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
 def true_at(entries: list[dict], session_id: int) -> list[dict]:
     """The entries holding just after `session_id` (a session's changes apply from that session on)."""
     return [e for e in entries if e["from_session"] <= session_id and (e["until_session"] is None or e["until_session"] > session_id)]
+
+
+# -- what is graded (D45) --------------------------------------------------------------------------
+
+PRIMARY_KINDS = ("number", "date", "name", "title", "item")  # code-gradable: the pre-registered probe types
+HEDGES = ("about", "approximately", "approx.", "around", "roughly", "nearly", "almost", "at least", "at most",
+          "under", "over", "up to", "more than", "less than", "fewer than", "maximum", "minimum", "max", "min",
+          "only if", "every day", "each day", "daily", "per day", "per week", "a week", "a day", "per month",
+          "or more", "or less", "no more than", "no less than", "below", "above", "within")
+
+
+def graded_qualifier(qualifier: str) -> str:
+    """The qualifier if it is a real hedge, limit or condition (from HEDGES), else "" (not graded)."""
+    q = qualifier.strip().lower()
+    return qualifier.strip() if q and any(q == h or q.startswith(h + " ") or q.endswith(" " + h) for h in HEDGES) else ""
+
+
+def grading_view(entries: list[dict]) -> list[dict]:
+    """The probes to grade, derived from table entries (the rows are never changed).
+
+    Primary probes (graded by code): kinds number (value and unit), date (the resolved day, or the text
+    when unresolved), name, title and list item, in states "true" (should be in memory) and "false"
+    (should not). Each keeps its qualifier only when it is a real hedge or limit, and its "who" only when
+    it is not "user" (we, someone else). Secondary probes (graded by the judge): kinds task and
+    preference, and every entry in state "done" or "no longer" (the field is kept: "no longer" means the
+    field's claim no longer holds).
+    """
+    out = []
+    for e in entries:
+        primary = e["kind"] in PRIMARY_KINDS and e["state"] in ("true", "false")
+        out.append({**e, "grade": "code" if primary else "judge",
+                    "qualifier": graded_qualifier(e.get("qualifier") or ""),
+                    "who": e.get("who") if e.get("who") not in ("user", None) else ""})
+    return out
