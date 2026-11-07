@@ -1,0 +1,268 @@
+"""Ingestion: turning a finished session into memories (D35, D36).
+
+Three ways, one per kind of arm:
+
+- **note** (`ingest_note`): the agent reads the session (never the
+  `share_memory` flags) and up to 10 related existing memories found by
+  retrieval, and writes notes; changes supersede the memories they replace,
+  forgets retire them (D29). Prompt: prompts/ingest_note_v1.md.
+- **log** (`ingest_log`): the agent chooses which of the user's words to keep,
+  with the same criteria, and returns them verbatim; the harness checks each
+  is an exact part of that turn and otherwise keeps the whole turn. The log is
+  append-only. Prompt: prompts/ingest_log_v1.md.
+- **oracle** (`ingest_oracle`): the flagged turns, verbatim, with no model call.
+  An upper-bound reference that uses Memora's annotations, labelled as such.
+
+Answers are one JSON object between tags, read strictly and never repaired
+(as in the HW1 harness). An unusable answer is a rejected attempt, kept in the
+audit log, and the model is told what was wrong and asked again, up to 3
+attempts in all; an answer cut off at the output limit is retried with twice
+the limit. If all attempts fail, nothing is stored for that session and the
+failure is returned, to be counted and reported.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from memrecon.llm import ModelCallError, OutputTruncated
+from memrecon.memory import At, MemoryStore, Source
+
+PROMPTS = Path(__file__).resolve().parent / "prompts"
+MAX_ATTEMPTS = 3
+MAX_RELATED = 10
+RELATED_K = 3
+
+
+def load_prompt(name: str) -> tuple[str, str]:
+    """(system, user template) from prompts/<name>.md; the leading comment is not sent."""
+    text = (PROMPTS / f"{name}.md").read_text(encoding="utf-8")
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    _, rest = text.split("=== SYSTEM ===", 1)
+    system, user = rest.split("=== USER ===", 1)
+    return system.strip(), user.strip()
+
+
+def render_conversation(session: dict) -> tuple[str, dict[int, dict]]:
+    """Numbered lines ("3. User: ...") and a map from line number to turn. Flags are never included."""
+    lines, by_line = [], {}
+    for n, t in enumerate(session.get("conversation", []), start=1):
+        who = "User" if t.get("speaker") == "user_agent" else "Assistant"
+        lines.append(f"{n}. {who}: {t.get('message', '')}")
+        by_line[n] = t
+    return "\n".join(lines), by_line
+
+
+class UnusableAnswer(ValueError):
+    """The model's answer could not be used; the message is what it is told."""
+
+
+def extract_block(reply: str, tag: str) -> dict:
+    """The JSON object between <tag> and </tag>: exactly one block, valid JSON, never repaired."""
+    open_, close = f"<{tag}>", f"</{tag}>"
+    if reply.count(open_) != 1 or reply.count(close) != 1:
+        raise UnusableAnswer(f"Answer with exactly one {open_}...{close} block.")
+    inner = reply.split(open_, 1)[1].split(close, 1)[0]
+    if not inner.strip() or reply.index(open_) > reply.index(close):
+        raise UnusableAnswer(f"The {open_}...{close} block is empty or out of order.")
+    try:
+        data = json.loads(inner)
+    except json.JSONDecodeError as e:
+        raise UnusableAnswer(f"The text inside {open_}...{close} is not valid JSON ({e.msg}).") from None
+    if not isinstance(data, dict):
+        raise UnusableAnswer("The block must hold one JSON object.")
+    return data
+
+
+def _ints(value, what: str) -> list[int]:
+    if not isinstance(value, list) or not all(isinstance(x, int) and not isinstance(x, bool) for x in value):
+        raise UnusableAnswer(f'"{what}" must be a list of numbers.')
+    return value
+
+
+def parse_note_answer(reply: str, labels: dict[str, str], lines: dict[int, dict]) -> dict:
+    """Check a note-arm answer against the memories and lines that were shown."""
+    data = extract_block(reply, "memories")
+    if set(data) != {"new", "change", "forget"}:
+        raise UnusableAnswer('The object must have exactly the keys "new", "change" and "forget".')
+    shown = {int(k) for k in labels}
+    new = []
+    if not isinstance(data["new"], list):
+        raise UnusableAnswer('"new" must be a list.')
+    for item in data["new"]:
+        if not isinstance(item, dict) or set(item) != {"memory", "lines"} or not isinstance(item["memory"], str) or not item["memory"].strip():
+            raise UnusableAnswer('Each item in "new" must be {"memory": "...", "lines": [...]}.')
+        new.append((item["memory"].strip(), _check_lines(_ints(item["lines"], "lines"), lines)))
+    change = []
+    if not isinstance(data["change"], list):
+        raise UnusableAnswer('"change" must be a list.')
+    for item in data["change"]:
+        if not isinstance(item, dict) or set(item) != {"replaces", "memory", "lines"} or not isinstance(item["memory"], str) or not item["memory"].strip():
+            raise UnusableAnswer('Each item in "change" must be {"replaces": [...], "memory": "...", "lines": [...]}.')
+        replaces = _ints(item["replaces"], "replaces")
+        if not replaces or not set(replaces) <= shown:
+            raise UnusableAnswer(f'"replaces" must list numbers of the existing memories shown ({sorted(shown) or "none were shown"}).')
+        change.append((replaces, item["memory"].strip(), _check_lines(_ints(item["lines"], "lines"), lines)))
+    forget = _ints(data["forget"], "forget")
+    if not set(forget) <= shown:
+        raise UnusableAnswer(f'"forget" must list numbers of the existing memories shown ({sorted(shown) or "none were shown"}).')
+    used = [n for r, _, _ in change for n in r] + forget
+    if len(used) != len(set(used)):
+        raise UnusableAnswer("Each existing memory can be replaced or forgotten only once.")
+    return {"new": new, "change": change, "forget": forget}
+
+
+def _check_lines(nums: list[int], lines: dict[int, dict]) -> list[int]:
+    bad = [n for n in nums if n not in lines or lines[n].get("speaker") != "user_agent"]
+    if not nums or bad:
+        raise UnusableAnswer('"lines" must list one or more numbers of the user\'s lines in the conversation.')
+    return nums
+
+
+def parse_log_answer(reply: str, lines: dict[int, dict]) -> list[tuple[int, str]]:
+    data = extract_block(reply, "log")
+    if set(data) != {"keep"} or not isinstance(data["keep"], list):
+        raise UnusableAnswer('The object must be {"keep": [...]}.')
+    out = []
+    for item in data["keep"]:
+        if not isinstance(item, dict) or set(item) != {"line", "words"} or not isinstance(item["words"], str) or not item["words"].strip():
+            raise UnusableAnswer('Each item in "keep" must be {"line": N, "words": "..."}.')
+        n = item["line"]
+        if not isinstance(n, int) or n not in lines or lines[n].get("speaker") != "user_agent":
+            raise UnusableAnswer('"line" must be the number of one of the user\'s lines.')
+        out.append((n, item["words"].strip()))
+    return out
+
+
+@dataclass
+class Outcome:
+    """What one session's ingestion did, for counting and reporting."""
+
+    session_id: int
+    ok: bool
+    attempts: int = 0
+    created: list[str] = field(default_factory=list)
+    superseded: list[str] = field(default_factory=list)
+    forgotten: list[str] = field(default_factory=list)
+    span_fallbacks: int = 0  # log arm: kept words that were not an exact part of the turn
+    error: str | None = None
+
+
+class Ingestor:
+    def __init__(self, client, store: MemoryStore, retriever=None, persona: str = "", max_tokens: int = 2048,
+                 related_threshold: float = 0.0, note_prompt: str = "ingest_note_v1", log_prompt: str = "ingest_log_v1",
+                 tag: str | None = None) -> None:
+        self.client = client
+        self.store = store
+        self.retriever = retriever
+        self.persona = persona or store.persona
+        self.max_tokens = max_tokens
+        self.related_threshold = related_threshold
+        self.note_prompt = note_prompt
+        self.log_prompt = log_prompt
+        self.tag = tag
+
+    # -- shared --------------------------------------------------------------------
+
+    def _ask(self, system: str, user: str, parse, at: At) -> tuple[object | None, int, str | None]:
+        """Call the model up to MAX_ATTEMPTS times; feed back why an answer was unusable."""
+        messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        limit = self.max_tokens
+        error = None
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            try:
+                result = self.client.chat(messages, max_tokens=limit, tag=self.tag,
+                                          meta={"step": "ingest", "persona": self.persona, "session": at.session_id, "attempt": attempt})
+            except OutputTruncated:
+                limit *= 2  # retry the same request with twice the room
+                error = f"cut off at {limit // 2} tokens"
+                continue
+            except ModelCallError as e:
+                error = str(e)
+                if "reasoning" in str(e) or "unreadable" in str(e):
+                    continue
+                return None, attempt, error  # server unreachable or HTTP error: stop, the run can resume later
+            try:
+                return parse(result.content), attempt, None
+            except UnusableAnswer as e:
+                error = str(e)
+                messages = messages + [
+                    {"role": "assistant", "content": result.content},
+                    {"role": "user", "content": f"That answer could not be used: {e} Answer again, following the instructions exactly."},
+                ]
+        return None, MAX_ATTEMPTS, error
+
+    def _related(self, session: dict, at: At) -> tuple[str, dict[str, str]]:
+        if self.retriever is None or not self.store.active():
+            return "(none)", {}
+        self.retriever.sync(self.store)
+        best: dict[str, float] = {}
+        for t in session.get("conversation", []):
+            if t.get("speaker") != "user_agent":
+                continue
+            for mid, score in self.retriever.search(t.get("message", ""), k=RELATED_K, threshold=self.related_threshold):
+                best[mid] = max(score, best.get(mid, -1.0))
+        ids = [mid for mid, _ in sorted(best.items(), key=lambda kv: -kv[1])[:MAX_RELATED]]
+        if not ids:
+            return "(none)", {}
+        return self.store.present(ids, at)
+
+    def _sources(self, session: dict, nums: list[int], lines: dict[int, dict]) -> list[Source]:
+        return [Source(self.persona, session["session_id"], lines[n].get("turn", n)) for n in nums]
+
+    # -- the three kinds of ingestion -------------------------------------------------------
+
+    def ingest_note(self, session: dict) -> Outcome:
+        at = At(session["session_id"], 0)
+        system, template = load_prompt(self.note_prompt)
+        conversation, lines = render_conversation(session)
+        memories, labels = self._related(session, at)
+        user = template.format(date=session.get("date", ""), memories=memories, conversation=conversation)
+        answer, attempts, error = self._ask(system, user, lambda r: parse_note_answer(r, labels, lines), at)
+        out = Outcome(session["session_id"], ok=answer is not None, attempts=attempts, error=error)
+        if answer is None:
+            return out
+        date = session.get("date", "")
+        for text, nums in answer["new"]:
+            out.created.append(self.store.note(text, self._sources(session, nums, lines), at, date=date))
+        for replaces, text, nums in answer["change"]:
+            ids = [labels[str(n)] for n in replaces]
+            out.created.append(self.store.note(text, self._sources(session, nums, lines), at, supersedes=ids, date=date))
+            out.superseded += ids
+        if answer["forget"]:
+            ids = [labels[str(n)] for n in answer["forget"]]
+            self.store.forget(ids, at)
+            out.forgotten += ids
+        return out
+
+    def ingest_log(self, session: dict) -> Outcome:
+        at = At(session["session_id"], 0)
+        system, template = load_prompt(self.log_prompt)
+        conversation, lines = render_conversation(session)
+        user = template.format(date=session.get("date", ""), conversation=conversation)
+        answer, attempts, error = self._ask(system, user, lambda r: parse_log_answer(r, lines), at)
+        out = Outcome(session["session_id"], ok=answer is not None, attempts=attempts, error=error)
+        if answer is None:
+            return out
+        for n, words in answer:
+            turn_text = lines[n].get("message", "")
+            if words not in turn_text:  # not the user's exact words: keep the whole turn instead
+                words = turn_text
+                out.span_fallbacks += 1
+            out.created.append(self.store.log(words, self._sources(session, [n], lines), at, date=session.get("date", "")))
+        return out
+
+    def ingest_oracle(self, session: dict) -> Outcome:
+        """Upper-bound reference: Memora's flagged turns, verbatim (uses the annotations; no model call)."""
+        at = At(session["session_id"], 0)
+        out = Outcome(session["session_id"], ok=True)
+        if session.get("operation") not in ("add", "update"):
+            return out
+        for t in session.get("conversation", []):
+            if t.get("share_memory") and t.get("speaker") == "user_agent":
+                src = [Source(self.persona, session["session_id"], t.get("turn", 0))]
+                out.created.append(self.store.log(t["message"], src, at, date=session.get("date", "")))
+        return out

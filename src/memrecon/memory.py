@@ -35,8 +35,11 @@ Lineage, kept for the harness and **never shown to the model** (D28):
 `written_from` ("user", "memory" or "both"), `parents` (memory IDs it was
 written from), `sources` (every user turn in its ancestry), `superseded_by`,
 `retired` (None, "superseded" or "forgotten"), `versions`, `times_recalled`.
-The model sees memories only through `present()`: their text, under labels
-that are numbered afresh for each call and mapped back by the harness.
+The model sees memories only through `present()`: their text and the date of
+the conversation their information came from (D36: relative dates count from
+it), under labels numbered afresh for each call and mapped back by the
+harness. A rewrite keeps its parent's date; a user's change takes the date of
+the conversation it was made in.
 
 Snapshots are canonical JSON (sorted keys, no clock times, IDs assigned in
 insertion order), so two runs that did the same things give byte-identical
@@ -61,7 +64,7 @@ import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-SNAPSHOT_FORMAT = 5
+SNAPSHOT_FORMAT = 6
 MODES = ("note", "log")
 
 
@@ -101,6 +104,7 @@ class Memory:
     sources: list[Source]
     versions: list[Version]
     created_at: At
+    date: str = ""  # date of the conversation its information came from (D36); shown to the model
     times_recalled: int = 0
     superseded_by: str | None = None
     retired: str | None = None  # None, "superseded" or "forgotten"
@@ -160,14 +164,14 @@ class MemoryStore:
 
     # -- ingestion: what the user did --------------------------------------------
 
-    def log(self, text: str, sources: list[Source], at: At, supersedes: list[str] = ()) -> str:
+    def log(self, text: str, sources: list[Source], at: At, supersedes: list[str] = (), date: str = "") -> str:
         """Store the user's own words (log mode). Depth 0. May supersede earlier log entries."""
         self._require_mode("log", "log")
-        mid = self._new(text, 0, 0, sources, at, supersedes, uses_parent_text=False)
-        self._emit("log", at, id=mid, text=text, depth=0, since_user=0, supersedes=list(supersedes), sources=[asdict(x) for x in sources])
+        mid = self._new(text, 0, 0, sources, at, supersedes, uses_parent_text=False, date=date)
+        self._emit("log", at, id=mid, text=text, depth=0, since_user=0, date=date, supersedes=list(supersedes), sources=[asdict(x) for x in sources])
         return mid
 
-    def note(self, text: str, sources: list[Source], at: At, supersedes: list[str] = ()) -> str:
+    def note(self, text: str, sources: list[Source], at: At, supersedes: list[str] = (), date: str = "") -> str:
         """Store a model note on the user's words (note mode).
 
         With `supersedes`, the note records a user's change: it was written from
@@ -178,8 +182,8 @@ class MemoryStore:
         self._require_mode("note", "note")
         parents = [self._get(p) for p in supersedes]
         depth = max(p.depth for p in parents) + 1 if parents else 1
-        mid = self._new(text, depth, 1, sources, at, supersedes, uses_parent_text=True)
-        self._emit("note", at, id=mid, text=text, depth=depth, since_user=1, supersedes=list(supersedes), sources=[asdict(x) for x in sources])
+        mid = self._new(text, depth, 1, sources, at, supersedes, uses_parent_text=True, date=date)
+        self._emit("note", at, id=mid, text=text, depth=depth, since_user=1, date=date, supersedes=list(supersedes), sources=[asdict(x) for x in sources])
         return mid
 
     def forget(self, ids: list[str], at: At) -> None:
@@ -212,6 +216,7 @@ class MemoryStore:
             sources=list(p.sources),
             versions=[Version(rewritten, p.depth + 1, at, p.since_user + 1)],
             created_at=at,
+            date=p.date,  # a rewrite carries the date of the information it came from
         )
         self._emit("keep", at, id=new, parent=mid, text=rewritten, depth=p.depth + 1, since_user=p.since_user + 1)
         return new
@@ -229,7 +234,7 @@ class MemoryStore:
     # -- what the model may see ---------------------------------------------------
 
     def present(self, ids: list[str], at: At | None = None) -> tuple[str, dict[str, str]]:
-        """The model's view of some memories: numbered text only, no IDs or lineage.
+        """The model's view of some memories: numbered text, with the date its information came from; no IDs or lineage.
 
         Returns the text to put in a prompt and a map from the labels shown
         ("1", "2", ...) back to memory IDs, so a model's answer ("memory 2 is
@@ -240,7 +245,7 @@ class MemoryStore:
         for k, mid in enumerate(ids, start=1):
             m = self._live(mid)
             labels[str(k)] = mid
-            lines.append(f"[{k}] {m.text}")
+            lines.append(f"[{k}] ({m.date}) {m.text}" if m.date else f"[{k}] {m.text}")
         self._emit("present", at, labels=labels)
         return "\n".join(lines), labels
 
@@ -325,7 +330,7 @@ class MemoryStore:
 
     # -- internals -------------------------------------------------------------
 
-    def _new(self, text, depth, since_user, sources, at, supersedes, uses_parent_text) -> str:
+    def _new(self, text, depth, since_user, sources, at, supersedes, uses_parent_text, date="") -> str:
         parents = [self._live(p) for p in supersedes]
         mid = self._new_id()
         inherited = [s for p in parents for s in p.sources]
@@ -340,6 +345,7 @@ class MemoryStore:
             sources=all_sources,
             versions=[Version(text, depth, at, since_user)],
             created_at=at,
+            date=date,
         )
         for p in parents:
             self._retire(p, "superseded", at, by=mid)

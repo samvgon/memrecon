@@ -247,3 +247,19 @@ def test_since_user_in_log_mode_and_events(tmp_path):
     mid = s.note(NOTE, SRC, At(89, 4))
     s.keep(mid, "Roughly €100k.", At(95, 2))
     assert [e["since_user"] for e in read_events(tmp_path / "f.jsonl")] == [1, 2]
+
+
+# --- dates (D36) ---------------------------------------------------------------------
+
+
+def test_dates_travel_with_memories_and_are_shown():
+    s = MemoryStore("p")
+    mid = s.note("The user needs to call their parents on 2025-06-04.", SRC, At(89, 4), date="2025-06-03")
+    child = s.keep(mid, "Call parents (2025-06-04).", At(95, 2))
+    assert s.get(child).date == "2025-06-03"  # a rewrite keeps the information's date
+    s.replace(child, "Parents call due.", At(96, 1))
+    assert s.get(child).date == "2025-06-03"
+    new = s.note("The user moved the call to 2025-06-06.", NEW_SRC, At(110, 6), supersedes=[mid], date="2025-06-05")
+    assert s.get(new).date == "2025-06-05"  # a user's change takes its own conversation's date
+    text, _ = s.present([new, child])
+    assert text == "[1] (2025-06-05) The user moved the call to 2025-06-06.\n[2] (2025-06-03) Parents call due."
