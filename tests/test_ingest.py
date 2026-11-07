@@ -190,3 +190,32 @@ def test_oracle_uses_flagged_turns_without_the_model():
     out = Ingestor(ScriptedClient(), store).ingest_oracle(SESSION)
     assert [store.get(m).text for m in out.created] == ["Speaking of costs, I spent $11.83 on lunch today."]
     assert Ingestor(ScriptedClient(), MemoryStore("p", mode="log")).ingest_oracle({**SESSION, "operation": "delete"}).created == []
+
+
+def test_duplicate_memories_are_rejected():
+    _, lines = render_conversation(SESSION)
+    m = {"memory": "The user walked 10,800 steps on 2025-06-03.", "lines": [3]}
+    with pytest.raises(UnusableAnswer, match="more than once"):
+        parse_note_answer(note_reply(new=[m, m]), {}, lines)
+    # v1 runs (E16, E17) must replay exactly as they ran, so v1 keeps accepting them
+    assert len(parse_note_answer(note_reply(new=[m, m]), {}, lines, reject_duplicates=False)["new"]) == 2
+    store = MemoryStore("p")
+    out = Ingestor(ScriptedClient(note_reply(new=[m, m])), store).ingest_note(SESSION)
+    assert out.ok and len(out.created) == 2
+
+
+def test_prompt_v2_loads():
+    system, user = load_prompt("ingest_note_v2")
+    assert "states only what is true now" in system and "{memories}" in user and "share_memory" not in system
+
+
+def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
+    said_not_did = "I'll now write the memories for this conversation."
+    client = ScriptedClient(said_not_did, note_reply())
+    out = Ingestor(client, MemoryStore("p"), note_prompt="ingest_note_v2").ingest_note(SESSION)
+    assert out.ok and out.attempts == 2
+    feedback = client.calls[1]["messages"][-1]["content"]
+    assert "Answer with exactly one block in this form" in feedback and '"replaces"' in feedback
+    v1 = ScriptedClient(said_not_did, note_reply())
+    Ingestor(v1, MemoryStore("p")).ingest_note(SESSION)
+    assert v1.calls[1]["messages"][-1]["content"].endswith("following the instructions exactly.")

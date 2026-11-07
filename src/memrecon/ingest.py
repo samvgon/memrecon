@@ -46,6 +46,14 @@ def load_prompt(name: str) -> tuple[str, str]:
     return system.strip(), user.strip()
 
 
+def answer_format(system: str) -> str:
+    """The prompt's answer-format paragraph (from "Answer with exactly one block" to the end), repeated
+    in the retry message so a model that described what it would do, instead of doing it, sees the
+    form again (as HW1's harness reminded the model of the tool-call format)."""
+    i = system.find("Answer with exactly one block")
+    return system[i:].strip() if i >= 0 else ""
+
+
 def render_conversation(session: dict) -> tuple[str, dict[int, dict]]:
     """Numbered lines ("3. User: ...") and a map from line number to turn. Flags are never included."""
     lines, by_line = [], {}
@@ -83,8 +91,12 @@ def _ints(value, what: str) -> list[int]:
     return value
 
 
-def parse_note_answer(reply: str, labels: dict[str, str], lines: dict[int, dict]) -> dict:
-    """Check a note-arm answer against the memories and lines that were shown."""
+def parse_note_answer(reply: str, labels: dict[str, str], lines: dict[int, dict], reject_duplicates: bool = True) -> dict:
+    """Check a note-arm answer against the memories and lines that were shown.
+
+    reject_duplicates (on from prompt v2): the same memory text twice makes the answer unusable.
+    It is off for v1, so E16 and E17, which ran v1, replay exactly as they ran.
+    """
     data = extract_block(reply, "memories")
     if set(data) != {"new", "change", "forget"}:
         raise UnusableAnswer('The object must have exactly the keys "new", "change" and "forget".')
@@ -109,6 +121,9 @@ def parse_note_answer(reply: str, labels: dict[str, str], lines: dict[int, dict]
     forget = _ints(data["forget"], "forget")
     if not set(forget) <= shown:
         raise UnusableAnswer(f'"forget" must list numbers of the existing memories shown ({sorted(shown) or "none were shown"}).')
+    texts = [t for t, _ in new] + [t for _, t, _ in change]
+    if reject_duplicates and len(texts) != len(set(texts)):
+        raise UnusableAnswer("The same memory appears more than once; write each memory once.")
     used = [n for r, _, _ in change for n in r] + forget
     if len(used) != len(set(used)):
         raise UnusableAnswer("Each existing memory can be replaced or forgotten only once.")
@@ -168,8 +183,12 @@ class Ingestor:
 
     # -- shared --------------------------------------------------------------------
 
-    def _ask(self, system: str, user: str, parse, at: At) -> tuple[object | None, int, str | None]:
-        """Call the model up to MAX_ATTEMPTS times; feed back why an answer was unusable."""
+    def _ask(self, system: str, user: str, parse, at: At, remind: bool = False) -> tuple[object | None, int, str | None]:
+        """Call the model up to MAX_ATTEMPTS times; feed back why an answer was unusable.
+
+        remind (on from prompt v2): the feedback also repeats the prompt's answer format. Off for v1
+        prompts, so E16 and E17, whose retry messages did not include it, replay exactly as they ran."""
+        reminder = (" " + answer_format(system)) if remind else ""
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         limit = self.max_tokens
         error = None
@@ -195,7 +214,7 @@ class Ingestor:
                 error = str(e)
                 messages = messages + [
                     {"role": "assistant", "content": result.content},
-                    {"role": "user", "content": f"That answer could not be used: {e} Answer again, following the instructions exactly."},
+                    {"role": "user", "content": f"That answer could not be used: {e} Answer again, following the instructions exactly.{reminder}"},
                 ]
         return None, MAX_ATTEMPTS, error
 
@@ -225,7 +244,8 @@ class Ingestor:
         conversation, lines = render_conversation(session)
         memories, labels = self._related(session, at)
         user = template.format(date=session.get("date", ""), memories=memories, conversation=conversation)
-        answer, attempts, error = self._ask(system, user, lambda r: parse_note_answer(r, labels, lines), at)
+        strict = self.note_prompt != "ingest_note_v1"
+        answer, attempts, error = self._ask(system, user, lambda r: parse_note_answer(r, labels, lines, reject_duplicates=strict), at, remind=strict)
         out = Outcome(session["session_id"], ok=answer is not None, attempts=attempts, error=error)
         if answer is None:
             return out
