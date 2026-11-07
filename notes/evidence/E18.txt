@@ -1,0 +1,126 @@
+# Evidence E18
+script:       scripts/explore/E18_ingestion_v2.py
+run at:       2026-11-06T21:59:27-08:00
+memrecon:     df110cb (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; wall time 1066 s
+
+1. RELIABILITY
+  v1: 476 sessions, 0 failed, attempts {1: 474, 2: 2}, 0 fresh calls, 478 from cache
+      output tokens per answer: p50 48 p90 103 p99 323 max 540; seconds per session: median 0.0, total 0
+  v2: 476 sessions, 0 failed, attempts {1: 462, 2: 14}, 480 fresh calls, 10 from cache
+      output tokens per answer: p50 54 p90 157 p99 344 max 470; seconds per session: median 1.8, total 1065
+  (attempts > 1: the first answer was unusable or cut off; the reasons are in the attempt files of the audit log)
+
+2. GRANULARITY (Memora's add/update sessions are about one record each)
+  v1: sessions with the same memory twice: 13; words per memory: p50 16 p90 45 max 208
+      activity    n= 176: 0   3 | 1 141 | 2-4  28 | 5+   4 | mean 1.41
+      goal        n=   8: 0   0 | 1   6 | 2-4   2 | 5+   0 | mean 1.25
+      preference  n=  72: 0   0 | 1  66 | 2-4   6 | 5+   0 | mean 1.08
+  v2: sessions with the same memory twice: 0; words per memory: p50 17 p90 104 max 254
+      activity    n= 176: 0   8 | 1 135 | 2-4  33 | 5+   0 | mean 1.14
+      goal        n=   8: 0   0 | 1   7 | 2-4   1 | 5+   0 | mean 1.12
+      preference  n=  72: 0   0 | 1  67 | 2-4   5 | 5+   0 | mean 1.07
+
+3. DETAIL SURVIVAL AND INVENTED NUMBERS
+  v1: all  93.2% of 556 | hashtag 100.0% | name  89.9% | number  97.1% | qualifier  62.5% | quoted  88.7% | record value  97.7% | memories with a number not in the conversation: 8 of 398
+      financial_analyst session 22 [10000.0]: The user hit their step goal on 2025-06-01 by walking 10,000 steps.
+      financial_analyst session 32 [6.0, 12.0, 15.0, 20.0, 1150000.0]: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      financial_analyst session 38 [6.0, 10.0, 12.0, 15.0, 18.0, 20.0, 1150000.0]: The user is working on a new project proposal titled "Regional Logistics Network Optimization Initiative." The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      financial_analyst session 43 [2.0, 4.0]: The user approved reallocation of capital from Project Evergreen (Region 4) to Project Horizon (Region 2) due to higher projected ROI.
+  v2: all  95.1% of 556 | hashtag 100.0% | name  94.5% | number  97.1% | qualifier  62.5% | quoted  92.5% | record value  96.6% | memories with a number not in the conversation: 47 of 347
+      financial_analyst session 22 [10000.0]: The user hit their step goal on 2025-06-01 by walking 10,000 steps.
+      financial_analyst session 32 [6.0, 12.0, 15.0, 20.0, 1150000.0]: The user is working on a new project proposal titled 'Regional Logistics Network Optimization Initiative'. The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      financial_analyst session 38 [6.0, 10.0, 12.0, 15.0, 18.0, 20.0, 1150000.0]: The user is working on a new project proposal titled 'Regional Logistics Network Optimization Initiative'. The project aims to enhance operational efficiency and cost-effectiveness across the regional
+      financial_analyst session 43 [2.0, 4.0, 10.0]: The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'. The agenda items included an Evaluation of Proposed Capital Expenditures for Upcomi
+
+4. UPDATE RECOGNITION (memories of the record's earlier sessions, active just before the session)
+  v1 update sessions n=31: earlier memory shown 100.0%, replaced any 100.0%, replaced all  58.1%, shown but none replaced 0
+     delete sessions n=58: shown  98.3%, forgot any   6.9%, changed any  91.4%, all retired  79.3%, none retired   1.7%
+     at the end: 73 records with an update or delete; 14 still have memories from before it (51 memories; upper bound, see Limits)
+  v2 update sessions n=31: earlier memory shown 100.0%, replaced any  96.8%, replaced all  90.3%, shown but none replaced 1
+     delete sessions n=55: shown 100.0%, forgot any   0.0%, changed any  98.2%, all retired  96.4%, none retired   1.8%
+     at the end: 73 records with an update or delete; 2 still have memories from before it (2 memories; upper bound, see Limits)
+
+5. FINISHED TASKS (update/delete sessions whose flagged turns say finished, completed, done with, ...)
+  v1: n=16: forgot 0, changed 14, new memory only 1, nothing 1
+  v2: n=16: forgot 0, changed 15, new memory only 1, nothing 0
+
+6. WORDING (pattern counts over all memories made)
+  v1: 398 memories; working-out 4; earlier version kept ('used to', 'previously', ...) 28; from sessions where the user said we/our/us: 154, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 13; date left relative ('next month', 'tomorrow', ...) 36
+      relative: The user approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+      relative: The action items from the meeting include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 
+      relative: The action items from the meeting include conducting a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigned to the Senior Financial Analyst, and preparing a revised forecast incorporating the approved capital reallocation, due by the end of next wee
+  v2: 347 memories; working-out 1; earlier version kept ('used to', 'previously', ...) 18; from sessions where the user said we/our/us: 116, of which say 'and others' (or team, family...) 0
+      change described ('updated', 'the changes', ...) 19; date left relative ('next month', 'tomorrow', ...) 26
+      relative: The user worked on meeting notes titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory compliance, and a r
+      relative: The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'. The agenda items included an Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment for the Next Operating Period, and a Discus
+      relative: The user updated the meeting notes titled 'Financial Performance Review & Strategic Capital Allocation'. The changes included the agenda items: Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment for the Next Operating Period, and a Discussi
+
+7. RETRIEVAL at 0.70, top 3: a record's latest memory found by the flagged turns of its next update/delete
+  v1:  63.8% of 130 turns
+  v2:  55.4% of 130 turns
+
+SIDE BY SIDE: 6 random add/update sessions (the user's flagged turns, then each version's memories)
+- management_consultant session 9 (preference, add). User: That reminds me, I recently rewatched "The Apartment" and I really love that movie. / I just adore the witty dialogue and the charming performances by Jack Lemmon and Shirley MacLaine! It's such a heartwarming story.
+    v1 * The user recently rewatched the movie "The Apartment" and loves it, specifically adoring the witty dialogue and the charming performances by Jack Lemmon and Shirley MacLaine, describing it as a heartwarming story.
+    v2 * The user recently rewatched the movie "The Apartment" and loves it for its witty dialogue and the charming performances by Jack Lemmon and Shirley MacLaine, describing it as a heartwarming story.
+- financial_analyst session 107 (activity, add). User: Battery storage solutions, for example, could help smooth out the intermittent nature of renewables. I also grabbed a coffee this morning for $9.89.
+    v1 * The user spent $9.89 on a coffee on 2025-06-05.
+    v1 * The user has been looking into advancements in renewable energy sources, specifically reading about advancements in solar panel efficiency and new battery storage solutions.
+    v2 * The user spent $9.89 on a coffee on 2025-06-05.
+- sales_manager session 92 (activity, add). User: This post is for LinkedIn. / It's a Thought Leadership Post. / The main message is about being delighted to see our mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user jour / Please include #MobileFirst, #EnterpriseSolutions, #SalesLeadership, and #InnovationInTravel.
+    v1 * The user is creating a thought leadership social media post for LinkedIn. The main message is about being delighted to see their mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction, and asking what innovations are driving success in this dynamic landscape. 
+    v2 * The user is creating a thought leadership social media post for LinkedIn. The main message is about being delighted to see their mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction, and asking what innovations are driving success in this dynamic landscape. 
+    v2 * The user is creating a thought leadership social media post for LinkedIn focusing on industry trends in pharmaceuticals. The main message is that trust is the most valuable asset in pharmaceuticals, building deep, long-term customer relationships is essential for advancing patient care, and understanding client needs to deliver tailored solutions sets the user apart. The selected hashtags are #Cus
+- management_consultant session 152 (activity, add). User: Speaking of important tasks, I need to update my professional certifications soon.
+    v1 * The user needs to update their professional certifications soon.
+    v2 * The user needs to update their professional certifications soon.
+- management_consultant session 64 (preference, update). User: Speaking of music, I used to love the 70s, but lately I'm really into the 2000s; there were so many great pop and R&B hits back then!
+    v1 * The user used to love music from the 1970s, but lately they are really into the 2000s, specifically appreciating the great pop and R&B hits from that era.
+    v2 * The user's music preference has shifted from the 1970s to the 2000s, specifically enjoying the pop and R&B hits from that decade.
+- management_consultant session 25 (activity, add). User: Speaking of planning, I really need to plan my vacation days soon.
+    v1 * The user needs to plan their vacation days soon.
+    v2 * The user needs to plan their vacation days soon.
+
+v2 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)
+- sales_manager session 43 (activity). User: Please update the key points to include: Identification of top-performing accounts and areas requiring focused attention. / I also need to add 'Review of Q3 revenue achievement against targets for strategic accounts.' to the key points.
+    shown   * The user has completed planning their vacation time for the year and no longer needs to track this task on their to-do list.
+    written * The user edited an email titled 'To provide an update on the Q3 performance for key enterprise accounts and outline strategic priorities for the upcoming period.' by removing 'VP Sales North America' from the recipient list and removing 'Proposed strategic initiatives for cross-selling and upselling
+
+v2 DELETE SESSIONS (5 at random)
+- sales_manager session 48: forgot 0, changed 1. User: Please remove 'Next steps and ownership for critical actions' from the agenda items. / Yes, please also remove 'Schedule follow-up with client's Head of Infrastructure to present updated integration timeline.' from the key decisions.
+    written * The user organized meeting notes for a Strategic Account Review titled 'Global Compliance Solutions for Key Manufacturing Client.' The agenda included identifying potential risks and mitigation strategies for upcoming contract renewals. Key decisions included initiating discussions with legal and pr
+- management_consultant session 144: forgot 0, changed 1. User: I finished the client assessment report.
+    written * The user has finished the client assessment report.
+- financial_analyst session 108: forgot 0, changed 1. User: I've completed scheduling my dentist appointment, so you can remove that from my to-do list.
+    written * The user has completed scheduling their dentist appointment.
+- management_consultant session 135: forgot 0, changed 1. User: Please remove 'Successful completion of the initial three-month pilot phase for the FinTech innovation enterprise.' from the key points. / Yes, please also remove 'Initial data indicates strong user engagement and positive market reception in test regions.' from the key points.
+    written * The user is drafting an email to update key stakeholders on the pilot innovation-focused fintech enterprise and outline next steps. The recipients are the Regional Market Leads for EMEA, APAC, and the Americas, along with the Global Head of Digital Transformation. Key points include a strategic alig
+- management_consultant session 35: forgot 0, changed 1. User: Speaking of evolving, I actually used to really like Ella Fitzgerald, but my taste has changed and I don't really listen to her anymore. / I've actually gotten more into instrumental jazz lately, so I just don't find myself reaching for vocalists as much anymore.
+    written * The user used to absolutely adore Ella Fitzgerald, describing her voice as pure magic and noting that her music always put a smile on their face, but their taste has changed and they no longer listen to her.
+
+FINISHED TASKS, both versions (4 at random)
+- sales_manager session 144. User: Yes, I do! I also just finished planning my vacation time.
+    v1 new only
+      * The user has finished planning their vacation time.
+    v2 changed
+      * The user has planned their vacation time.
+- sales_manager session 160. User: Oh, I actually just finished preparing those client success stories.
+    v1 changed
+      * The user has finished preparing client success stories.
+    v2 changed
+      * The user has finished preparing client success stories.
+- management_consultant session 40. User: Yes, for now. I actually just finished updating my home organization.
+    v1 changed
+      * The user has updated their home organization.
+    v2 changed
+      * The user has finished updating their home organization.
+- management_consultant session 29. User: I actually just finished planning my vacation days.
+    v1 changed
+      * The user has finished planning their vacation days.
+    v2 changed
+      * The user has finished planning their vacation days.
