@@ -222,6 +222,15 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
 
 
 def test_lint_comments_are_never_sent():
-    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2"):
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3"):
         system, user = load_prompt(name)
         assert "markdownlint" not in system + user
+
+
+def test_prompt_v3_loads_and_is_strict():
+    system, user = load_prompt("ingest_note_v3")
+    assert "adds to" not in system and "calendar date" not in system and "{memories}" in user
+    m = {"memory": "The user walked 10,800 steps.", "lines": [3]}
+    client = ScriptedClient(note_reply(new=[m, m]), note_reply(new=[m]))
+    out = Ingestor(client, MemoryStore("p"), note_prompt="ingest_note_v3").ingest_note(SESSION)
+    assert out.ok and out.attempts == 2 and len(out.created) == 1
