@@ -1,11 +1,11 @@
-"""E20: ingestion prompt v4 against v1 and v2: short self-contained memories with v2's update rules.
+"""E20: ingestion prompt v5 against v1 and v2: short self-contained memories with v2's update rules.
 
 Question (D39): v1 split documents into short pieces, which retrieval found more often but which left
 duplicates and stale copies (E16-E18); v2 merged them, which fixed updates but made long memories that
 retrieval missed and folded new events into related memories, rewriting (and sometimes losing) facts the
-user never changed (E19). Does v4 (v3 with v1's wording for what one memory is, "one memory for each thing
-the user told you about", which gave v1's pieces; v3 was piloted only, and its pilot still wrote one set
-of meeting notes as one long memory) (short memories naming what they are about, v2's duplicate and update
+user never changed (E19). Does v5 (v1's text with only the changes decided in D38 and D39; v3 and v4,
+built from v2's text, were piloted only, and their pilots still wrote one set of meeting notes as one
+long memory) (short memories naming what they are about, v2's duplicate and update
 rules, a change only when a memory is no longer true or complete about the same thing) keep v2's update
 handling with v1's retrieval, and stop the folding? On the development personas, for each version:
   1-6 as in E18: reliability, granularity, detail survival and invented numbers, update recognition and
@@ -20,7 +20,7 @@ handling with v1's retrieval, and stop the folding? On the development personas,
       session was ingested; a drop is a fact lost after it was saved (as in E19's step count).
 Method: development personas only (notes/split.json), replayed in file order (A6) once per version with
 the real ingestion code and the agent model, related memories as in E16 (top 3 per user turn, up to 10,
-no threshold). v1 and v2 are answered from the cache of E16 and E18 (fresh calls should be 0); v4 makes
+no threshold). v1 and v2 are answered from the cache of E16 and E18 (fresh calls should be 0); v5 makes
 new calls (about 480), cached for reruns. Records are identified as in E12-E19 (A10); goals have no
 record key and are left out of retention.
 Pilot: MEMRECON_E20_PILOT=N ingests only the first N sessions of the first persona and prints timings;
@@ -48,8 +48,8 @@ from memrecon.retrieval import Retriever
 K = 3
 THRESHOLD = 0.70
 THRESHOLDS = [0.60, 0.65, 0.70, 0.75]
-VERSIONS = ["ingest_note_v1", "ingest_note_v2", "ingest_note_v4"]
-SHORT = {"ingest_note_v1": "v1", "ingest_note_v2": "v2", "ingest_note_v4": "v4"}
+VERSIONS = ["ingest_note_v1", "ingest_note_v2", "ingest_note_v5"]
+SHORT = {"ingest_note_v1": "v1", "ingest_note_v2": "v2", "ingest_note_v5": "v5"}
 PILOT = int(os.environ.get("MEMRECON_E20_PILOT", "0") or 0)
 PROGRESS = ROOT / "results" / "e20_progress.log"
 
@@ -388,9 +388,9 @@ print()
 random.seed(20)
 by_session = {v: {(p, s["session_id"]): (s, o, shown) for p, s, o, _, shown in reports[v]["outcomes"]} for v in VERSIONS}
 print("SIDE BY SIDE: 6 random add/update sessions (the user's flagged turns, then each version's memories)")
-pool = [key for key, (s, o, _) in by_session["ingest_note_v4"].items() if s.get("operation") in ("add", "update") and flagged_turns(s)]
+pool = [key for key, (s, o, _) in by_session["ingest_note_v5"].items() if s.get("operation") in ("add", "update") and flagged_turns(s)]
 for key in random.sample(pool, min(6, len(pool))):
-    s = by_session["ingest_note_v4"][key][0]
+    s = by_session["ingest_note_v5"][key][0]
     print(f"- {key[0]} session {key[1]} ({s.get('session_type')}, {s.get('operation')}). User: " + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for v in VERSIONS:
         _, o, _ = by_session[v][key]
@@ -398,43 +398,43 @@ for key in random.sample(pool, min(6, len(pool))):
             print(f"    {SHORT[v]} * {text(v, key[0], m)[:400]}")
 print()
 
-print("v4 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)")
-missed = [(p, s, o, shown) for p, s, o, earlier, shown in reports["ingest_note_v4"]["outcomes"]
+print("v5 UPDATE SESSIONS WHERE AN EARLIER MEMORY WAS SHOWN BUT NOT REPLACED (5 at random)")
+missed = [(p, s, o, shown) for p, s, o, earlier, shown in reports["ingest_note_v5"]["outcomes"]
           if s.get("operation") == "update" and shown and not (earlier & set(o.superseded))]
 for p, s, o, shown in random.sample(missed, min(5, len(missed))):
     print(f"- {p} session {s['session_id']} ({s.get('session_type')}). User: " + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for m in sorted(shown):
-        print(f"    shown   * {text('ingest_note_v4', p, m)[:300]}")
+        print(f"    shown   * {text('ingest_note_v5', p, m)[:300]}")
     for m in o.created:
-        print(f"    written * {text('ingest_note_v4', p, m)[:300]}")
+        print(f"    written * {text('ingest_note_v5', p, m)[:300]}")
 print()
 
-print("v4 DELETE SESSIONS (5 at random)")
-dels = [(p, s, o) for p, s, o, _, _ in reports["ingest_note_v4"]["outcomes"] if s.get("operation") == "delete"]
+print("v5 DELETE SESSIONS (5 at random)")
+dels = [(p, s, o) for p, s, o, _, _ in reports["ingest_note_v5"]["outcomes"] if s.get("operation") == "delete"]
 for p, s, o in random.sample(dels, min(5, len(dels))):
     print(f"- {p} session {s['session_id']}: forgot {len(o.forgotten)}, changed {len(o.superseded)}. User: "
           + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for m in o.created:
-        print(f"    written * {text('ingest_note_v4', p, m)[:300]}")
+        print(f"    written * {text('ingest_note_v5', p, m)[:300]}")
 print()
 
 print("FINISHED TASKS, both versions (4 at random)")
 for key in random.sample(sorted(fin_examples), min(4, len(fin_examples))):
-    s = by_session["ingest_note_v4"][key][0]
+    s = by_session["ingest_note_v5"][key][0]
     print(f"- {key[0]} session {key[1]}. User: " + " / ".join(t["message"][:160] for t in flagged_turns(s)))
     for ver, kind, texts in fin_examples[key]:
         print(f"    {ver} {kind}" + "".join(f"\n      * {t[:200]}" for t in texts))
 
 print()
-print("v4 CHANGES THAT FOLDED A MEMORY OF ANOTHER RECORD, not preference sessions (5 at random)")
-for p, s, old, new in random.sample(folded["ingest_note_v4"], min(5, len(folded["ingest_note_v4"]))):
+print("v5 CHANGES THAT FOLDED A MEMORY OF ANOTHER RECORD, not preference sessions (5 at random)")
+for p, s, old, new in random.sample(folded["ingest_note_v5"], min(5, len(folded["ingest_note_v5"]))):
     print(f"- {p} session {s['session_id']} ({s.get('session_type')}, {s.get('operation')}). User: " + (" / ".join(t["message"][:140] for t in flagged_turns(s)) or "(no flagged turns)"))
     print(f"    replaced * {old[:300]}")
     for t in new:
         print(f"    with     * {t[:300]}")
 print()
-print("v4 RECORDS THAT LOST AN ELEMENT AFTER IT WAS SAVED (5 at random)")
-lost = [x for x in reports["ingest_note_v4"]["retention"] if x["lost"]]
+print("v5 RECORDS THAT LOST AN ELEMENT AFTER IT WAS SAVED (5 at random)")
+lost = [x for x in reports["ingest_note_v5"]["retention"] if x["lost"]]
 for x in random.sample(lost, min(5, len(lost))):
     print(f"- {x['persona']} session {x['session']['session_id']}: lost {x['lost']}. User: " + " / ".join(t["message"][:140] for t in flagged_turns(x["session"])))
     print(f"    now * {x['now_text'][:300] or '(no active memory)'}")

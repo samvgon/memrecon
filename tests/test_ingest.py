@@ -222,7 +222,7 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
 
 
 def test_lint_comments_are_never_sent():
-    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4"):
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5"):
         system, user = load_prompt(name)
         assert "markdownlint" not in system + user
 
@@ -239,3 +239,12 @@ def test_prompt_v3_loads_and_is_strict():
 def test_prompt_v4_loads():
     system, user = load_prompt("ingest_note_v4")
     assert "One memory for each thing the user told you about" in system and "adds to" not in system
+
+
+def test_prompt_v5_is_v1_with_the_decided_changes():
+    v1, _ = load_prompt("ingest_note_v1")
+    v5, user = load_prompt("ingest_note_v5")
+    for kept in ("One memory for each thing the user told you about", "Use as many sentences as the details need",
+                 "Add nothing the user did not say"):
+        assert kept in v1 and kept in v5
+    assert "calendar date" not in v5 and "same memory twice" in v5 and "{memories}" in user
