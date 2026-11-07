@@ -1,0 +1,76 @@
+# Evidence E17
+script:       scripts/explore/E17_note_recall.py
+run at:       2026-11-06T18:44:02-08:00
+memrecon:     4082e34 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas; 216 items (records told about in add/update sessions); k = 3
+ingestion calls not found in the cache (should be 0): 0
+
+Natural recalls per item over the replay (outside the item's own update/delete sessions):
+threshold     >=1     >=3     >=5    >=10   mean median | from small talk | recalls per session
+     0.65   69.9%   43.1%   29.2%   11.1%   5.14    2.0 |           19.1% | mean 2.98, max 24
+     0.70   55.6%   23.1%   12.5%    0.9%   1.75    1.0 |            4.0% | mean 1.16, max 13  <- chosen
+     0.75   38.4%    9.7%    1.9%    0.0%   0.75    0.0 |            0.6% | mean 0.54, max 8
+('from small talk' = share of natural recalls made by turns of no_memory sessions;
+ 'recalls per session' = memories recalled per session, i.e. rewrites a replace arm would make)
+
+By fact type at 0.70: share of items with >=1 / >=5 natural recalls, mean
+  activity     n= 149  >=1  57.7%  >=5  13.4%  mean  1.91
+  goal         n=   8  >=1 100.0%  >=5  62.5%  mean  4.38
+  preference   n=  59  >=1  44.1%  >=5   3.4%  mean  1.02
+
+Split items: 40 add/update sessions gave 2+ memories. 8 at random:
+- sales_manager session 65 (activity, add): 2 memories
+    * The user walked 10,800 steps on 2025-06-03.
+    * The user walked 10,800 steps on 2025-06-03.
+- sales_manager session 20 (activity, add): 3 memories
+    * The user needs to write an email to the VP Sales North America and Marketing Leadership providing an update on Q3 performance for key enterprise accounts and outlining strategic priorities for the upc
+    * The user needs to include an analysis of key account health metrics and emerging trends in the telecommunications sector, along with proposed strategic initiatives for cross-selling and upselling oppo
+    * The user wants the recipients of the email to review the attached Q3 performance summary and be prepared to discuss insights during a regional sync meeting next week to finalize action plans.
+- management_consultant session 69 (activity, update): 2 memories
+    * Key decisions made in the 'Fintech Core System Integration - Phase 1 Review & Next Steps' meeting included scheduling a dedicated technical deep-dive session on the data migration strategy for the upc
+    * The agenda for the 'Fintech Core System Integration - Phase 1 Review & Next Steps' meeting included a discussion of identified technical roadblocks and mitigation strategies, planning for Phase 2 roll
+- management_consultant session 123 (activity, update): 2 memories
+    * The main objectives of the user's project "Pan-European Digital Health Ecosystem Integration Strategy" are to establish clear ROI metrics for digital health investments across the continent, to identi
+    * The key stakeholders in the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include the IT Infrastructure & Security Teams, National Health Ministries Representatives, and 
+- management_consultant session 67 (preference, update): 2 memories
+    * The user has recently gotten into Ta-Nehisi Coates' work, finding his writing powerful.
+    * The user used to like how Yuval Noah Harari explores big ideas in his books, specifically appreciating how he makes complex historical and philosophical ideas accessible and engaging, especially in "S
+- management_consultant session 13 (activity, add): 2 memories
+    * The user walked 12,372 steps on 2025-06-01.
+    * The user walked 12,372 steps on 2025-06-01.
+- management_consultant session 66 (activity, add): 10 memories
+    * The user is working on a project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy."
+    * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient dat
+    * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" has a proposed budget of €750,000.
+    * The user's project "Pan-European Digital Health Ecosystem Integration Strategy" has a timeline of 18 months, with a phased rollout over the first year and optimization planned for the subsequent six m
+    * Dr. Elara Vance, a Senior Management Consultant, will be leading the user's project "Pan-European Digital Health Ecosystem Integration Strategy."
+    * The key stakeholders in the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include the IT Infrastructure & Security Teams and National Health Ministries Representatives.
+    * The main objectives of the user's project "Pan-European Digital Health Ecosystem Integration Strategy" are to establish clear ROI metrics for digital health investments across the continent and to ide
+    * The deliverables for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include a Financial Impact Assessment, an Investment Roadmap for full-scale rollout, a Target Opera
+    * The potential risks for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include high complexity due to regulatory divergence across countries, data privacy concerns, an
+    * The methodology for the user's project "Pan-European Digital Health Ecosystem Integration Strategy" leverages Agile principles for rapid prototyping and iterative development, combined with a structur
+- financial_analyst session 107 (activity, add): 2 memories
+    * The user spent $9.89 on a coffee on 2025-06-05.
+    * The user has been looking into advancements in renewable energy sources, specifically reading about advancements in solar panel efficiency and new battery storage solutions.
+
+Delete sessions that produced notes: 54. 8 at random (with what the user said):
+- financial_analyst session 43 (activity); forgot 0. User: Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investm
+    * The user approved reallocation of capital from Project Evergreen (Region 4) to Project Horizon (Region 2) due to higher projected ROI.
+- management_consultant session 35 (preference); forgot 0. User: Speaking of evolving, I actually used to really like Ella Fitzgerald, but my taste has changed and I don't really listen / I've actually gotten more into instrumental jazz lately, so I just don't find myself reaching for vocalists as much anym
+    * The user used to really like Ella Fitzgerald, but their taste has changed and they don't really listen to her anymore, having gotten more into instrumental jazz lately.
+- management_consultant session 121 (preference); forgot 0. User: That's really neat! Speaking of new perspectives, I actually used to be really into books on mindfulness, but I'm findin
+    * The user used to really enjoy reading about mindfulness, finding it a calming topic, but is finding themselves less drawn to that topic lately.
+- sales_manager session 119 (activity); forgot 0. User: Please remove the objective: 'Establish our company as the leading provider of enterprise 5G solutions in the region.'
+    * The main objectives for the user's project proposal "Regional 5G Enterprise Solutions Expansion Initiative" are to enhance market penetration in three high-potential regional sectors: manufacturing, l
+- management_consultant session 130 (activity); forgot 0. User: Please remove 'IT Infrastructure & Security Teams' from the stakeholders field. / Yes, please also remove 'Identify and evaluate key integration points for existing national digital health platforms.' f
+    * The key stakeholders in the user's project "Pan-European Digital Health Ecosystem Integration Strategy" include National Health Ministries Representatives.
+    * The main objectives of the user's project "Pan-European Digital Health Ecosystem Integration Strategy" are to establish clear ROI metrics for digital health investments across the continent, to develo
+- management_consultant session 40 (todo_list); forgot 0. User: Yes, for now. I actually just finished updating my home organization.
+    * The user has updated their home organization.
+- management_consultant session 157 (preference); forgot 0. User: Speaking of books, you know, I used to really like Ta-Nehisi Coates, but my feelings have changed. I've found his recent
+    * The user used to like Ta-Nehisi Coates, but their feelings have changed, and they have found his recent work does not resonate with them anymore.
+- management_consultant session 51 (todo_list); forgot 0. User: I just finished updating the consulting framework.
+    * The user has finished updating the consulting framework for a project.
