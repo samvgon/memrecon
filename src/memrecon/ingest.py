@@ -346,8 +346,9 @@ class Ingestor:
         out.facts = len(facts)
         dsys, dtemplate = load_prompt(self.decide_prompt)
         added_here: set[str] = set()  # facts added from this session are not shown to its later facts
-        for text, nums in facts:
+        for k, (text, nums) in enumerate(facts):
             sources = self._sources(session, nums, lines)
+            others = "\n".join(f"- {t}" for j, (t, _) in enumerate(facts) if j != k) or "(none)"
             cands = self._candidates(text, added_here)
             entry = {"fact": text, "candidates": cands, "action": None, "ids": []}
             self.decision_log.append(entry)
@@ -359,7 +360,8 @@ class Ingestor:
                 continue
             shown, labels = self.store.present([mid for mid, _ in cands], at)
             self.last_shown |= set(labels.values())
-            duser = dtemplate.format(date=date, fact=text, memories=shown)
+            # other_facts is used from decide_note_v3 on (D43); earlier templates have no such field
+            duser = dtemplate.format(date=date, fact=text, memories=shown, other_facts=others)
             decision, _, derr = self._ask(dsys, duser, lambda r: parse_decision(r, labels), at, remind=True, step="decide")
             if decision is None:
                 out.decide_failures += 1
@@ -367,6 +369,10 @@ class Ingestor:
                 decision = ("add", [], "")  # a fact whose decision failed is kept, never dropped
                 entry["action"] = "add (decision failed)"
             action, ids, memory = decision
+            if action == "replace" and len(ids) == 1 and memory == self.store.get(ids[0]).text:
+                # a rewrite with no change is not a rewrite (D42): the memory stays as it was, depth unchanged
+                action, ids, memory = "none", [], ""
+                entry["action"] = "none (identical replace)"
             entry["action"] = entry["action"] or action
             entry["ids"] = ids
             out.decisions[entry["action"]] = out.decisions.get(entry["action"], 0) + 1

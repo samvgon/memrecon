@@ -224,7 +224,7 @@ def test_v2_retry_repeats_the_answer_format_but_v1_does_not():
 
 
 def test_lint_comments_are_never_sent():
-    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5", "extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2"):
+    for name in ("ingest_note_v1", "ingest_log_v1", "ingest_note_v2", "ingest_note_v3", "ingest_note_v4", "ingest_note_v5", "extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2", "decide_note_v3"):
         system, user = load_prompt(name)
         assert "markdownlint" not in system + user
 
@@ -276,7 +276,7 @@ class WordRetriever:
 
 
 def test_two_step_prompts_load_without_flags():
-    for name in ("extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2"):
+    for name in ("extract_note_v1", "decide_note_v1", "extract_note_v2", "decide_note_v2", "decide_note_v3"):
         system, user = load_prompt(name)
         assert "share_memory" not in system + user and "<!--" not in system
     assert "{fact}" in load_prompt("decide_note_v1")[1] and "{memories}" not in load_prompt("extract_note_v1")[1]
@@ -376,3 +376,25 @@ def test_two_step_v2_prompts():
     client = ScriptedClient(facts_reply("The user likes jazz."))
     out = Ingestor(client, MemoryStore("p"), WordRetriever(), extract_prompt="extract_note_v2", decide_prompt="decide_note_v2").ingest_two_step(SESSION)
     assert out.ok and "for a document, give its title" in client.calls[0]["messages"][0]["content"]
+
+
+def test_a_replace_with_identical_text_is_no_rewrite():
+    store = MemoryStore("p")
+    old = store.note("The user likes jazz music.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+    client = ScriptedClient(facts_reply("The user likes jazz music."), decision("replace", [1], "The user likes jazz music."))
+    out = Ingestor(client, store, WordRetriever()).ingest_two_step(SESSION)
+    assert out.decisions == {"none (identical replace)": 1} and out.superseded == [] and out.created == []
+    assert store.get(old).retired is None and store.get(old).depth == 1
+
+
+def test_decide_v3_shows_the_other_facts_and_v2_does_not():
+    def run(prompt):
+        store = MemoryStore("p")
+        store.note("The user's project has a proposed budget of $1,150,000.", [Source("p", 5, 3)], At(5, 0), date="2025-05-30")
+        client = ScriptedClient(facts_reply("The user is working on a proposal titled 'Atlas'.", "The user's project has a proposed budget of $750,000."),
+                                decision("add"), decision("add"))
+        Ingestor(client, store, WordRetriever(), decide_prompt=prompt).ingest_two_step(SESSION)
+        return [c["messages"][1]["content"] for c in client.calls if c["meta"]["step"] == "decide"]
+    v3 = run("decide_note_v3")
+    assert any("Other facts from this conversation:\n- The user is working on a proposal titled 'Atlas'." in m for m in v3)
+    assert all("Other facts" not in m for m in run("decide_note_v2"))
