@@ -8,6 +8,8 @@ why), and do its rows agree with the log where the log can tell (E25): documents
 list items and changed fields, preference items and changes, expense and step amounts, goal amounts,
 calendar events, to-dos (whose logged description is usually reworded in the dialogue, so matched by
 shared words)? Also prints a sample of sessions with their rows for Sam's hand check.
+Matching for preferences and calendar events also accepts shared words ("North Island Lodge in
+Seychelles" for the log's "North Island Lodge, Seychelles").
 Method: sessions in file order (A6); the record of a session is its A10 key, or ("goal", subcategory)
 for goals, or ("session", id) otherwise. The flags choose the lines to read (harness side; the model is
 shown only line numbers). Rows are written to results/probes/E26_<persona>.jsonl. Calls are cached.
@@ -161,23 +163,26 @@ for p, s, o in outcomes:
     elif t == "preference":
         item = d.get("item", "")
         if op == "add":
-            ok = match_text(item, [r for r in rs if r.status in ("new", "added")])
+            ok = match_text(item, [r for r in rs if r.status in ("new", "added")]) or match_words(item, [r for r in rs if r.status in ("new", "added")])
             c[("preference add: item, as new", ok)] += 1
             ok or miss["preference add"].append((p, s["session_id"], item))
         elif op == "delete":
-            ok = match_text(item, [r for r in rs if r.status in ("no longer", "removed")])
+            ok = match_text(item, [r for r in rs if r.status in ("no longer", "removed")]) or match_words(item, [r for r in rs if r.status in ("no longer", "removed")])
             c[("preference delete: item, as no longer", ok)] += 1
             ok or miss["preference delete"].append((p, s["session_id"], item))
         else:
             if d.get("old_item"):
-                ok = match_text(d["old_item"], [r for r in rs if r.status in ("no longer", "replaced", "removed")])
+                olds = [r for r in rs if r.status in ("no longer", "replaced", "removed")]
+                ok = match_text(d["old_item"], olds) or match_words(d["old_item"], olds)
                 c[("preference update: old item, as no longer/replaced", ok)] += 1
                 ok or miss["preference update: old item"].append((p, s["session_id"], d["old_item"]))
-                ok = match_text(item, [r for r in rs if r.status in ("new", "updated", "added")])
+                news = [r for r in rs if r.status in ("new", "updated", "added")]
+                ok = match_text(item, news) or match_words(item, news)
                 c[("preference update: new item, as new/updated", ok)] += 1
             else:
                 to_dislike = d.get("preference") == "dislike"
-                ok = match_text(item, [r for r in rs if (r.status == "no longer") == to_dislike])
+                same = [r for r in rs if (r.status == "no longer") == to_dislike]
+                ok = match_text(item, same) or match_words(item, same)
                 c[(f"preference update: same item, now {d.get('preference')}", ok)] += 1
                 ok or miss["preference update: same item"].append((p, s["session_id"], f"{item} -> {d.get('preference')}"))
     elif t == "goal":

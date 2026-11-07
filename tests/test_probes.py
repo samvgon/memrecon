@@ -58,6 +58,8 @@ def test_split_number(detail, expected):
     ("next Tuesday", "2025-06-10"), ("this Friday", "2025-06-06"), ("Friday", "2025-06-06"), ("today", "2025-06-04"),
     ("this morning", "2025-06-04"), ("tomorrow", "2025-06-05"), ("in 10 days", "2025-06-14"), ("August 21st", "2025-08-21"),
     ("21 August", "2025-08-21"), ("June 5, 2025", "2025-06-05"), ("2025-07-01", "2025-07-01"), ("next week", None), ("soon", None),
+    ("due in 10 days", "2025-06-14"), ("due by the end of next week", None), ("within the next three months", None),
+    ("on August 21st this year", "2025-08-21"), ("may", None),
 ])
 def test_resolve_date(detail, expected):
     assert resolve_date(detail, "2025-06-04") == expected
@@ -71,8 +73,10 @@ def test_details_and_qualifiers_must_be_exact_copies_of_a_line_to_read():
         parse_probe_answer(answer(d("$900K", "updated")), readable)
     with pytest.raises(UnusableAnswer, match="qualifier"):
         parse_probe_answer(answer(d("$900,000", "updated", qualifier="roughly")), readable)
-    with pytest.raises(UnusableAnswer, match="lines to read"):
+    with pytest.raises(UnusableAnswer, match="got 1"):
         parse_probe_answer(answer(d("Hi", line=1)), readable)
+    with pytest.raises(UnusableAnswer, match='without quotes.*got "3"'):
+        parse_probe_answer(answer(d("$900,000", "updated", line="3")), readable)
     with pytest.raises(UnusableAnswer, match="status"):
         parse_probe_answer(answer(d("$900,000", "changed")), readable)
     with pytest.raises(UnusableAnswer, match="more than once"):

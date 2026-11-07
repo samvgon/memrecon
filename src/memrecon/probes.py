@@ -23,6 +23,7 @@ matching liked item and records it as no longer liked. Nothing in this module is
 from __future__ import annotations
 
 import datetime as dt
+import json
 import re
 from dataclasses import asdict, dataclass
 
@@ -97,16 +98,16 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
     m = re.search(r"\b(\d{4})-(\d{2})-(\d{2})\b", t)
     if m:
         return m.group(0)
-    if re.fullmatch(r"(today|tonight|this (morning|afternoon|evening)|earlier today|later today)", t):
+    if re.search(r"\b(today|tonight|this (morning|afternoon|evening))\b", t):
         return base.isoformat()
-    if t == "tomorrow":
+    if re.search(r"\btomorrow\b", t):
         return (base + dt.timedelta(days=1)).isoformat()
-    if t == "yesterday":
+    if re.search(r"\byesterday\b", t):
         return (base - dt.timedelta(days=1)).isoformat()
-    m = re.fullmatch(r"in (\d+) days?", t)
+    m = re.search(r"\bin (\d+) days?\b", t)
     if m:
         return (base + dt.timedelta(days=int(m.group(1)))).isoformat()
-    m = re.fullmatch(r"(next |this |on )?(" + "|".join(_WEEKDAYS) + r")", t)
+    m = re.search(r"\b(next |this |on )?(" + "|".join(_WEEKDAYS) + r")\b", t)
     if m:
         target = _WEEKDAYS.index(m.group(2))
         ahead = (target - base.weekday()) % 7
@@ -114,11 +115,11 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
             ahead = 7
         return (base + dt.timedelta(days=ahead)).isoformat()
     month = "|".join(sorted(_MONTHS, key=len, reverse=True))
-    m = re.fullmatch(rf"({month})\.? (\d{{1,2}})(?:st|nd|rd|th)?(?:,? (\d{{4}}))?", t) or None
+    m = re.search(rf"\b({month})\.? (\d{{1,2}})(?:st|nd|rd|th)?\b(?:,? (\d{{4}}))?", t)
     if m:
         mo, day, year = _MONTHS[m.group(1)], int(m.group(2)), int(m.group(3) or base.year)
     else:
-        m = re.fullmatch(rf"(\d{{1,2}})(?:st|nd|rd|th)? (?:of )?({month})(?:,? (\d{{4}}))?", t)
+        m = re.search(rf"\b(\d{{1,2}})(?:st|nd|rd|th)? (?:of )?({month})\b(?:,? (\d{{4}}))?", t)
         if not m:
             return None
         mo, day, year = _MONTHS[m.group(2)], int(m.group(1)), int(m.group(3) or base.year)
@@ -142,8 +143,10 @@ def parse_probe_answer(reply: str, readable: dict[int, str]) -> list[dict]:
         if not isinstance(item, dict) or set(item) != KEYS:
             raise UnusableAnswer('Each detail must have exactly the keys "line", "detail", "qualifier", "field", "who", "kind" and "status".')
         line = item["line"]
-        if not isinstance(line, int) or isinstance(line, bool) or line not in readable:
-            raise UnusableAnswer(f'"line" must be one of the lines to read ({sorted(readable)}).')
+        if not isinstance(line, int) or isinstance(line, bool):
+            raise UnusableAnswer(f'"line" must be a number without quotes, one of {sorted(readable)}; got {json.dumps(line)}.')
+        if line not in readable:
+            raise UnusableAnswer(f'"line" must be one of the lines to read ({sorted(readable)}); got {line}.')
         for key in ("detail", "qualifier", "field", "who", "kind", "status"):
             if not isinstance(item[key], str):
                 raise UnusableAnswer(f'"{key}" must be a string.')
