@@ -1,15 +1,15 @@
-# Stage 0 control check (config 73328e6d45)
+# Stage 0 control check (config a0018ce663)
 
-Config: `{"agent": "qwen3.6-35b-a3b-ud-q4_k_m", "arms": {"log": {"log_prompt": "ingest_log_v1", "method": "ingest_log", "mode": "log"}, "note": {"candidate_threshold": 0.0, "decide_prompt": "decide_note_v3", "extract_prompt": "extract_note_v2", "method": "ingest_two_step", "mode": "note", "note_prompt": "ingest_note_v5"}}, "recall_k": 3, "recall_threshold": 0.7, "rewrite_prompt": "rewrite_v4", "select_prompt": "select_v1", "sessions": "all", "stage": "0-control"}`
+Config: `{"agent": "qwen3.6-35b-a3b-ud-q4_k_m", "arms": {"log": {"log_prompt": "ingest_log_v1", "method": "ingest_log", "mode": "log"}, "note": {"candidate_threshold": 0.0, "decide_prompt": "decide_note_v3", "extract_prompt": "extract_note_v2", "method": "ingest_two_step", "mode": "note", "note_prompt": "ingest_note_v5"}}, "recall_k": 3, "recall_threshold": 0.7, "rewrite_prompt": "rewrite_v5b", "select_prompt": "select_v1", "sessions": "all", "stage": "0-control"}`
 
 | Persona | Arm | Sessions | Identical | Pass | First difference | Turns with recall | Found | Selected | Rewrites | Identical rewrites | Recall failures | Ingest failures (A/B) | Seconds |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| financial_analyst | note | 156 | 156 | yes | — | 162 | 258 | 157 | 156 | 85 | 1 | 0/0 | 273.8 |
-| financial_analyst | log | 156 | 156 | yes | — | 151 | 266 | 136 | 136 | 0 | 0 | 0/0 | 257.9 |
-| management_consultant | note | 157 | 157 | yes | — | 111 | 187 | 129 | 129 | 34 | 0 | 0/0 | 238.0 |
-| management_consultant | log | 157 | 157 | yes | — | 134 | 244 | 158 | 158 | 0 | 0 | 0/0 | 292.6 |
-| sales_manager | note | 163 | 163 | yes | — | 140 | 220 | 137 | 137 | 38 | 0 | 0/0 | 265.5 |
-| sales_manager | log | 163 | 163 | yes | — | 148 | 263 | 148 | 148 | 0 | 0 | 0/0 | 272.6 |
+| financial_analyst | note | 156 | 156 | yes | — | 162 | 258 | 157 | 157 | 102 | 0 | 0/0 | 139.2 |
+| financial_analyst | log | 156 | 156 | yes | — | 151 | 266 | 136 | 136 | 0 | 0 | 0/0 | 99.8 |
+| management_consultant | note | 157 | 157 | yes | — | 111 | 187 | 129 | 129 | 67 | 0 | 0/0 | 105.4 |
+| management_consultant | log | 157 | 157 | yes | — | 134 | 244 | 158 | 158 | 0 | 0 | 0/0 | 126.9 |
+| sales_manager | note | 163 | 163 | yes | — | 140 | 220 | 137 | 137 | 61 | 0 | 0/0 | 124.0 |
+| sales_manager | log | 163 | 163 | yes | — | 148 | 263 | 148 | 148 | 0 | 0 | 0/0 | 114.8 |
 
 **Overall: PASS**
 
