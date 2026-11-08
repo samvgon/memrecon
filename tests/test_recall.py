@@ -5,7 +5,7 @@ import pytest
 
 from memrecon.ingest import UnusableAnswer, load_prompt
 from memrecon.memory import At, MemoryStore, Source
-from memrecon.recall import Discard, Keep, Recaller, Replace, parse_rewrite_answer, parse_select_answer, policy
+from memrecon.recall import Discard, Keep, Recaller, Replace, how_long_before, memory_slots, parse_rewrite_answer, parse_select_answer, policy
 from memrecon.retrieval import Retriever
 
 TOPICS = ["budget", "coffee", "steps", "design"]
@@ -60,7 +60,8 @@ SESSION = {"session_id": 5, "date": "2025-06-05", "conversation": [
 
 
 def test_prompts_load_and_never_mention_policies_or_flags():
-    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}"), ("rewrite_v3", "{memory}"), ("rewrite_v4", "{memory}")):
+    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}"), ("rewrite_v3", "{memory}"), ("rewrite_v4", "{memory}"),
+                       ("rewrite_v5a", "{memory_text}"), ("rewrite_v5b", "{memory_text}")):
         system, user = load_prompt(name)
         text = system + user
         assert "{conversation}" in user and slot in user and "share_memory" not in text
@@ -158,3 +159,19 @@ def test_failures_store_nothing_and_are_counted():
 
 def test_policy_lookup():
     assert isinstance(policy("discard"), Discard) and isinstance(policy("keep"), Keep)
+
+
+def test_memory_slots_and_the_date_line():
+    assert how_long_before("2025-06-01", "2025-06-03") == "2 days before this one"
+    assert how_long_before("2025-06-02", "2025-06-03") == "the day before this one"
+    assert how_long_before("2025-06-03", "2025-06-03") == "the same day as this one"
+    assert how_long_before("", "2025-06-03") == "" and how_long_before("2025-06-04", "2025-06-03") == ""
+    slots = memory_slots("Spent $5.", "2025-06-01", "2025-06-05")
+    assert slots["memory"] == "(2025-06-01) Spent $5." and slots["when"] == "4 days before this one"
+    assert memory_slots("Spent $5.", "", "2025-06-05")["memory"] == "Spent $5."
+    store = store_with(BUDGET, STEPS)
+    client = ScriptedClient(useful(1), memory("x"))
+    Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", rewrite_prompt="rewrite_v5b").recall_session(SESSION)
+    rew = client.calls[1]["messages"][1]["content"]
+    assert "Memory, from an earlier conversation on 2025-06-01 (4 days before this one):\nThe project budget is $1,700,000." in rew
+    assert "different events of the same kind" in client.calls[1]["messages"][0]["content"]

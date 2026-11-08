@@ -7,7 +7,7 @@ Recall then has two steps (D54, Sam):
 1. **select** (prompts/select_v1.md, one call per turn): the agent sees the memories found, listed by
    date, newest first, and chooses the ones useful for responding to the user's latest message, most useful first, or
    none. Each one chosen is counted (`MemoryStore.select`).
-2. **rewrite** (prompts/rewrite_v4.md, one call per chosen memory, in the order chosen, each on its own):
+2. **rewrite** (prompts/rewrite_v4.md; versions 5a and 5b on trial, E36; one call per chosen memory, in the order chosen, each on its own):
    the agent rewrites the memory for the conversation right now.
 
 The **write policy** then decides what is stored:
@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from datetime import date as _date
 
 from memrecon.ingest import MAX_ATTEMPTS, UnusableAnswer, answer_format, extract_block, load_prompt, render_conversation
 from memrecon.llm import ModelCallError, OutputTruncated
@@ -149,6 +150,25 @@ class RecallOutcome:
         return sum((not t.select_ok) + len(t.rewrite_failed) for t in self.turns)
 
 
+def how_long_before(memory_date: str, conversation_date: str) -> str:
+    """How long before the conversation the memory's information came from, in words ("" if unknown)."""
+    try:
+        days = (_date.fromisoformat(conversation_date) - _date.fromisoformat(memory_date)).days
+    except (TypeError, ValueError):
+        return ""
+    if days < 0:
+        return ""
+    return {0: "the same day as this one", 1: "the day before this one"}.get(days, f"{days} days before this one")
+
+
+def memory_slots(text: str, memory_date: str, conversation_date: str) -> dict[str, str]:
+    """What a rewrite prompt may show of one memory. `memory` is the form `present` gives ("(date) text"),
+    used by versions 1 to 4; `memory_text`, `memory_date` and `when` let a prompt show the date on its own
+    line (version 5, E36). A prompt uses the ones it names; the rest are ignored."""
+    return {"memory": f"({memory_date}) {text}" if memory_date else text, "memory_text": text,
+            "memory_date": memory_date or "an unknown date", "when": how_long_before(memory_date, conversation_date) or "date unknown"}
+
+
 def by_date(store: MemoryStore, ids: list[str]) -> list[str]:
     """Newest first (Sam): the date its information came from, then the order it was written, latest first (D54)."""
     order = {mid: n for n, mid in enumerate(store.memories)}
@@ -205,8 +225,10 @@ class Recaller:
             system, template = load_prompt(self.rewrite_prompt)
             for mid in tr.selected:
                 self.store.select(mid, at)
-                one, _ = self.store.present([mid], at)
-                user = template.format(date=session.get("date", ""), conversation=conversation, memory=one.split("] ", 1)[1])
+                self.store.present([mid], at)
+                m = self.store.get(mid)
+                user = template.format(date=session.get("date", ""), conversation=conversation,
+                                       **memory_slots(m.text, m.date, session.get("date", "")))
                 text, error = self._ask(system, user, parse_rewrite_answer, at, "rewrite")
                 if text is None:
                     tr.rewrite_failed.append(mid)
