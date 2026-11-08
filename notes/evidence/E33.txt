@@ -1,35 +1,38 @@
 # Evidence E33
 script:       scripts/explore/E33_ingestion_losses.py
-run at:       2026-11-08T00:59:09-08:00
-memrecon:     b090b87 (scripts clean)
+run at:       2026-11-08T01:08:36-08:00
+memrecon:     0f719ef (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
 development personas: financial_analyst, management_consultant, sales_manager; calls in the replay {'cached': 3687}; wall time 8 s
 
 1. DETAILS FOUND WHEN TOLD BUT LOST BY THE END: what happened in the session they were last lost
-  v1: 56 lost
+  v1: 43 lost
         39  superseded, in a session about another record
-        12  superseded, in a session about its own record
          3  forgotten, in a session about another record
-         2  forgotten, in a session about its own record
-      by the losing session's operation: add 26, update 18, delete 12
-      by kind: item 33, number 10, name 6, title 4, date 3
-  v5: 62 lost
-        47  superseded, in a session about another record
-        15  superseded, in a session about its own record
-      by the losing session's operation: add 28, update 24, delete 10
-      by kind: item 42, number 9, name 5, title 4, date 2
-  2s2: 99 lost
-        83  superseded, in a session about another record
-        16  superseded, in a session about its own record
-      by the losing session's operation: add 65, update 25, delete 9
-      by kind: item 64, name 16, date 8, number 6, title 5
-  2s3: 84 lost
-        65  superseded, in a session about another record
-        19  superseded, in a session about its own record
-      by the losing session's operation: add 46, update 30, delete 8
-      by kind: item 56, name 13, number 5, title 5, date 5
+         1  forgotten, in a session about its own record
+      by the losing session's operation: add 30, update 10, delete 3
+      by kind: item 20, number 10, name 6, date 6, title 1
+      by record type: preferences 19, expenses and steps 14, documents 4, goals 3, to-dos and calendar 3; folded (superseded in another record's session) by record type: preferences 16, expenses and steps 14, documents 4, goals 3, to-dos and calendar 2
+  v5: 50 lost
+        49  superseded, in a session about another record
+         1  superseded, in a session about its own record
+      by the losing session's operation: add 37, update 12, delete 1
+      by kind: item 30, number 9, name 5, date 5, title 1
+      by record type: expenses and steps 16, preferences 15, documents 15, goals 2, to-dos and calendar 2; folded (superseded in another record's session) by record type: expenses and steps 16, preferences 15, documents 15, goals 2, to-dos and calendar 1
+  2s2: 85 lost
+        82  superseded, in a session about another record
+         3  superseded, in a session about its own record
+      by the losing session's operation: add 68, update 13, delete 4
+      by kind: item 48, name 15, date 12, number 7, title 3
+      by record type: documents 62, preferences 16, to-dos and calendar 4, expenses and steps 3; folded (superseded in another record's session) by record type: documents 62, preferences 15, expenses and steps 3, to-dos and calendar 2
+  2s3: 70 lost
+        63  superseded, in a session about another record
+         7  superseded, in a session about its own record
+      by the losing session's operation: add 47, update 18, delete 5
+      by kind: item 40, name 12, date 9, number 6, title 3
+      by record type: documents 42, preferences 22, to-dos and calendar 4, expenses and steps 2; folded (superseded in another record's session) by record type: documents 38, preferences 21, expenses and steps 2, to-dos and calendar 2
 
 2. EXAMPLES OF LOSSES (up to 4 per arm and cause: the detail; the memory that held it; what replaced it)
   v1:
@@ -46,19 +49,6 @@ development personas: financial_analyst, management_consultant, sales_manager; c
       - financial_analyst session 66 [name] Star Trek
           held by: The user likes J.J. Abrams' work, specifically appreciating how he blends action, mystery, and character development, especially in movies like *Supe…
           now:     The user used to really like J.J. Abrams' work, but lately, they have been much more into Rian Johnson's work, appreciating his fresh approach to sto…
-    [superseded, its own record]
-      - financial_analyst session 72 [item] Rian Johnson takes more risks with his narratives
-          held by: The user used to really like J.J. Abrams' work, but lately, they have been much more into Rian Johnson's work, appreciating his fresh approach to sto…
-          now:     The user used to really like Rian Johnson's work, but after "The Last Jedi," they are no longer a fan.
-      - financial_analyst session 98 [item] her roles and delivery to be a bit too similar in every movie
-          held by: The user dislikes movies starring Sandra Bullock because they find her roles and delivery to be too similar in every movie and not very engaging.
-          now:     The user has come to enjoy Sandra Bullock's movies lately, finding her hilarious and charismatic, particularly after watching "The Heat" and "Ocean's…
-      - management_consultant session 150 [item] dramatic change it brings
-          held by: The user likes the monsoon climate, finding the heavy rain refreshing after intense heat, appreciating the dramatic change it brings and the way the …
-          now:     The user no longer likes the monsoon climate, finding the constant dampness and humidity unpleasant, and now prefers a drier heat.
-      - sales_manager session 82 [item] warm, sunny days
-          held by: The user loves Mediterranean climate weather, specifically warm, sunny days and mild evenings, which they find perfect for being outdoors without bei…
-          now:     The user has grown to dislike Mediterranean climates, finding the dry heat and lack of lush greenery too intense. They now prefer more temperate, gre…
     [forgotten, another record]
       - financial_analyst session 146 [name] the French Riviera
           held by: The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
@@ -67,8 +57,6 @@ development personas: financial_analyst, management_consultant, sales_manager; c
       - financial_analyst session 146 [item] coastline
           held by: The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
     [forgotten, its own record]
-      - financial_analyst session 52 [date] August 21st
-          held by: The user has a best friend whose birthday is on August 21st.
       - sales_manager session 106 [date] for the year
           held by: The user has completed planning their vacation time for the year.
   v5:
@@ -86,18 +74,9 @@ development personas: financial_analyst, management_consultant, sales_manager; c
           held by: The user likes J.J. Abrams' work, specifically appreciating how he blends action, mystery, and character development in movies like *Super 8* and *St…
           now:     The user has shifted their preference from J.J. Abrams' work to Rian Johnson's work, appreciating Johnson's fresh approach to storytelling and his wi…
     [superseded, its own record]
-      - financial_analyst session 72 [item] Rian Johnson takes more risks with his narratives
-          held by: The user has shifted their preference from J.J. Abrams' work to Rian Johnson's work, appreciating Johnson's fresh approach to storytelling and his wi…
-          now:     The user no longer enjoys Rian Johnson's work, specifically after watching "The Last Jedi", whereas previously they had shifted their preference to h…
-      - financial_analyst session 98 [item] her roles and delivery to be a bit too similar in every movie
-          held by: The user does not enjoy movies starring Sandra Bullock because they find her roles and delivery to be too similar in every movie and not very engagin…
-          now:     The user now enjoys movies starring Sandra Bullock, specifically finding her performances in "The Heat" and "Ocean's 8" hilarious and charismatic, ha…
-      - management_consultant session 156 [item] learning about new innovations and how they shape our future
-          held by: The user really enjoys reading books about technology, specifically loving to learn about new innovations and how they shape the future.
-          now:     The user no longer enjoys reading books about technology, finding themselves disliking that topic lately.
-      - management_consultant session 150 [item] dramatic change it brings
-          held by: The user likes the monsoon climate, finding the heavy rain refreshing after intense heat, loving the dramatic change it brings and the way the world …
-          now:     The user no longer likes the monsoon climate, finding the constant dampness and humidity unpleasant. They now prefer a drier heat.
+      - sales_manager session 102 [date] for the year
+          held by: The user has completed planning their vacation time for the year.
+          now:     The user still needs to plan their vacation time soon.
   2s2:
     [superseded, another record]
       - financial_analyst session 72 [name] J.J. Abrams
@@ -113,18 +92,15 @@ development personas: financial_analyst, management_consultant, sales_manager; c
           held by: The user loves how J.J. Abrams blends action, mystery, and character development, especially in movies like *Super 8* and *Star Trek*.
           now:     The user used to really like J.J. Abrams' work, but lately finds themselves much more into Rian Johnson's work because his approach to storytelling f…
     [superseded, its own record]
-      - financial_analyst session 72 [item] Rian Johnson takes more risks with his narratives
-          held by: The user finds Rian Johnson's narratives more engaging and thought-provoking because he takes more risks, whereas they now find J.J. Abrams' films a …
-          now:     The user used to really like Rian Johnson's work, but after watching "The Last Jedi," they are no longer a fan.
-      - financial_analyst session 98 [item] her roles and delivery to be a bit too similar in every movie
-          held by: The user prefers to avoid movies starring Sandra Bullock because they find her roles and delivery to be too similar in every movie and not very engag…
-          now:     The user used to not care for Sandra Bullock but has really come to enjoy her movies lately, specifically citing "The Heat" and "Ocean's 8" as the fi…
       - financial_analyst session 100 [item] music from the 1990s
           held by: The user really dislikes music from the 1990s.
           now:     The user has been re-listening to a lot of 90s music lately and is really starting to like it, having previously disliked it.
-      - sales_manager session 82 [item] warm, sunny days
-          held by: The user loves Mediterranean climate weather, specifically warm, sunny days and mild evenings, which they find perfect for being outdoors without bei…
-          now:     The user has grown to dislike Mediterranean climates, finding the dry heat and lack of lush greenery too intense.
+      - sales_manager session 102 [date] for the year
+          held by: The user has completed planning their vacation time for the year and no longer needs to track "Plan vacation time" on their to-do list.
+          now:     The user needs to plan their vacation time soon.
+      - sales_manager session 63 [date] today
+          held by: The user needs to prepare some proposal documents for work today.
+          now:     The user has completed the task "Prepare proposal documents" and it has been removed from their to-do list.
   2s3:
     [superseded, another record]
       - financial_analyst session 72 [name] J.J. Abrams
@@ -143,40 +119,45 @@ development personas: financial_analyst, management_consultant, sales_manager; c
       - financial_analyst session 58 [name] Head of Innovation
           held by: The recipients for the user's email are the Regional Leadership Team and the Head of Innovation.
           now:     The user is working on an email titled 'To provide a preliminary financial analysis of the regional AI pilot program's performance and outline key co…
-      - financial_analyst session 72 [item] Rian Johnson takes more risks with his narratives
-          held by: The user used to really like J.J. Abrams' movies but lately finds themselves much more into Rian Johnson's work because his approach to storytelling …
-          now:     The user used to really like Rian Johnson's work, but after watching "The Last Jedi," they are no longer a fan.
-      - financial_analyst session 72 [item] Abrams' films feel a bit more predictable to me now
-          held by: The user used to really like J.J. Abrams' movies but lately finds themselves much more into Rian Johnson's work because his approach to storytelling …
-          now:     The user used to really like Rian Johnson's work, but after watching "The Last Jedi," they are no longer a fan.
-      - financial_analyst session 98 [item] her roles and delivery to be a bit too similar in every movie
-          held by: The user prefers to avoid movies starring Sandra Bullock because they find her roles and delivery to be too similar in every movie and not very engag…
-          now:     The user used to not care for Sandra Bullock but has really come to enjoy her movies lately, specifically citing "The Heat" and "Ocean's 8" as the fi…
+      - financial_analyst session 100 [item] music from the 1990s
+          held by: The user really dislikes music from the 1990s.
+          now:     The user has been re-listening to a lot of 90s music lately and is really starting to like it, having previously disliked it.
+      - sales_manager session 102 [date] for the year
+          held by: The user completed planning their vacation time for the year and no longer needs to track "Plan vacation time" on their to-do list.
+          now:     The user needs to plan their vacation time soon.
+      - sales_manager session 63 [date] today
+          held by: The user needs to prepare some proposal documents for work today.
+          now:     The user has completed the task "Prepare proposal documents" and asked for it to be removed from their to-do list.
 
 3. NEVER FOUND (not found right after the session it was told in, nor at the end): how near the session's memories came
-  v1: 45; best overlap 0 15, best overlap 0.5-0.8 14, overlap >= 0.8 (short detail, words differ) 12, no memory from its session 2, best overlap < 0.5 2; 
-  v5: 53; best overlap 0.5-0.8 18, no memory from its session 13, overlap >= 0.8 (short detail, words differ) 11, best overlap 0 9, best overlap < 0.5 2; 
-  2s2: 31; best overlap 0.5-0.8 12, overlap >= 0.8 (short detail, words differ) 10, best overlap 0 9; 
-  2s3: 31; overlap >= 0.8 (short detail, words differ) 12, best overlap 0.5-0.8 10, best overlap 0 9; 
+  v1: 46; by record type documents 13, preferences 13, expenses and steps 11, to-dos and calendar 9; best overlap 0 19, overlap >= 0.8 (short detail, words differ) 14, best overlap 0.5-0.8 9, no memory from its session 2, best overlap < 0.5 2; a memory from its session has a calendar date 3, a memory from its session has other numbers 1
+      - financial_analyst [number] $9.89 | memory: The user spent $9.89 on a coffee on 2025-06-05.
+      - financial_analyst [date] this morning | memory: The user spent $9.89 on a coffee on 2025-06-05.
+      - financial_analyst [date] today | memory: The user needs to remember to call their parents on 2025-06-07.
+      - sales_manager [date] today | memory: The user needs to prepare proposal documents for work on 2025-06-02.
+  v5: 57; by record type preferences 21, documents 15, expenses and steps 14, to-dos and calendar 7; no memory from its session 14, overlap >= 0.8 (short detail, words differ) 14, best overlap 0 14, best overlap 0.5-0.8 13, best overlap < 0.5 2; a memory from its session has a calendar date 3, a memory from its session has other numbers 1
+      - financial_analyst [number] $9.89 | memory: The user spent $9.89 on a coffee on 2025-06-05.
+      - financial_analyst [date] this morning | memory: The user spent $9.89 on a coffee on 2025-06-05.
+      - financial_analyst [date] today | memory: The user needs to remember to call their parents today (2025-06-07).
+      - sales_manager [date] today | memory: The user needs to prepare proposal documents for work on 2025-06-02.
+  2s2: 27; by record type preferences 12, documents 6, to-dos and calendar 5, expenses and steps 4; overlap >= 0.8 (short detail, words differ) 14, best overlap 0 8, best overlap 0.5-0.8 5; 
+  2s3: 28; by record type preferences 14, documents 5, to-dos and calendar 5, expenses and steps 4; overlap >= 0.8 (short detail, words differ) 14, best overlap 0 9, best overlap 0.5-0.8 5; 
 
 4. OLD VALUES FOUND AT THE END (held once, updated or removed by the end): the memory that has it
-  v1: 47; says it changed 20, written at or after the change, without saying so 15, written before the change, never superseded 12
-      - [written before the change, never superseded] financial_analyst later today | The user spent $9.50 on a coffee on 2025-06-01.
-      - [written before the change, never superseded] financial_analyst later today | The user spent $10.82 on breakfast on 2025-06-02.
+  v1: 39; says it changed 26, written at or after the change, without saying so 12, written before the change, never superseded 1; by record type preferences 32, documents 5, to-dos and calendar 1, expenses and steps 1
+      - [written before the change, never superseded] sales_manager $9.34 | The user spent $9.34 on coffee on 2025-06-03.
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it absolutely incredible.
       - [written at or after the change, without saying so] financial_analyst temperate climates | The user has changed their preference from temperate climates to cooler, more humid environments, and dislikes Mediterranean climates because they ar…
-  v5: 42; says it changed 19, written at or after the change, without saying so 14, written before the change, never superseded 9
-      - [written before the change, never superseded] financial_analyst later today | The user spent $9.50 on a coffee on 2025-06-01.
-      - [written before the change, never superseded] financial_analyst later today | The user spent $10.82 on breakfast on 2025-06-02.
+  v5: 35; says it changed 24, written at or after the change, without saying so 11; by record type preferences 29, to-dos and calendar 4, documents 1, expenses and steps 1
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it absolutely incredible. They expressed a desire to go back someday.
       - [written at or after the change, without saying so] financial_analyst medium risk | The user is working on a new project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The project aims to significantly enhance lon…
-  2s2: 53; says it changed 29, written before the change, never superseded 14, written at or after the change, without saying so 10
-      - [written before the change, never superseded] financial_analyst later today | The user spent $9.50 on a coffee on the morning of 2025-06-01.
-      - [written before the change, never superseded] financial_analyst later today | The user spent $47.15 on dinner on 2025-06-02.
+  2s2: 40; says it changed 28, written at or after the change, without saying so 9, written before the change, never superseded 3; by record type preferences 30, documents 7, to-dos and calendar 2, expenses and steps 1
+      - [written before the change, never superseded] management_consultant Duke Ellington | The user has a soft spot for the music artist Duke Ellington.
+      - [written before the change, never superseded] management_consultant learning about new innovations and how they shape our future | The user loves learning about new innovations and how they shape the future.
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it to be absolutely incredible.
-      - [written at or after the change, without saying so] financial_analyst soon | The user needs to remember their spouse's birthday on October 7th, which is an important event coming up soon.
-  2s3: 63; says it changed 39, written before the change, never superseded 18, written at or after the change, without saying so 6
-      - [written before the change, never superseded] financial_analyst later today | The user spent $9.50 on a coffee on the morning of 2025-06-01.
-      - [written before the change, never superseded] financial_analyst later today | The user spent $47.15 on dinner on 2025-06-02.
+      - [written at or after the change, without saying so] financial_analyst medium risk | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
+  2s3: 53; says it changed 41, written before the change, never superseded 8, written at or after the change, without saying so 4; by record type preferences 33, documents 17, to-dos and calendar 2, expenses and steps 1
+      - [written before the change, never superseded] financial_analyst $1,700,000 | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
+      - [written before the change, never superseded] financial_analyst 5-7% | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it to be absolutely incredible.
       - [written at or after the change, without saying so] financial_analyst recommendations for scaling the pilot to additional regions… | The user is working on an email titled 'To provide a preliminary financial analysis of the regional AI pilot program's performance and outline key co…
