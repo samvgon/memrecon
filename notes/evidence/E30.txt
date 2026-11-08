@@ -1,0 +1,357 @@
+# Evidence E30
+script:       scripts/explore/E30_probe_extraction_v4.py
+run at:       2026-11-07T23:15:02-08:00
+memrecon:     11c9ca7 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1. RELIABILITY
+  315 sessions, 4 failed, attempts {1: 249, 2: 57, 3: 9}, 390 fresh calls, 2542 s
+    failed: financial_analyst session 38: "line" must be one of the lines to read ([6]); got 4.
+    failed: financial_analyst session 94: "replaces" must be null, or for "updated", "removed", "done" or "no longer" an E label shown (E1, E2, E3, E4, E5); detail 3 has "E1".
+    failed: sales_manager session 109: "line" must be one of the lines to read ([17]); got 13.
+    failed: sales_manager session 119: "line" must be one of the lines to read ([6]); got 4.
+  why answers were sent back: 14 x "replaces" must be null, or for "updated", "removed", "done" or "no longer" an E label sho; 11 x Each "detail" must be copied exactly from its line; 8 x "line" must be one of the lines to read ([6]); 6 x "attached_to" must be the id of another detail, "R", an E label shown (none), "unknown" or; 5 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5,; 3 x "attached_to" must be the id of another detail, "R", an E label shown (E1), "unknown" or n; 3 x "line" must be one of the lines to read ([13]); 3 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2), "unknown" ; 3 x "line" must be one of the lines to read ([5]); 3 x "line" must be one of the lines to read ([17]); 2 x "line" must be one of the lines to read ([11]); 2 x "line" must be one of the lines to read ([19]); 2 x Each detail must have exactly the keys "id", "line", "detail", "qualifier", "field", "who"; 2 x "line" must be one of the lines to read ([12]); 2 x "line" must be one of the lines to read ([14]); 1 x "line" must be one of the lines to read ([18]); 1 x "line" must be one of the lines to read ([15]); 1 x "line" must be one of the lines to read ([20]); 1 x "who" must be "user", "user and others", "", or a name copied exactly from its line; 1 x "line" must be one of the lines to read ([10]); 1 x "$900,000" is already recorded as E30: do not list it as "replaced"; 1 x "$1,100,000" is already recorded as E30: do not list it as "replaced"; 1 x "line" must be one of the lines to read ([16]); 1 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5); 1 x "kind" must be one of number, date, name, title, item, task, preference.
+
+2. ROWS
+  1058 rows from 491 flagged turns (2.15 per turn)
+  kind:   item 392, date 152, name 131, task 130, number 122, preference 103, title 28
+  status: new 926, no longer 61, removed 37, done 24, updated 9, replaced 1
+  who:    (empty) 603, user 425, user and others 19, (a name) 11; names: recipients 4, Sales Rep A 2, Legal & Compliance 1, CFO Office 1, Senior Financial Analyst 1, Financial Analyst Team 1, Sofia Rodriguez 1
+  attached to: R (the thing itself) 724, same session 304, earlier session 15, earlier session, another record 15
+  kinds attached to a detail: date 138, item 110, number 32, preference 25, name 16, task 7, title 6; attached to kinds: item 94, task 93, number 83, name 42, preference 10, title 9, date 3
+  replacing statuses: 131; naming the row replaced: earlier session 97, none 20, earlier session, another record 14; by status (named of all): updated 9 of 9, removed 30 of 37, done 20 of 24, no longer 52 of 61
+  'replaced' rows (an old value not recorded as a row): 1
+  numbers and dates attached to an item or task (details inside a longer item, or a task's deadline): 124; date in task 63, date in item 30, number in item 16, number in task 15
+  who by kind: date: user 77, (empty) 71, (a name) 3, user and others 1; item: (empty) 316, user 71, user and others 5; name: (empty) 129, user 2; number: user 103, (empty) 18, user and others 1; preference: user 77, (empty) 26; task: user 95, (empty) 15, user and others 12, (a name) 8; title: (empty) 28
+  dates with a duration parsed: 35 of 152: 10 days, 12 months, 15-month timeline, 18 months, 3 days, 3-year period, 6 months, 9 months, due in 10 days, for the next 4 weeks, in 2 weeks, in 4 days, over 12 months, over 18 months, over the next 18 months, over the next 18 months, structured into three distinct phases of six months each, over the next two years, six months, three-month, within 12 months
+  bare field names (title, name, date, item, time, preference): preference 18, date 16, item 13
+  with a qualifier: 21: under 10, a bit 3, a bit too intense 2, at least 1, estimated 1, initial implementation in the first 1, improve client satisfaction scores for onboarding by 1, within the initial 1, a little 1
+  numbers: 122, parsed 118; units: $ 78, steps 23, % 7, $ per week 4, None 4, steps per day 2, 7% 2, € 1, new strategic partnerships 1
+  dates: 152, resolved to a day 76; not resolved: 10 days, 12 months, 15-month timeline, 18 months, 3 days, 3-year period, 6 months, 9 months, by the end of next month, by the end of next week, due by the end of next week, every day, for the next 4 weeks, for the year, from that era, in 2 weeks, later, next week, over 12 months, over 18 months, over the next 18 months, over the next 18 months, structured into three distinct phases of six months each, over the next period, over the next two years, per day
+  190 field names; most used: task 71, expense 57, expense item 51, timeframe 32, liked author 27, step count 25, agenda item 23, project objective 23, task deadline 23, liked music 21, email recipient 20, post hashtag 19, preference 18, decision 17, liked travel destination 16
+
+3. AGREEMENT WITH THE LOG (where it can tell; E25)
+  calendar_event add                                      7 of    7 100.0%
+  calendar_event delete                                   1 of    1 100.0%
+  calendar_event update                                   2 of    2 100.0%
+  document: field new value                               4 of    4 100.0%
+  document: field old value                               0 of    4   0.0%
+  document: list item added                              25 of   26  96.2%
+  document: list item removed                            25 of   25 100.0%
+  food_expenses add                                      68 of   68 100.0%
+  goal: amount                                            8 of    8 100.0%
+  preference add: item, as new                           46 of   46 100.0%
+  preference delete: item, as no longer                  16 of   16 100.0%
+  preference update: new item, as new/updated            14 of   14 100.0%
+  preference update: old item, as no longer/replaced     13 of   14  92.9%
+  preference update: same item, now dislike               7 of    7 100.0%
+  preference update: same item, now like                  3 of    4  75.0%
+  step_tracker add                                       21 of   21 100.0%
+  todo_list add                                          36 of   37  97.3%
+  todo_list delete                                       23 of   26  88.5%
+  not matched (up to 4 each):
+    document: field old value: financial_analyst session 89: budget: 1700000
+    document: field old value: management_consultant session 55: budget: 1050000
+    document: field old value: management_consultant session 129: budget: 900000
+    document: field old value: management_consultant session 141: budget: 1100000
+    document: list item added: sales_manager session 43: Identification of top performing accounts and areas requiring focused attention.
+    preference update: old item: financial_analyst session 140: Swiss Alps
+    preference update: same item: management_consultant session 115: Scandinavia -> like
+    todo_list add: financial_analyst session 115: Review audit findings
+    todo_list delete: financial_analyst session 75: Reconcile account balances
+    todo_list delete: management_consultant session 106: Schedule exercise time
+    todo_list delete: management_consultant session 145: Plan conference attendance
+
+4. THE TABLE at the end of each persona's history, and updates the links do not reach
+  financial_analyst: 337 entries; holding at the end 303: true 278, no longer 17, done 6, false 2; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
+  management_consultant: 359 entries; holding at the end 318: true 289, no longer 21, done 8; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
+  sales_manager: 334 entries; holding at the end 290: true 252, no longer 27, done 7, false 4; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
+
+5. HAND-CHECK SAMPLE: E27's sessions with version 4's rows (each flagged line, then its rows)
+   ([id] detail | qualifier | field | who | kind | status | number unit | resolved date | attached to | replaces)
+   (an id from another session is shown as s<session>:<id> with its detail; R is the thing itself)
+- financial_analyst session 6 (activity, add, said on 2025-06-01) [picked for: who: someone else]
+    6. For the meeting notes, the title was "Strategic AI Integration Financial Review - North American Market Expansion."
+        * [1] Strategic AI Integration Financial Review - North American Market Expansion. |  | meeting notes title |  | title | new |  |  | R | 
+    8. The agenda for our meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory compliance, and a review of current AI-driven drug discovery project budgets and spend.
+        * [2] a cost-benefit analysis of proposed AI-powered supply chain optimization tools |  | agenda item |  | item | new |  |  | R | 
+        * [3] a risk assessment of financial implications for AI regulatory compliance |  | agenda item |  | item | new |  |  | R | 
+        * [4] a review of current AI-driven drug discovery project budgets and spend |  | agenda item |  | item | new |  |  | R | 
+    10. We approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months.
+        * [5] approved the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months |  | decision | user and others | task | new |  |  | R | 
+        * [6] within the next three months |  | decision timeframe |  | date | new | 3 month |  | 5 | 
+    12. The action items include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 weeks.
+        * [7] Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month |  | action item | Legal & Compliance | task | new |  |  | R | 
+        * [8] by the end of next month |  | action item deadline |  | date | new |  |  | 7 | 
+        * [9] the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 weeks |  | action item | CFO Office | task | new |  |  | R | 
+        * [10] within the next 2 weeks |  | action item deadline |  | date | new | 2 week |  | 9 | 
+- management_consultant session 61 (activity, add, said on 2025-06-03) [picked for: who: someone else]
+    6. The meeting was about "Fintech Core System Integration - Phase 1 Review & Next Steps."
+        * [1] Fintech Core System Integration - Phase 1 Review & Next Steps |  | meeting notes title |  | title | new |  |  | R | 
+    8. The agenda included a discussion of identified technical roadblocks and mitigation strategies, planning for Phase 2 rollout of account management and fraud detection modules, and analysis of initial pilot user feedback and performance metrics.
+        * [2] discussion of identified technical roadblocks and mitigation strategies |  | agenda item |  | item | new |  |  | R | 
+        * [3] planning for Phase 2 rollout of account management and fraud detection modules |  | agenda item |  | item | new |  |  | R | 
+        * [4] analysis of initial pilot user feedback and performance metrics |  | agenda item |  | item | new |  |  | R | 
+    10. We decided to schedule a dedicated technical deep-dive session on the data migration strategy for the upcoming period and approved the proposed change request for integrating the new KYC vendor's enhanced identity verification service.
+        * [5] schedule a dedicated technical deep-dive session on the data migration strategy for the upcoming period |  | decision | user and others | task | new |  |  | R | 
+        * [6] upcoming period |  | decision timeframe |  | date | new |  |  | 5 | 
+        * [7] approved the proposed change request for integrating the new KYC vendor's enhanced identity verification service |  | decision | user and others | task | new |  |  | R | 
+    12. Sofia Rodriguez needs to consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting. I also need to prepare a comparative analysis of potential fraud detection systems for review in 2 weeks.
+        * [8] Sofia Rodriguez needs to consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting |  | action item | Sofia Rodriguez | task | new |  |  | R | 
+        * [9] the next meeting |  | action item deadline |  | date | new |  |  | 8 | 
+        * [10] prepare a comparative analysis of potential fraud detection systems for review in 2 weeks |  | action item | user | task | new |  |  | R | 
+        * [11] in 2 weeks |  | action item deadline |  | date | new | 2 week |  | 10 | 
+- sales_manager session 4 (activity, add, said on 2025-06-01) [picked for: who: someone else]
+    7. The meeting was titled "Strategic Account Review: Global Compliance Solutions for Key Manufacturing Client."
+        * [1] Strategic Account Review: Global Compliance Solutions for Key Manufacturing Client. |  | meeting notes title |  | title | new |  |  | R | 
+    9. The agenda items included identifying potential risks and mitigation strategies for upcoming contract renewals, and addressing recent regulatory changes impacting the manufacturing sector.
+        * [2] identifying potential risks and mitigation strategies for upcoming contract renewals |  | agenda item |  | item | new |  |  | R | 
+        * [3] addressing recent regulatory changes impacting the manufacturing sector |  | agenda item |  | item | new |  |  | R | 
+    11. We decided to initiate discussions with legal and product teams regarding proactive solutions for anticipated regulatory shifts.
+        * [4] initiate discussions with legal and product teams regarding proactive solutions for anticipated regulatory shifts |  | decision | user and others | task | new |  |  | R | 
+    13. Sales Rep A needs to schedule a technical deep-dive with the client's compliance team within seven days, and I will review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days.
+        * [5] Sales Rep A needs to schedule a technical deep-dive with the client's compliance team within seven days |  | action item | Sales Rep A | task | new |  |  | R | 
+        * [6] within seven days |  | action item deadline | Sales Rep A | date | new | 7 day |  | 5 | 
+        * [7] I will review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days |  | action item | user | task | new |  |  | R | 
+        * [8] within five days |  | action item deadline | user | date | new | 5 day |  | 7 | 
+- management_consultant session 129 (activity, update, said on 2025-06-06) [picked for: status updated]
+    5. Yes, please update the budget from $900,000 to $1,100,000.
+        * [1] $1,100,000 |  | project budget | user | number | updated | 1.1e+06 $ |  | R | s55:2 ($900,000)
+- management_consultant session 55 (activity, update, said on 2025-06-03) [picked for: status updated]
+    5. Please update the success metrics to include 'Client Net Promoter Score (NPS) for onboarding experience'.
+        * [1] Client Net Promoter Score (NPS) for onboarding experience |  | success measure |  | item | new |  |  | R | 
+    7. Yes, please update the budget for this proposal from $1,050,000 to $900,000.
+        * [2] $900,000 |  | project budget | user | number | updated | 900,000 $ |  | R | s38:3 ($1,050,000)
+- financial_analyst session 89 (activity, update, said on 2025-06-04) [picked for: status updated]
+    5. Yes, the budget should be updated from $1,700,000 to $1,550,000.
+        * [1] $1,550,000 |  | project budget | user | number | updated | 1.55e+06 $ |  | R | s56:2 ($1,700,000)
+    7. Yes, please add 'Data Science Lead' to the stakeholders.
+        * [2] Data Science Lead |  | key stakeholder |  | name | new |  |  | R | 
+    9. Please add 'Final project report including impact analysis and recommendations for future enhancements' to the deliverables.
+        * [3] Final project report including impact analysis and recommendations for future enhancements |  | key deliverable |  | item | new |  |  | R | 
+- financial_analyst session 127 (activity, add, said on 2025-06-06) [picked for: qualifier on the hedge list (graded)]
+    6. It's for LinkedIn.
+        * [1] LinkedIn |  | social media platform |  | name | new |  |  | R | 
+    8. This will be an Insight Post.
+        * [2] Insight Post |  | content type |  | name | new |  |  | R | 
+    10. The main message is about exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance.
+        * [3] exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance |  | main message |  | item | new |  |  | R | 
+    12. Let's use #SupplyChainOptimization, #AIManufacturing, #FinancialAnalysis, #FinancialPlanning, and #EuropeanMarket.
+        * [4] #SupplyChainOptimization |  | post hashtag |  | item | new |  |  | R | 
+        * [5] #AIManufacturing |  | post hashtag |  | item | new |  |  | R | 
+        * [6] #FinancialAnalysis |  | post hashtag |  | item | new |  |  | R | 
+        * [7] #FinancialPlanning |  | post hashtag |  | item | new |  |  | R | 
+        * [8] #EuropeanMarket |  | post hashtag |  | item | new |  |  | R | 
+- financial_analyst session 56 (activity, add, said on 2025-06-03) [picked for: qualifier on the hedge list (graded)]
+    6. The title is "AI-Driven Credit Risk Scoring Model Enhancement."
+        * [1] AI-Driven Credit Risk Scoring Model Enhancement. |  | project proposal title |  | title | new |  |  | R | 
+    8. We're proposing an initiative to significantly enhance our long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accuracy and reduced default rates in our fintech lending products.
+    10. The proposed budget for this project is $1,700,000.
+        * [2] $1,700,000 |  | project budget | user and others | number | new | 1.7e+06 $ |  | R | 
+    12. We're looking at a 15-month timeline, structured into three distinct phases over the next period.
+        * [3] 15-month timeline |  | project timeline | user and others | date | new | 15 month |  | R | 
+    14. The project will be led by Dr. Anya Sharma, our Senior Financial Analyst.
+        * [4] Dr. Anya Sharma |  | project lead |  | name | new |  |  | R | 
+    16. Our key stakeholders include the Head of Lending Operations, Head of Product Development, and the Chief Risk Officer (CRO).
+        * [5] Head of Lending Operations |  | key stakeholder |  | item | new |  |  | R | 
+        * [6] Head of Product Development |  | key stakeholder |  | item | new |  |  | R | 
+        * [7] Chief Risk Officer (CRO) |  | key stakeholder |  | item | new |  |  | R | 
+    18. Our main objectives are to increase credit risk model predictive accuracy by at least 15% within the next 12 months, and reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.
+        * [8] increase credit risk model predictive accuracy by at least 15% within the next 12 months |  | project objective | user and others | task | new |  |  | R | 
+        * [9] at least 15% | at least | project objective accuracy |  | number | new | 15 % |  | 8 | 
+        * [10] within the next 12 months |  | project objective timeframe |  | date | new | 12 month |  | 8 | 
+        * [11] reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment |  | project objective | user and others | task | new |  |  | R | 
+        * [12] 5-7% |  | project objective NPL rate reduction |  | number | new | 5 7% |  | 11 | 
+        * [13] over the next two years |  | project objective timeframe |  | date | new | 2 year |  | 11 | 
+    20. The key deliverables will be a developed and validated AI-driven credit risk scoring model prototype within nine months, a detailed performance monitoring dashboard with automated alert system for model drift, and a full model integration plan and API documentation for existing lending platforms.
+        * [14] developed and validated AI-driven credit risk scoring model prototype within nine months |  | key deliverable | user and others | item | new |  |  | R | 
+        * [15] within nine months |  | key deliverable timeframe |  | date | new | 9 month |  | 14 | 
+        * [16] detailed performance monitoring dashboard with automated alert system for model drift |  | key deliverable | user and others | item | new |  |  | R | 
+        * [17] full model integration plan and API documentation for existing lending platforms |  | key deliverable | user and others | item | new |  |  | R | 
+    22. For risk analysis, we're looking at the availability of specialized AI/ML engineering talent for implementation, which is a medium risk, and model explainability and interpretability for regulatory scrutiny, also a medium risk.
+        * [18] availability of specialized AI/ML engineering talent for implementation |  | risk analysis | user and others | item | new |  |  | R | 
+        * [19] medium risk |  | risk level |  | number | new |  |  | 18 | 
+        * [20] model explainability and interpretability for regulatory scrutiny |  | risk analysis | user and others | item | new |  |  | R | 
+        * [21] medium risk |  | risk level |  | number | new |  |  | 20 | 
+- management_consultant session 103 (activity, add, said on 2025-06-05) [picked for: date not resolved]
+    17. I should also try to schedule some exercise time this week.
+        * [1] schedule some exercise time |  | task | user | task | new |  |  | R | 
+        * [2] this week |  | task deadline | user | date | new |  |  | 1 | 
+- financial_analyst session 27 (activity, add, said on 2025-06-02) [picked for: date not resolved]
+    7. The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase.
+        * [1] provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase |  | email purpose |  | item | new |  |  | R | 
+    9. The recipients for this email are the Regional Leadership Team and the Head of Innovation.
+        * [2] Regional Leadership Team |  | email recipient |  | name | new |  |  | R | 
+        * [3] Head of Innovation |  | email recipient |  | name | new |  |  | R | 
+    11. For key points, I want to include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts.
+        * [4] include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts |  | key points |  | item | new |  |  | R | 
+    13. I'd like the recipients to review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week.
+        * [5] review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week |  | action item | recipients | task | new |  |  | R | 
+        * [6] review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week |  | action item deadline | recipients | date | new |  |  | 5 | 
+        * [7] next week |  | action item deadline | recipients | date | new |  |  | 5 | 
+- financial_analyst session 45 (activity, delete, said on 2025-06-03) [picked for: status done]
+    8. I finished reviewing the audit findings.
+        * [1] reviewing the audit findings |  | task | user | task | done |  |  | R | s18:1 (review some audit findings)
+- management_consultant session 9 (preference, add, said on 2025-06-01) [picked for: status done]
+    16. That reminds me, I recently rewatched "The Apartment" and I really love that movie.
+        * [1] The Apartment |  | liked movie |  | name | new |  |  | R | 
+        * [2] really love |  | liked movie | user | preference | new |  |  | 1 | 
+    18. I just adore the witty dialogue and the charming performances by Jack Lemmon and Shirley MacLaine! It's such a heartwarming story.
+        * [3] adore |  | liked movie | user | preference | new |  |  | R | 
+        * [4] witty dialogue |  | liked movie feature |  | item | new |  |  | R | 
+        * [5] charming performances |  | liked movie feature |  | item | new |  |  | R | 
+        * [6] Jack Lemmon |  | liked movie feature |  | name | new |  |  | 5 | 
+        * [7] Shirley MacLaine |  | liked movie feature |  | name | new |  |  | 5 | 
+        * [8] heartwarming story |  | liked movie feature |  | item | new |  |  | R | 
+- financial_analyst session 154 (activity, delete, said on 2025-06-07) [picked for: status done]
+    13. I'm glad I finished reading financial news.
+        * [1] finished reading financial news |  | task | user | task | done |  |  | R | s148:1 (read financial news)
+- financial_analyst session 32 (activity, update, said on 2025-06-02) [picked for: status added]
+    5. Please update the objectives to include: 'Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months.'
+        * [1] Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months |  | project objective |  | task | new |  |  | R | 
+        * [2] 10% |  | project objective |  | number | new | 10 % |  | 1 | 
+        * [3] over 18 months |  | project objective |  | date | new | 18 month |  | 1 | 
+- sales_manager session 63 (activity, delete, said on 2025-06-03) [picked for: status removed]
+    12. I've actually completed "Prepare proposal documents," so you can remove that from my to-do list.
+        * [1] Prepare proposal documents |  | task | user | task | done |  |  | s53:1 (prepare some proposal documents) | 
+        * [2] remove that from my to-do list |  | task | user | task | removed |  |  | s53:1 (prepare some proposal documents) | 
+- management_consultant session 91 (activity, delete, said on 2025-06-04) [picked for: status removed]
+    5. Please remove "Highlighted potential cost savings through proactive threat mitigation over the next period." from the key points.
+        * [1] Highlighted potential cost savings through proactive threat mitigation over the next period |  | key point |  | item | removed |  |  | R | s82:1 (Highlighted potential cost savings through proactive threat mitigation over the next period)
+        * [2] over the next period |  | key point timeframe |  | date | removed |  |  | 1 | s82:2 (over the next period)
+    7. Yes, please remove 'Head of Regional Manufacturing' from the recipient list.
+        * [3] Head of Regional Manufacturing |  | email recipient |  | name | removed |  |  | R | s43:2 (Head of Regional Manufacturing)
+- financial_analyst session 43 (activity, delete, said on 2025-06-02) [picked for: status removed]
+    5. Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold." from the key decisions.
+        * [1] Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold. |  | decision |  | task | removed |  |  | R | s11:5 (mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold)
+- sales_manager session 74 (preference, delete, said on 2025-06-03) [picked for: status no longer]
+    13. Speaking of changes, I used to really like the idea of traveling to South America, but I'm actually not that keen on it anymore. I've just grown more interested in other places.
+        * [1] South America |  | liked travel destination |  | name | no longer |  |  | R | s54:1 (South America)
+    15. I've actually become really fascinated with East Asian cultures lately, like Japan and South Korea, so my travel preferences have shifted there.
+        * [2] East Asian cultures |  | liked travel destination |  | name | new |  |  | R | 
+        * [3] Japan |  | liked travel destination |  | name | new |  |  | 2 | 
+        * [4] South Korea |  | liked travel destination |  | name | new |  |  | 2 | 
+- sales_manager session 59 (preference, update, said on 2025-06-03) [picked for: status no longer]
+    14. Speaking of differences, I used to really like Guns N' Roses, but honestly, I'm just not into their music anymore. My taste has definitely shifted.
+        * [1] Guns N' Roses |  | liked band |  | name | no longer |  |  | R | s36:2 (Guns N' Roses)
+        * [2] not into their music anymore |  | liked band | user | preference | no longer |  |  | 1 | 
+- financial_analyst session 47 (preference, update, said on 2025-06-03) [picked for: status no longer]
+    12. Speaking of fascinating topics, I used to really like Ta-Nehisi Coates, but lately, I've been much more into Michio Kaku's books. His way of making complex science understandable is just incredible!
+        * [1] Ta-Nehisi Coates |  | liked author |  | name | no longer |  |  | R | s42:1 (Ta-Nehisi Coates)
+        * [2] Michio Kaku's books |  | liked author |  | item | new |  |  | R | 
+        * [3] Michio Kaku |  | liked author |  | name | new |  |  | 2 | 
+- management_consultant session 78 (activity, add, said on 2025-06-04) [picked for: date resolved to a day]
+    13. It's also interesting how traditions can intersect with daily life, like how I just spent $8.39 on coffee this morning.
+        * [1] $8.39 |  | expense | user | number | new | 8.39 $ |  | R | 
+        * [2] coffee |  | item |  | item | new |  |  | 1 | 
+        * [3] this morning |  | timeframe |  | date | new |  | 2025-06-04 | 1 | 
+- management_consultant session 6 (activity, add, said on 2025-06-01) [picked for: date resolved to a day]
+    18. It really is; speaking of daily things, I just spent $5.65 on breakfast this morning.
+        * [1] $5.65 |  | expense | user | number | new | 5.65 $ |  | R | 
+        * [2] breakfast |  | expense item | user | item | new |  |  | 1 | 
+        * [3] this morning |  | timeframe | user | date | new |  | 2025-06-01 | 1 | 
+- sales_manager session 10 (activity, add, said on 2025-06-01) [picked for: date resolved to a day]
+    14. That's really cool! Speaking of security, I have a colleague's birthday on July 29th that I need to remember.
+        * [1] colleague's birthday |  | event |  | item | new |  |  | R | 
+        * [2] July 29th |  | event date |  | date | new |  | 2025-07-29 | 1 | 
+- financial_analyst session 96 (preference, add, said on 2025-06-05) [picked for: kind preference]
+    10. That reminds me, I really dislike music from the 1990s. I just can't get into it.
+        * [1] music from the 1990s |  | disliked music |  | item | new |  |  | R | 
+        * [2] dislike |  | disliked music | user | preference | new |  |  | R | 
+- sales_manager session 25 (activity, delete, said on 2025-06-01) [picked for: document delete]
+    5. Please remove "Discuss roadmap for next phase of solution deployment" from the agenda items.
+        * [1] Discuss roadmap for next phase of solution deployment |  | agenda item |  | item | removed |  |  | R | s3:5 (presenting the roadmap for the next phase of solution deployment)
+    7. Yes, please remove 'David Chen (Product Lead)' from the attendees.
+        * [2] David Chen (Product Lead) |  | attendee |  | name | removed |  |  | R | s3:10 (David Chen)
+- financial_analyst session 140 (preference, update, said on 2025-06-06) [picked for: preference update, item switched]
+    12. Speaking of meaningful results, I used to love the Swiss Alps, but lately I'm really drawn to the French Riviera for travel. The sunshine and coastline are just calling my name!
+        * [1] the French Riviera |  | liked travel destination |  | name | new |  |  | R | 
+        * [2] travel |  | liked travel destination |  | item | new |  |  | 1 | 
+        * [3] sunshine |  | liked travel element |  | item | new |  |  | R | 
+        * [4] coastline |  | liked travel element |  | item | new |  |  | R | 
+- sales_manager session 36 (preference, update, said on 2025-06-02) [picked for: preference update, item switched]
+    13. Speaking of things changing, my music tastes have definitely evolved; I used to be all about Queen, but now I'm really into Guns N' Roses!
+        * [1] Queen |  | liked band |  | name | no longer |  |  | s11:1 (Queen) | s11:1 (Queen)
+        * [2] Guns N' Roses |  | liked band |  | name | new |  |  | R | 
+    15. I guess I just prefer their raw energy and harder rock sound now! Queen is still great, but Axl Rose's vocals are just so powerful.
+        * [3] raw energy and harder rock sound |  | liked music style | user | item | new |  |  | 2 | 
+        * [4] Axl Rose's vocals |  | liked vocals |  | item | new |  |  | 2 | 
+- management_consultant session 156 (preference, update, said on 2025-06-07) [picked for: preference update, like/dislike flipped]
+    11. Speaking of complex interplay, I used to enjoy reading books about technology, but lately, I find myself disliking that topic.
+        * [1] reading books about technology |  | liked topic |  | item | no longer |  |  | R | s98:2 (reading books about technology)
+        * [2] disliking that topic |  | preference | user | preference | new |  |  | R | 
+- management_consultant session 115 (preference, update, said on 2025-06-05) [picked for: preference update, like/dislike flipped]
+    12. Speaking of fascinating things, I actually used to dislike the idea of traveling to Scandinavia, but lately, I've really warmed up to it. I'd love to visit there now!
+        * [1] Scandinavia |  | disliked travel destination |  | name | no longer |  |  | R | s88:1 (Scandinavia)
+        * [2] visit there |  | travel destination | user | task | new |  |  | R | 
+    14. Honestly, the stunning fjords and the Northern Lights just look so magical in photos; I can't resist them anymore!
+        * [3] stunning fjords |  | liked feature of travel destination |  | item | new |  |  | R | 
+        * [4] Northern Lights |  | liked feature of travel destination |  | item | new |  |  | R | 
+- financial_analyst session 48 (activity, add, said on 2025-06-03) [picked for: flagged line with no rows]
+    19. It's really cool. I even managed to hit 10,151 steps today, which is quite a milestone for me.
+        * [1] 10,151 steps |  | step count | user | number | new | 10,151 steps |  | R | 
+        * [2] today |  | step count date | user | date | new |  | 2025-06-03 | 1 | 
+- management_consultant session 38 (activity, add, said on 2025-06-02) [picked for: flagged line with no rows]
+    6. The title for this project proposal is "FinTech Digital Onboarding Optimization & Compliance Framework."
+        * [1] FinTech Digital Onboarding Optimization & Compliance Framework |  | project proposal title |  | title | new |  |  | R | 
+    8. This project is a comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution.
+        * [2] comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution |  | project description |  | item | new |  |  | R | 
+    10. The estimated budget for this project is $1,050,000.
+        * [3] $1,050,000 | estimated | project budget |  | number | new | 1.05e+06 $ |  | R | 
+    12. The timeline for this project is over 12 months, with initial implementation in the first 6 months and continuous refinement thereafter.
+        * [4] over 12 months |  | project timeline |  | date | new | 12 month |  | R | 
+        * [5] initial implementation in the first 6 months and continuous refinement thereafter |  | project timeline |  | item | new |  |  | R | 
+        * [6] 6 months | initial implementation in the first | project timeline |  | date | new | 6 month |  | 5 | 
+    14. Dr. Anya Sharma, a Senior Management Consultant, will be leading this project.
+        * [7] Dr. Anya Sharma |  | project lead |  | name | new |  |  | R | 
+        * [8] Senior Management Consultant |  | project lead title |  | title | new |  |  | 7 | 
+    16. The key stakeholders include the Chief Compliance Officer, the Head of Digital Transformation, and Client Executive Leadership.
+        * [9] Chief Compliance Officer |  | key stakeholder |  | name | new |  |  | R | 
+        * [10] Head of Digital Transformation |  | key stakeholder |  | name | new |  |  | R | 
+        * [11] Client Executive Leadership |  | key stakeholder |  | name | new |  |  | R | 
+    18. The main objectives are to ensure full adherence to all relevant regional financial regulations for digital client acquisition and to improve client satisfaction scores for onboarding by 25% within the initial 9 months.
+        * [12] ensure full adherence to all relevant regional financial regulations for digital client acquisition |  | project objective |  | task | new |  |  | R | 
+        * [13] improve client satisfaction scores for onboarding by 25% within the initial 9 months |  | project objective |  | task | new |  |  | R | 
+        * [14] 25% | improve client satisfaction scores for onboarding by | project objective |  | number | new | 25 % |  | 13 | 
+        * [15] within the initial 9 months |  | project objective |  | date | new | 9 month |  | 13 | 
+        * [16] 9 months | within the initial | project objective |  | date | new | 9 month |  | 13 | 
+    20. The deliverables include a Regional Regulatory Compliance Matrix & Gap Analysis, Training Materials for Operations and Compliance Teams, Performance Monitoring Dashboard Design, and Target State Process Maps for Digital Onboarding with a UX/UI focus.
+        * [17] Regional Regulatory Compliance Matrix & Gap Analysis |  | project deliverable |  | item | new |  |  | R | 
+        * [18] Training Materials for Operations and Compliance Teams |  | project deliverable |  | item | new |  |  | R | 
+        * [19] Performance Monitoring Dashboard Design |  | project deliverable |  | item | new |  |  | R | 
+        * [20] Target State Process Maps for Digital Onboarding with a UX/UI focus |  | project deliverable |  | item | new |  |  | R | 
+    22. Success will be measured by employee satisfaction with new onboarding tools, estimated cost savings from process automation, and the average onboarding completion time in minutes.
+        * [21] employee satisfaction with new onboarding tools |  | success measure |  | item | new |  |  | R | 
+        * [22] estimated cost savings from process automation |  | success measure |  | item | new |  |  | R | 
+        * [23] average onboarding completion time in minutes |  | success measure |  | item | new |  |  | R | 
+    24. The risk assessment is medium-high, with key risks being integration with legacy systems, evolving regulations, and user adoption challenges. Mitigation includes a phased approach and robust change management.
+        * [24] medium-high |  | risk assessment |  | number | new |  |  | R | 
+        * [25] integration with legacy systems |  | key risk |  | item | new |  |  | R | 
+        * [26] evolving regulations |  | key risk |  | item | new |  |  | R | 
+        * [27] user adoption challenges |  | key risk |  | item | new |  |  | R | 
+        * [28] phased approach |  | mitigation |  | item | new |  |  | R | 
+        * [29] robust change management |  | mitigation |  | item | new |  |  | R | 
+- sales_manager session 93 (activity, delete, said on 2025-06-04) [picked for: random]
+    5. Please remove 'Legal and Compliance Department' from the stakeholders.
+        * [1] Legal and Compliance Department |  | stakeholder | user | name | removed |  |  | R | s31:11 (Legal and Compliance Department)
+- management_consultant session 65 (activity, add, said on 2025-06-03) [picked for: random]
+    12. I definitely feel more fulfilled when I'm active; I walked 5,326 steps today.
+        * [1] 5,326 steps |  | step count | user | number | new | 5,326 steps |  | R | 
+        * [2] today |  | date | user | date | new |  | 2025-06-03 | 1 | 
+- financial_analyst session 122 (activity, add, said on 2025-06-06) [picked for: random]
+    10. Speaking of balance, I just spent $41.42 on dinner, so I'm trying to balance my budget too.
+        * [1] $41.42 |  | expense | user | number | new | 41.42 $ |  | R | 
+        * [2] dinner |  | expense item | user | item | new |  |  | 1 | 
+- management_consultant session 137 (activity, add, said on 2025-06-06) [picked for: random]
+    13. I need to review the project budget later today.
+        * [1] review the project budget |  | task | user | task | new |  |  | R | 
+        * [2] later today |  | task deadline |  | date | new |  | 2025-06-06 | 1 | 
+- management_consultant session 45 (activity, delete, said on 2025-06-03) [picked for: random]
+    10. I actually managed to schedule some exercise time earlier.
+        * [1] schedule some exercise time |  | task | user | task | done |  |  | s26:2 (schedule my exercise time for the week) | s26:2 (schedule my exercise time for the week)
+- sales_manager session 138 (activity, delete, said on 2025-06-06) [picked for: random]
+    12. I'm actually done with "Review competitor analysis" from my work tasks.
+        * [1] Review competitor analysis |  | task | user | task | done |  |  | R | s112:1 (review the competitor analysis)
+
+written: results/probes/E30_handcheck.json
