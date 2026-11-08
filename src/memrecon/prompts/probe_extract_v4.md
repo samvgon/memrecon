@@ -7,7 +7,9 @@ one ("name" is a proper name only, "date" covers deadlines, durations and timefr
 own title, "number" includes a level such as "medium"); the numbers, amounts, dates and timeframes inside a
 longer item are also listed as details of their own, attached to it, and separate things joined by "and"
 are listed separately; "replaced" is only for an old value not shown as an E row (code checks); "added" is
-dropped ("new"); a preference's field names what the preference is about. Harness side, run by the judge
+dropped ("new"); a preference's field names what the preference is about. Edited once after an 8-session
+pilot (not evidence; E30 not yet run): "who" goes on the action, not on its deadline, and the whole item
+is listed with its deadline or timeframe for every kind of item. Harness side, run by the judge
 model; never shown to the agent. Every detail, qualifier and named who is copied exactly from its line
 (code checks). Never edit a version that has been used in a run: copy it to v5.
 -->
@@ -30,7 +32,7 @@ For each line to read, list every detail the user states in it. A detail is one 
 - one item of a list (one agenda item, one objective, one recipient, one hashtag), whole;
 - a thing the user likes, dislikes, wants or needs to do.
 
-When a longer item has its own number, amount, percentage, date, deadline or timeframe inside it, list the whole item, and also list each of those as a detail of its own, attached to the item ("increase accuracy by at least 15% within the next 12 months": the whole objective; "15%" with qualifier "at least"; "within the next 12 months"). When a line joins separate things with "and", list each one as its own detail.
+When a longer item has its own number, amount, percentage, date, deadline or timeframe inside it, list the whole item, with them, as written, and also list each of those as a detail of its own, attached to the item. This holds for every kind of item: an action item with its deadline, an objective with its target and timeframe ("increase accuracy by at least 15% within the next 12 months": the whole objective; "15%" with qualifier "at least"; "within the next 12 months"). When a line joins separate things with "and", list each one as its own detail.
 
 Copy each detail exactly as it is written in its line, word for word, so that it can be found in that line. Do not reword, shorten inside, or combine details from different lines. Ignore small talk and anything only the assistant said. Do not list again a detail that is already recorded (an E row) unless the line changes it.
 
@@ -47,7 +49,7 @@ Say what each detail belongs to in "attached_to":
 - "unknown", when it clearly belongs to something the line does not identify;
 - null, when it stands on its own.
 
-Give "who" for whoever did, decided or is to do the thing the detail is about: an action, a decision, an assignment, or something the user did ("I spent $41.42 on dinner", "I walked 5,326 steps": "user"). Write "user"; "user and others" (for "we"); or the person, team or organisation named in the line, copied exactly ("Legal & Compliance"). Asking the assistant to add, update or remove something in a document or list does not make the user the "who" of what is in it: for the contents of a document, list or record (a budget, a stakeholder, an attendee, an agenda item, a project lead) and for a liked thing, leave "who" empty.
+Give "who" for whoever did, decided or is to do the thing the detail is about: an action, a decision, an assignment, or something the user did ("I spent $41.42 on dinner", "I walked 5,326 steps": "user"). Write "user"; "user and others" (for "we"); or the person, team or organisation named in the line, copied exactly ("Legal & Compliance"). Give it on the action itself, not on the details attached to it (its deadline, timeframe or amount). Asking the assistant to add, update or remove something in a document or list does not make the user the "who" of what is in it: for the contents of a document, list or record (a budget, a stakeholder, an attendee, an agenda item, a project lead) and for a liked thing, leave "who" empty.
 
 Give each detail a status. A status says what the user's statement does when it is made, and never changes later: when a value is later updated, its row keeps the status it had, and the change is a new row.
 - "new": the user tells it for the first time, including something added to a thing told before ("add 'X' to the agenda");
