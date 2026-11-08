@@ -61,7 +61,8 @@ SESSION = {"session_id": 5, "date": "2025-06-05", "conversation": [
 
 def test_prompts_load_and_never_mention_policies_or_flags():
     for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}"), ("rewrite_v3", "{memory}"), ("rewrite_v4", "{memory}"),
-                       ("rewrite_v5a", "{memory_text}"), ("rewrite_v5b", "{memory_text}")):
+                       ("rewrite_v5a", "{memory_text}"), ("rewrite_v5b", "{memory_text}"),
+                       ("rewrite_v5c", "{memory_text}")):
         system, user = load_prompt(name)
         text = system + user
         assert "{conversation}" in user and slot in user and "share_memory" not in text
@@ -169,6 +170,9 @@ def test_memory_slots_and_the_date_line():
     slots = memory_slots("Spent $5.", "2025-06-01", "2025-06-05")
     assert slots["memory"] == "(2025-06-01) Spent $5." and slots["when"] == "4 days before this one"
     assert memory_slots("Spent $5.", "", "2025-06-05")["memory"] == "Spent $5."
+    assert slots["gap"] == "4 days before the conversation date"
+    assert memory_slots("x", "2025-06-04", "2025-06-05")["gap"] == "1 day before the conversation date"
+    assert memory_slots("x", "2025-06-05", "2025-06-05")["gap"] == "the same date as the conversation"
     store = store_with(BUDGET, STEPS)
     client = ScriptedClient(useful(1), memory("x"))
     Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", rewrite_prompt="rewrite_v5b").recall_session(SESSION)
@@ -182,3 +186,11 @@ def test_call_settings_reach_the_client():
     client = ScriptedClient(useful())
     Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", call_settings={"seed": 1}).recall_session(SESSION)
     assert client.calls[0]["seed"] == 1
+
+
+def test_rewrite_v5c_shows_the_date_without_the_word_conversation_in_the_memory_line():
+    store = store_with(BUDGET, STEPS)
+    client = ScriptedClient(useful(1), memory("x"))
+    Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", rewrite_prompt="rewrite_v5c").recall_session(SESSION)
+    rew = client.calls[1]["messages"][1]["content"]
+    assert "Memory, dated 2025-06-01 (4 days before the conversation date):\nThe project budget is $1,700,000." in rew

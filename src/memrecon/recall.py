@@ -161,12 +161,24 @@ def how_long_before(memory_date: str, conversation_date: str) -> str:
     return {0: "the same day as this one", 1: "the day before this one"}.get(days, f"{days} days before this one")
 
 
+def gap_to_conversation(memory_date: str, conversation_date: str) -> str:
+    """The same as `how_long_before`, worded against the conversation date and not "this one" ("" if unknown)."""
+    words = how_long_before(memory_date, conversation_date)
+    if not words:
+        return ""
+    if words.startswith("the same day"):
+        return "the same date as the conversation"
+    return words.replace("the day before this one", "1 day before the conversation date").replace("before this one", "before the conversation date")
+
+
 def memory_slots(text: str, memory_date: str, conversation_date: str) -> dict[str, str]:
     """What a rewrite prompt may show of one memory. `memory` is the form `present` gives ("(date) text"),
-    used by versions 1 to 4; `memory_text`, `memory_date` and `when` let a prompt show the date on its own
-    line (version 5, E36). A prompt uses the ones it names; the rest are ignored."""
+    used by versions 1 to 4; `memory_text`, `memory_date`, `when` ("2 days before this one") and `gap`
+    ("2 days before the conversation date") let a prompt show the date on its own line (versions 5a-5c,
+    E36). A prompt uses the ones it names; the rest are ignored."""
     return {"memory": f"({memory_date}) {text}" if memory_date else text, "memory_text": text,
-            "memory_date": memory_date or "an unknown date", "when": how_long_before(memory_date, conversation_date) or "date unknown"}
+            "memory_date": memory_date or "an unknown date", "when": how_long_before(memory_date, conversation_date) or "date unknown",
+            "gap": gap_to_conversation(memory_date, conversation_date) or "date unknown"}
 
 
 def by_date(store: MemoryStore, ids: list[str]) -> list[str]:

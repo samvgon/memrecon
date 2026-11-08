@@ -86,13 +86,13 @@ Add to this file whenever a new term, table or column appears.
 
 | Term | Meaning here |
 |---|---|
-| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37), during the session and before it is ingested. The agent chooses which are useful for the turn (`select_v1.md`) and rewrites each of those on its own (`rewrite_v4.md`, D53–D57; `rewrite_v5a.md` and `rewrite_v5b.md` on trial in E36); the write policy decides what is stored. |
+| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37), during the session and before it is ingested. The agent chooses which are useful for the turn (`select_v1.md`) and rewrites each of those on its own (`rewrite_v4.md`, D53–D57; `rewrite_v5a.md`, `rewrite_v5b.md` and `rewrite_v5c.md` on trial in E36); the write policy decides what is stored. |
 | **natural recall** | Recall by the replayed conversation's own user turns (D14). |
 | **injected query** | Planned: extra recall queries about specific details, to build depth where natural recall is too rare (E17). |
 | **replaced by a different event** | A rewrite that writes another event of the same kind in its memory's place ("$5.88 on a coffee" becomes the "$8.18 on a coffee" the user just mentioned), when the user did not say anything changed. Rough class from words and numbers (E36): a number of the memory is lost and one from the user's message appears, or under half of the memory's content words stay and more come from the message. The recall-time counterpart of **folding**. |
 | **updated as the user said** | The same shape of rewrite when the user's message says something changed ("no longer", "used to", "completed", "from X to Y"): the rewrite takes in the change, usually keeping the old state ("previously enjoyed …, now …"). Counted apart from losses (E36). |
 | **rewrite class** (E36) | One of: identical; kept (at least 80% of the memory's content words, nothing from the message); kept + words from the message; shortened; replaced by a different event; updated as the user said; failed (no usable answer). A heuristic for choosing a prompt, not the judge. |
-| **memory slots** | What a rewrite prompt may show of the memory (`recall.memory_slots`): `{memory}` ("(2025-06-01) text", versions 1–4), `{memory_text}`, `{memory_date}` and `{when}` ("2 days before this one", "the same day as this one"; versions 5a and 5b). |
+| **memory slots** | What a rewrite prompt may show of the memory (`recall.memory_slots`): `{memory}` ("(2025-06-01) text", versions 1–4), `{memory_text}`, `{memory_date}`, `{when}` ("2 days before this one", "the same day as this one"; versions 5a and 5b) and `{gap}` ("2 days before the conversation date", "the same date as the conversation"; version 5c). |
 | **drift** | How far a memory's content has moved from the latest legitimate state of what the user said. Measured by probes, never counted. |
 | **probe** | One checkable detail of the answer key (a number, date, name, title, list item…) with its expected state at a point in time. |
 | **answer key** | The probe table built from the user's words by the extractor (section 6). |

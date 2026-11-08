@@ -5,7 +5,7 @@ replacing one event with another of the same kind ("$5.88 on a coffee" became th
 mentioned): 24 of 422 note rewrites and 48 of 442 log rewrites, by the rough classification below. Does
 showing the memory's date on its own line, with how long before this conversation it was (v5a, Sam's
 idea), or that plus "The memory and the user's latest message may describe different events of the
-same kind" (v5b), stop that, without stopping the rewrites that take in a change the user asked for
+same kind" (v5b), or v5b with the date line worded without "conversation" (v5c), stop that, without stopping the rewrites that take in a change the user asked for
 ("used to love cultural ceremonies, no longer keen") and without breaking the rest?
 Method: E35's session records give, for every rewrite, the turn, the memory chosen and v4's answer; the
 memory's text and date as they stood at that turn are rebuilt from store B's event file (text events
@@ -27,6 +27,9 @@ replays only N cases (not evidence). Answers are saved to results/e36/answers.js
 Added after the first run (Sam, Nov 8), all answered from the cache: how often an answer merges two events
 (keeps every number of the memory and adds one from the user's message), is written in the first person,
 or mentions a conversation ("in an earlier conversation"), with every merged and first-person answer.
+Version 5c (added after the second run, Nov 8): version 5b with the date line worded without
+"conversation" ("Memory, dated 2025-06-01 (2 days before the conversation date):"), since versions 5a and
+5b often wrote "in an earlier conversation" into the rewrite. The other versions answer from the cache.
 Limits: one model, one run of each version (calls are cached, so a rerun repeats the answers); the
 classification is a heuristic, not the judge; v5b's sentence was written after seeing these cases.
 """
@@ -46,8 +49,9 @@ from memrecon.monitor import wait_for_memory
 from memrecon.probes import content_words, numbers_in
 from memrecon.recall import Discard, Recaller, memory_slots, parse_rewrite_answer
 
-VERSIONS = ["rewrite_v4", "rewrite_v5a", "rewrite_v5b"]
-SHORT = {"rewrite_v4": "v4", "rewrite_v5a": "v5a", "rewrite_v5b": "v5b"}
+VERSIONS = ["rewrite_v4", "rewrite_v5a", "rewrite_v5b", "rewrite_v5c"]
+SHORT = {"rewrite_v4": "v4", "rewrite_v5a": "v5a", "rewrite_v5b": "v5b", "rewrite_v5c": "v5c"}
+NEW = ["v5a", "v5b", "v5c"]
 OTHERS_PER_ARM = 50
 SEED = 36
 PILOT = int(os.environ.get("MEMRECON_E36_PILOT", "0") or 0)
@@ -236,14 +240,14 @@ def show(c):
 print("\n== Every case v4 replaced by a different event ==")
 for c in sorted((c for c in chosen if group_of(c["e35_class"]) == "replaced by a different event"), key=lambda c: c["key"]):
     show(c)
-print("\n== User-asked changes that v5a or v5b no longer took in ==")
+print("\n== User-asked changes that a version 5 no longer took in ==")
 for c in sorted(chosen, key=lambda c: c["key"]):
     if group_of(c["e35_class"]) == "updated as the user said" and any(
-            c[v + "_class"] not in ("updated as the user said", "kept + words from the message") for v in ("v5a", "v5b")):
+            c[v + "_class"] not in ("updated as the user said", "kept + words from the message") for v in NEW):
         show(c)
-print("\n== Other cases where v5a or v5b replaced the memory by a different event ==")
+print("\n== Other cases where a version 5 replaced the memory by a different event ==")
 for c in sorted(chosen, key=lambda c: c["key"]):
-    if group_of(c["e35_class"]) == "other" and any(c[v + "_class"] == "replaced by a different event" for v in ("v5a", "v5b")):
+    if group_of(c["e35_class"]) == "other" and any(c[v + "_class"] == "replaced by a different event" for v in NEW):
         show(c)
 
 
@@ -277,12 +281,16 @@ for label, test in (("merged", lambda c, v: merged(c, v)),
         xs = [c for c in chosen if c["arm"] == arm]
         print(f"  {label + ', ' + arm:34}" + "".join(f"{sum(test(c, v) for c in xs):>6} {pct(sum(test(c, v) for c in xs), len(xs)):>7}"
                                                     for v in SHORT.values()))
-print("\n== Every merged answer under v5a or v5b ==")
+print("\n== Every merged answer under a version 5 ==")
 for c in sorted(chosen, key=lambda c: c["key"]):
-    if merged(c, "v5a") or merged(c, "v5b"):
+    if any(merged(c, v) for v in NEW):
         show(c)
-        print(f"  merged: v4 {merged(c, 'v4')}, v5a {merged(c, 'v5a')}, v5b {merged(c, 'v5b')}; group in E35: {group_of(c['e35_class'])}")
-print("\n== Every first-person answer under v5a or v5b ==")
+        print("  merged: " + ", ".join(f"{v} {merged(c, v)}" for v in SHORT.values()) + f"; group in E35: {group_of(c['e35_class'])}")
+print("\n== Every first-person answer under a version 5 ==")
 for c in sorted(chosen, key=lambda c: c["key"]):
-    if any(c[v] and FIRST_PERSON.search(c[v]) for v in ("v5a", "v5b")):
+    if any(c[v] and FIRST_PERSON.search(c[v]) for v in NEW):
+        show(c)
+print("\n== Every answer under version 5b or 5c that mentions a conversation ==")
+for c in sorted(chosen, key=lambda c: c["key"]):
+    if any(c[v] and FRAMING.search(c[v]) for v in ("v5b", "v5c")):
         show(c)
