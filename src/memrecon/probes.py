@@ -34,6 +34,7 @@ from .llm import ModelCallError, OutputTruncated
 PROMPT = "probe_extract_v1"
 KINDS = ("number", "date", "name", "title", "item", "task", "preference")
 STATUSES = ("new", "added", "updated", "replaced", "removed", "done", "no longer")
+STATUSES_V4 = tuple(x for x in STATUSES if x != "added")  # "added" behaved as "new" and was used unevenly (D48)
 WHO = ("user", "user and others", "someone else", "")  # version 1; version 2 drops "someone else" for a name copied from the line
 KEYS = {"line", "detail", "qualifier", "field", "who", "kind", "status"}
 KEYS_V2 = KEYS | {"id", "attached_to"}
@@ -116,6 +117,28 @@ def split_number(detail: str) -> tuple[float | None, str | None]:
     return round(value, 6), unit or None
 
 
+_DURATION = re.compile(r"(?P<num>\d+(?:\.\d+)?|(?:[a-z]+[\s-])*?[a-z]+)[\s-]+(?P<unit>minute|hour|day|business day|week|month|quarter|year)s?\b", re.I)
+
+
+def split_duration(detail: str) -> tuple[float | None, str | None]:
+    """The number in a deadline, duration or timeframe (a date kind): 'within seven days' -> (7.0, 'day');
+    '15-month' -> (15.0, 'month'); 'in 2 weeks' -> (2.0, 'week'). None for a date or time of day."""
+    for m in _DURATION.finditer(detail):
+        num = m.group("num")
+        if num[0].isdigit():
+            value = float(num)
+        else:
+            words = num.lower().replace("-", " ").split()
+            for start in range(len(words)):  # 'within the next three' -> 'three'
+                value, rest = words_to_number(" ".join(words[start:]))
+                if value is not None and not rest:
+                    break
+            else:
+                continue
+        return round(value, 6), m.group("unit").lower()
+    return None, None
+
+
 _WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 _MONTHS = {m: i for i, m in enumerate(["january", "february", "march", "april", "may", "june", "july", "august",
                                         "september", "october", "november", "december"], 1)}
@@ -172,13 +195,17 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
 # -- extraction ----------------------------------------------------------------------------------
 
 
-def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, existing: dict[str, str] | None = None) -> list[dict]:
+def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, existing: dict[str, str] | None = None,
+                       shown: dict[str, str] | None = None) -> list[dict]:
     """The details, each checked: keys, allowed values, a line that was to be read, and the detail and
     qualifier copied exactly from that line. The same row twice is unusable.
     Version 2 also checks ids (1, 2, ... each once), attached_to (null or another detail's id) and a named
     "who" copied exactly from the detail's line. Version 3: attached_to may also be "R", "unknown" or an E
-    label of `existing` (label -> row_id), and "replaces" is null or an E label, for REPLACING statuses only."""
-    existing = existing or {}
+    label of `existing` (label -> row_id), and "replaces" is null or an E label, for REPLACING statuses only.
+    Version 4 drops "added", and a "replaced" detail must not be one already shown as an E row (`shown`:
+    label -> detail), which "replaces" names instead (D48)."""
+    existing, shown = existing or {}, shown or {}
+    statuses = STATUSES_V4 if version >= 4 else STATUSES
     data = extract_block(reply, "details")
     if set(data) != {"details"} or not isinstance(data["details"], list):
         raise UnusableAnswer('The object must be {"details": [...]}.')
@@ -206,8 +233,12 @@ def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, e
             raise UnusableAnswer('"field" must name what the detail is.')
         if item["kind"] not in KINDS:
             raise UnusableAnswer(f'"kind" must be one of {", ".join(KINDS)}.')
-        if item["status"] not in STATUSES:
-            raise UnusableAnswer(f'"status" must be one of {", ".join(STATUSES)}.')
+        if item["status"] not in statuses:
+            raise UnusableAnswer(f'"status" must be one of {", ".join(statuses)}' + (' ("added" is now "new").' if item["status"] == "added" and version >= 4 else "."))
+        if version >= 4 and item["status"] == "replaced":
+            again = [label for label, d in shown.items() if norm(d) == norm(item["detail"])]
+            if again:
+                raise UnusableAnswer(f'"{item["detail"]}" is already recorded as {again[0]}: do not list it as "replaced"; give {again[0]} in "replaces" of the detail that replaces it.')
         if version >= 2:
             if item["who"] not in ("user", "user and others", "") and item["who"] not in readable[line]:
                 raise UnusableAnswer(f'"who" must be "user", "user and others", "", or a name copied exactly from its line; line {line} does not contain "{item["who"]}".')
@@ -276,11 +307,13 @@ class ProbeExtractor:
         system, template = load_prompt(self.prompt)
         fields = self.fields.get(record, [])
         version = int(self.prompt.rsplit("_v", 1)[1]) if "_v" in self.prompt else 1
+        self.shown = {}
         recorded, existing = self.recorded(record, readable) if version >= 3 else ("", {})
+        shown = dict(self.shown)
         # placeholders a version's template does not use are ignored (recorded is used from version 3 on)
         user = template.format(date=session.get("date", ""), lines=", ".join(str(n) for n in sorted(readable)),
                                fields=", ".join(fields) if fields else "(none)", conversation=conversation, recorded=recorded)
-        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable, version, existing), sid)
+        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable, version, existing, shown), sid)
         if items is None:
             return ProbeOutcome(sid, False, attempts, [], error)
         rows = []
@@ -299,6 +332,8 @@ class ProbeExtractor:
                 row.number, row.unit = split_number(row.detail)
             if row.kind == "date":
                 row.resolved = resolve_date(row.detail, row.date)
+                if version >= 4:
+                    row.number, row.unit = split_duration(row.detail)
             rows.append(row)
             if row.field not in fields:
                 fields.append(row.field)
@@ -323,6 +358,7 @@ class ProbeExtractor:
                 seen.add(e["row_id"])
                 shown.append(e)
         labels = {f"E{i}": e["row_id"] for i, e in enumerate(shown, 1)}
+        self.shown = {f"E{i}": e["detail"] for i, e in enumerate(shown, 1)}
         lines = ["R: the thing this conversation is about"] + [
             f"E{i} ({e['field']}{', ' + e['state'] if e['state'] != 'true' else ''}): {e['detail']}" for i, e in enumerate(shown, 1)]
         return "\n".join(lines), labels
@@ -490,6 +526,7 @@ def grading_view(entries: list[dict]) -> list[dict]:
             derived["number"], derived["unit"] = split_number(e["detail"])
         if e["kind"] == "date":
             derived["resolved"] = resolve_date(e["detail"], e.get("from_date") or "")
+            derived["number"], derived["unit"] = split_duration(e["detail"])
         out.append({**e, **derived, "grade": "code" if primary else "judge",
                     "qualifier": graded_qualifier(e.get("qualifier") or "") if e["kind"] in ("number", "date") else "",
                     "who": e.get("who") if e.get("who") not in ("user", None) else ""})

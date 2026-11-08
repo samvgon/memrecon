@@ -243,9 +243,9 @@ harness. A version used in a run is never edited; changes go in the next version
 ## 6. The drift measure's answer key (probes)
 
 `src/memrecon/probes.py`, prompts `probe_extract_v1.md` (E26), `probe_extract_v2.md` (E28, D46) and
-`probe_extract_v3.md` (E29, D47), run by the judge (D44–D47). Harness side only.
+`probe_extract_v3.md` (E29, D47) and `probe_extract_v4.md` (E30, D48), run by the judge (D44–D48). Harness side only.
 
-**Row** (one per extracted detail; stored append-only, never edited; E26, E28 and E29 write them to
+**Row** (one per extracted detail; stored append-only, never edited; E26, E28, E29 and E30 write them to
 `results/probes/E<n>_<persona>.jsonl`):
 
 | Column | What it is | Comes from |
@@ -255,11 +255,11 @@ harness. A version used in a run is never edited; changes go in the next version
 | `field` | What the detail is, in terms of what it belongs to (`meeting notes title`, `agenda item`, `action item deadline`, `liked author`); reuses the record's earlier field names, shown as "fields so far". | extractor |
 | `detail` | The detail, copied exactly from the line (checked by code). | extractor |
 | `qualifier` | A word or phrase that limits, hedges or conditions the detail, copied exactly ("about", "at least", "only if approved"), or empty. Collected for every kind; scored only for numbers and dates (D47). Not "about" meaning "on the subject of", nor "from"/"to" in a change (version 3's definition). | extractor |
-| `who` | Only for something someone did, decided or is to do: `user`, `user and others` ("we"), or, from version 2, the person, team or organisation named in the line, copied exactly (version 1: `someone else`); empty otherwise. | extractor |
-| `kind` | `number`, `date`, `name`, `title`, `item`, `task`, `preference`. | extractor |
-| `status` | What the statement did when it was made, fixed (a row is never re-labelled when a later session changes it): `new` (first told), `added` (to something told before), `updated` (replaces an earlier value), `replaced` (the earlier value, when not already a row), `removed`, `done`, `no longer` (the field's claim no longer holds). | extractor |
+| `who` | Who did, decided or is to do the thing: `user`, `user and others` ("we"), or, from version 2, the person, team or organisation named in the line, copied exactly (version 1: `someone else`); empty otherwise. From version 4 the user's own activities ("I spent", "I walked") get `user`, and the contents of a document or list get none even when the user asks for them to be changed. | extractor |
+| `kind` | `number` (amount, count, percentage, score, level such as "medium"), `date` (date, day, time, deadline, duration, timeframe), `name` (a proper name only), `title` (a thing's own title), `item` (any other single thing), `task` (something to do or done), `preference` (the liking itself). Defined one by one from version 4. | extractor |
+| `status` | What the statement did when it was made, fixed (a row is never re-labelled when a later session changes it): `new` (first told; from version 4 also something added to a thing told before), `added` (versions 1–3: added to something told before; dropped in version 4, D48), `updated` (replaces an earlier value), `replaced` (the earlier value, when not already a row; version 4 refuses it for a value shown as an E row), `removed`, `done`, `no longer` (the field's claim no longer holds). | extractor |
 | `session`, `line`, `date` | Where it was said, and the conversation date ("said on"). | harness |
-| `number`, `unit` | For kind number: value and unit ("10k steps" → 10000, "steps"). | code |
+| `number`, `unit` | For kind number: value and unit ("10k steps" → 10000, "steps"). From version 4 also for kind date when it holds a duration ("within seven days" → 7, "day"; `split_duration`). | code |
 | `resolved` | For kind date: the calendar day, from the conversation date, when it names one day ("next Tuesday"); empty for ranges ("next week"). | code |
 | `attached_to` | What the detail belongs to: the `row_id` of another detail (a deadline, timeframe, owner or amount of an action item, decision or task); from version 3 also an earlier session's row (an E label), the record itself (a root id, `persona:R:<record>`, "R" to the model: "This post is for LinkedIn"), or `unknown` (it clearly belongs to something the line does not name). Empty: it stands on its own. Version 2's links reach only the same session. | extractor (an id or label), harness (the row_id) |
 | `replaces` | Version 3: for `updated`, `removed`, `done` and `no longer`, the `row_id` of the earlier row it replaces, removes, finishes or no longer holds (from an E label), or empty when that row is not recorded. | extractor (a label), harness (the row_id) |

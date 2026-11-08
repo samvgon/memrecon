@@ -4,7 +4,7 @@ import json
 import pytest
 
 from memrecon.ingest import UnusableAnswer, load_prompt
-from memrecon.probes import ProbeExtractor, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, resolve_date, split_number, true_at
+from memrecon.probes import ProbeExtractor, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, resolve_date, split_duration, split_number, true_at
 
 SESSION = {
     "session_id": 7,
@@ -310,3 +310,41 @@ def test_v3_same_words_attached_to_different_things_are_two_details():
     assert len(parse_probe_answer(two, readable, 3, {})) == 4
     with pytest.raises(UnusableAnswer, match="attach each"):
         parse_probe_answer(answer(d3(1, "medium risk", "risk level", "name", attached="R"), d3(2, "medium risk", "risk level", "name", attached="R")), readable, 3, {})
+
+
+# -- version 4 (D48) -------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("detail,expected", [
+    ("within seven days", (7.0, "day")), ("15-month", (15.0, "month")), ("over 12 months", (12.0, "month")),
+    ("within the next three months", (3.0, "month")), ("in 2 weeks", (2.0, "week")),
+    ("2025-06-03", (None, None)), ("July 29th", (None, None)), ("by the end of next month", (None, None)),
+])
+def test_split_duration(detail, expected):
+    assert split_duration(detail) == expected
+
+
+def test_prompt_v4_loads():
+    system, user = load_prompt("probe_extract_v4")
+    assert '"added"' not in system and "Michio Kaku" in system and "{recorded}" in user and "share_memory" not in system + user
+
+
+def test_v4_drops_added_and_rejects_replaced_rows_already_shown():
+    readable = {3: "Yes, the budget should be updated from $1,700,000 to $1,550,000."}
+    existing, shown = {"E1": "p:56:2"}, {"E1": "$1,700,000"}
+    ok = answer(d3(1, "$1,550,000", "project budget", "number", "updated", attached="R", replaces="E1"))
+    assert parse_probe_answer(ok, readable, 4, existing, shown)
+    with pytest.raises(UnusableAnswer, match='already recorded as E1'):
+        parse_probe_answer(answer(d3(1, "$1,700,000", "project budget", "number", "replaced", attached="R"),
+                                  d3(2, "$1,550,000", "project budget", "number", "updated", attached="R", replaces="E1")), readable, 4, existing, shown)
+    assert parse_probe_answer(answer(d3(1, "$1,700,000", "project budget", "number", "replaced", attached="R")), readable, 4, {}, {})
+    with pytest.raises(UnusableAnswer, match='"added" is now "new"'):
+        parse_probe_answer(answer(d3(1, "$1,550,000", "project budget", "number", "added", attached="R")), readable, 4, existing, shown)
+
+
+def test_v4_dates_carry_their_duration():
+    first = {**SESSION, "session_id": 1, "operation": "add", "conversation": SESSION["conversation"][:2] + [
+        {"turn": 3, "speaker": "user_agent", "message": "Sales Rep A needs to follow up within seven days.", "share_memory": True}]}
+    client = ScriptedClient(answer(d3(1, "follow up", "action item", "task", who="Sales Rep A", attached="R"),
+                                   d3(2, "within seven days", "action item deadline", "date", attached=1)))
+    rows = ProbeExtractor(client, persona="p", prompt="probe_extract_v4").extract(first, ("content", "notes_1")).rows
+    assert (rows[1].number, rows[1].unit) == (7.0, "day")
