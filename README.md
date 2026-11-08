@@ -17,7 +17,7 @@ Some agent-memory systems rewrite a memory when they recall it, so it fits the t
 | `scripts/monitor.py` | Live view of a run: machine and GPU memory, model servers, token use, the agent's memory, disk. |
 | `scripts/download_data.sh` | Downloads the Memora dataset at the pinned commit. |
 | `scripts/make_split.py` | Recreates or checks the frozen development/test persona split (`notes/split.json`). |
-| `scripts/explore/` | Numbered data-exploration scripts (E01–E32); their saved outputs are in `notes/evidence/`. See its README. |
+| `scripts/explore/` | Numbered data-exploration scripts (E01–E33); their saved outputs are in `notes/evidence/`. See its README. |
 | `src/memrecon/llm.py` | The only way experiment code calls a model. |
 | `src/memrecon/embed.py`, `src/memrecon/retrieval.py` | Embeddings (cached) and retrieval: which memories are relevant to a turn. |
 | `src/memrecon/memory.py` | The memory store: memories, their lineage and depth, snapshots and the event file. |
