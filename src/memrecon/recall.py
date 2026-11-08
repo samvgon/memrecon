@@ -5,9 +5,9 @@ On every replayed user turn, retrieval looks for memories relevant to what the u
 Recall then has two steps (D54, Sam):
 
 1. **select** (prompts/select_v1.md, one call per turn): the agent sees the memories found, listed by
-   date, newest first, and chooses the ones useful for responding to the user's latest message, most useful first, or
+   date, newest first (D59), and chooses the ones useful for responding to the user's latest message, most useful first, or
    none. Each one chosen is counted (`MemoryStore.select`).
-2. **rewrite** (prompts/rewrite_v4.md; versions 5a and 5b on trial, E36; one call per chosen memory, in the order chosen, each on its own):
+2. **rewrite** (prompts/rewrite_v5b.md, D58; one call per chosen memory, in the order chosen, each on its own):
    the agent rewrites the memory for the conversation right now.
 
 The **write policy** then decides what is stored:
@@ -39,7 +39,7 @@ from memrecon.memory import At, MemoryStore
 RECALL_K = 3  # D37
 RECALL_THRESHOLD = 0.70  # D37
 SELECT_PROMPT = "select_v1"
-REWRITE_PROMPT = "rewrite_v4"  # D57
+REWRITE_PROMPT = "rewrite_v5b"  # D58 (was rewrite_v4, D57)
 
 
 # -- write policies -------------------------------------------------------------------------------

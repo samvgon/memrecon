@@ -86,7 +86,7 @@ Add to this file whenever a new term, table or column appears.
 
 | Term | Meaning here |
 |---|---|
-| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37), during the session and before it is ingested. The agent chooses which are useful for the turn (`select_v1.md`) and rewrites each of those on its own (`rewrite_v4.md`, D53–D57; `rewrite_v5a.md`, `rewrite_v5b.md` and `rewrite_v5c.md` on trial in E36); the write policy decides what is stored. |
+| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37), during the session and before it is ingested. The agent chooses which are useful for the turn (`select_v1.md`) and rewrites each of those on its own (`rewrite_v5b.md`, D58; earlier versions D53–D57; `rewrite_v5a.md` and `rewrite_v5c.md` tried in E36 and not used); the write policy decides what is stored. |
 | **natural recall** | Recall by the replayed conversation's own user turns (D14). |
 | **injected query** | Planned: extra recall queries about specific details, to build depth where natural recall is too rare (E17). |
 | **replaced by a different event** | A rewrite that writes another event of the same kind in its memory's place ("$5.88 on a coffee" becomes the "$8.18 on a coffee" the user just mentioned), when the user did not say anything changed. Rough class from words and numbers (E36): a number of the memory is lost and one from the user's message appears, or under half of the memory's content words stay and more come from the message. The recall-time counterpart of **folding**. |
@@ -256,7 +256,7 @@ the totals `found`, `selected` and `failures`); each turn where retrieval found 
 | `turn` | Line number of the user turn in the session. |
 | `found`, `scores` | Memory IDs retrieval found (top 3 reaching 0.70, D37), most similar first, and their similarities. Each is counted in `times_recalled`. |
 | `shown` | The order step 1 listed them in (newest first). |
-| `selected` | Those the agent chose as useful for the turn (step 1, `select_v1.md`), most useful first; each counted in `times_selected` and rewritten on its own (step 2, `rewrite_v4.md`), in that order. |
+| `selected` | Those the agent chose as useful for the turn (step 1, `select_v1.md`), most useful first; each counted in `times_selected` and rewritten on its own (step 2, `rewrite_v5b.md`, D58), in that order. |
 | `rewrites` | Memory ID → its rewrite, for analysis (e.g. details a rewrite adds that were not in the memory). |
 | `written` | IDs the write policy wrote to (replace: the same ID; keep: the new child; discard: none). |
 | `unchanged` | Selected memories whose rewrite was identical to their text (no rewrite under any policy). |

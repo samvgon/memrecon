@@ -109,7 +109,7 @@ def test_discard_counts_and_leaves_no_trace():
     assert store.get(mid).times_recalled == 1 and store.get(mid).times_selected == 1
     sel, rew = (c["messages"][1]["content"] for c in client.calls)
     assert "3. User: I'm worried about the budget" in sel and "[1] (2025-06-01) The project budget is $1,700,000." in sel
-    assert "Memory:\n(2025-06-01) The project budget is $1,700,000." in rew
+    assert "Memory, from an earlier conversation on 2025-06-01 (4 days before this one):\nThe project budget is $1,700,000." in rew  # rewrite_v5b, D58
     assert [c["meta"]["step"] for c in client.calls] == ["select", "rewrite"]
 
 
@@ -129,7 +129,7 @@ def test_memories_are_shown_by_date_and_rewritten_in_the_order_chosen():
     assert sel.index("(2025-06-03)") < sel.index("(2025-06-01)")  # newest first, whatever the similarity
     assert out.turns[0].shown == [a, b] and out.turns[0].selected == [b, a]  # [2] is the older (budget) memory, chosen first
     assert store.get(a).text == "steps rewrite" and store.get(b).text == "budget rewrite"
-    assert "budget" in client.calls[1]["messages"][1]["content"].split("Memory:")[1]
+    assert "budget" in client.calls[1]["messages"][1]["content"].split("Memory, from an earlier conversation")[1]
 
 
 def test_replace_overwrites_and_keep_adds_a_child():
@@ -194,3 +194,8 @@ def test_rewrite_v5c_shows_the_date_without_the_word_conversation_in_the_memory_
     Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", rewrite_prompt="rewrite_v5c").recall_session(SESSION)
     rew = client.calls[1]["messages"][1]["content"]
     assert "Memory, dated 2025-06-01 (4 days before the conversation date):\nThe project budget is $1,700,000." in rew
+
+
+def test_the_frozen_prompts():
+    from memrecon.recall import REWRITE_PROMPT, SELECT_PROMPT
+    assert (SELECT_PROMPT, REWRITE_PROMPT) == ("select_v1", "rewrite_v5b")  # D54, D58
