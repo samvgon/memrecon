@@ -1,0 +1,69 @@
+# Evidence E34
+script:       scripts/explore/E34_candidate_threshold.py
+run at:       2026-11-08T01:27:10-08:00
+memrecon:     5ce9f2a (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+development personas: financial_analyst, management_consultant, sales_manager; wall time 546 s; calls v1 {'cached': 478}; 2s3 {'cached': 1357}; 2s3@0.70 {'cached': 639, 'fresh': 440}
+
+1. RECALL AT THE END (probes that should hold, found in some active memory)
+  v1         85.0% of 595   item 86.0%, date 80.3%, number 89.6%, name 79.7%, title 90.0%
+            by record type: documents 92.8% of 236, expenses and steps 88.2% of 212, preferences 68.0% of 100, to-dos and calendar 60.0% of 30, goals 82.4% of 17
+  2s3        83.5% of 595   item 81.2%, date 83.8%, number 93.4%, name 76.3%, title 85.0%
+            by record type: documents 80.1% of 236, expenses and steps 97.2% of 212, preferences 64.0% of 100, to-dos and calendar 70.0% of 30, goals 100.0% of 17
+  2s3@0.70   83.2% of 595   item 81.6%, date 82.9%, number 93.4%, name 72.9%, title 85.0%
+            by record type: documents 76.7% of 236, expenses and steps 97.2% of 212, preferences 70.0% of 100, to-dos and calendar 70.0% of 30, goals 100.0% of 17
+
+2. OVER TIME, WHEN TOLD, AND LOST
+  v1        mean over sessions 0.832 (thirds 0.895 / 0.857 / 0.746); found when told  91.9%; lost by the end 43
+  2s3       mean over sessions 0.887 (thirds 0.919 / 0.898 / 0.844); found when told  94.6%; lost by the end 70
+  2s3@0.70  mean over sessions 0.882 (thirds 0.928 / 0.884 / 0.835); found when told  94.6%; lost by the end 72
+  (thirds are of the sessions in order, across personas)
+
+3. CAUSE OF EACH LOSS (found when told, not at the end: what happened in the session it was last lost)
+  v1        43: superseded in a session about another record 39, forgotten in a session about another record 3, forgotten in a session about its own record 1; folded, by record type: preferences 16, expenses and steps 14, documents 4, goals 3, to-dos and calendar 2
+  2s3       70: superseded in a session about another record 63, superseded in a session about its own record 7; folded, by record type: documents 38, preferences 21, expenses and steps 2, to-dos and calendar 2
+  2s3@0.70  72: superseded in a session about another record 59, superseded in a session about its own record 13; folded, by record type: documents 40, preferences 15, expenses and steps 2, to-dos and calendar 2
+
+4. QUALIFIERS KEPT, AND OLD VALUES (held once, updated or removed by the end)
+  v1        qualifiers 7 of 7; old values found 39 of 147: says it changed 26, carried 12, never superseded 1
+  2s3       qualifiers 7 of 7; old values found 53 of 147: says it changed 41, never superseded 8, carried 4
+  2s3@0.70  qualifiers 7 of 7; old values found 48 of 147: says it changed 35, carried 10, never superseded 3
+
+5. PAIRED AT THE END (found by one arm and not the other; exact sign test; probes are not independent)
+  v1 vs 2s3: only v1 53, only 2s3 44, p = 0.417
+  v1 vs 2s3@0.70: only v1 59, only 2s3@0.70 48, p = 0.334
+  2s3 vs 2s3@0.70: only 2s3 12, only 2s3@0.70 10, p = 0.832
+
+6. STEP 2'S DECISIONS (two-step arms), by the session's operation
+  2s3: 519 facts; add 331, replace 148, none (identical replace) 19, add (decision failed) 8, none 8, add (no candidate) 4, forget 1
+      in add sessions: add 300, replace 24, add (no candidate) 3, none 2, none (identical replace) 2, add (decision failed) 1
+      in update sessions: replace 51, add 17, none (identical replace) 11, add (decision failed) 4, none 3
+      in delete sessions: replace 73, none (identical replace) 6, add 5, add (decision failed) 3, none 3, forget 1
+      in none sessions: add 9, add (no candidate) 1
+  2s3@0.70: 519 facts; add 195, add (no candidate) 144, replace 139, none (identical replace) 17, none 16, add (decision failed) 7, forget 1
+      in add sessions: add 174, add (no candidate) 131, replace 23, none 3, add (decision failed) 1
+      in update sessions: replace 47, none (identical replace) 12, add 9, add (no candidate) 8, none 6, add (decision failed) 4
+      in delete sessions: replace 69, none 7, add 5, none (identical replace) 5, add (decision failed) 2, add (no candidate) 2, forget 1
+      in none sessions: add 7, add (no candidate) 3
+
+7. EXAMPLES (up to 6 each): lost by 2s3 at 0.0 but kept at the new threshold, and the reverse; old values never superseded at the new threshold
+  kept by 2s3@0.70, not by 2s3:
+    - financial_analyst [name, preferences] J.J. Abrams | lost in session 72: The user used to really like J.J. Abrams' movies but lately finds themselves much more into Rian Johnson's work because his approach to storytelling …
+    - financial_analyst [name, documents] Head of Innovation | lost in session 58: The recipients for the user's email are the Regional Leadership Team and the Head of Innovation.
+    - management_consultant [item, preferences] Ernst Lubitsch's work | lost in session 114: The user has recently found a new appreciation for Ernst Lubitsch's work.
+    - management_consultant [item, preferences] Lubitsch's wit and subtle humor | lost in session 114: The user finds Ernst Lubitsch's wit and subtle humor charming and enjoys the lightness and sophistication of his films.
+    - management_consultant [item, preferences] lightness and sophistication | lost in session 114: The user finds Ernst Lubitsch's wit and subtle humor charming and enjoys the lightness and sophistication of his films.
+    - sales_manager [item, preferences] techno-thriller books
+  kept by 2s3, not by 2s3@0.70:
+    - management_consultant [item, preferences] getting involved directly
+    - management_consultant [name, documents] Dr. Anya Sharma | lost in session 66: Dr. Anya Sharma, a Senior Management Consultant, will be leading the user's project.
+    - management_consultant [name, documents] Chief Operations Officer | lost in session 91: The user plans to send the email to the Head of Regional Manufacturing, the Chief Operations Officer, and the IT Security Lead.
+    - management_consultant [name, documents] IT Security Lead | lost in session 91: The user plans to send the email to the Head of Regional Manufacturing, the Chief Operations Officer, and the IT Security Lead.
+    - management_consultant [item, documents] Identified critical vulnerabilities in current supply chain digital interfaces | lost in session 82: The user intends to include key points in the email regarding identified critical vulnerabilities in current supply chain digital interfaces and a pr…
+    - management_consultant [item, documents] Proposed a phased implementation of enhanced access controls and monitoring systems | lost in session 82: The user intends to include key points in the email regarding identified critical vulnerabilities in current supply chain digital interfaces and a pr…
+  old values never superseded at 2s3@0.70:
+    - [documents] $1,700,000 | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
+    - [documents] outlining next steps and ownership for critical actions | The agenda items for the meeting included identifying key pain points and bottlenecks, discussing resource allocation and support requirements, and o…
+    - [expenses and steps] $9.34 | The user spent $9.34 on coffee.
