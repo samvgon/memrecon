@@ -1,30 +1,29 @@
 # Evidence E29
 script:       scripts/explore/E29_probe_extraction_v3.py
-run at:       2026-11-07T17:07:32-08:00
-memrecon:     df8fd6f (scripts clean)
+run at:       2026-11-07T18:18:26-08:00
+memrecon:     7a193ce (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
 1. RELIABILITY
-  315 sessions, 2 failed, attempts {1: 268, 2: 42, 3: 5}, 359 fresh calls, 2035 s
-    failed: financial_analyst session 56: The same detail appears more than once; list each detail once.
+  315 sessions, 1 failed, attempts {1: 267, 2: 44, 3: 4}, 4 fresh calls, 47 s
     failed: management_consultant session 3: "line" must be one of the lines to read ([19]); got 15.
-  why answers were sent back: 11 x "replaces" must be null, or for "updated", "removed", "done" or "no longer" an E label sho; 4 x "attached_to" must be the id of another detail, "R", an E label shown (none), "unknown" or; 4 x "line" must be one of the lines to read ([19]); 3 x "line" must be one of the lines to read ([11]); 3 x "line" must be one of the lines to read ([6]); 3 x "line" must be one of the lines to read ([12]); 3 x "line" must be one of the lines to read ([16]); 2 x The same detail appears more than once; 2 x Each "detail" must be copied exactly from its line; 2 x "line" must be one of the lines to read ([20]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5,; 2 x "line" must be one of the lines to read ([13]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3), "unkno; 2 x "line" must be one of the lines to read ([10]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2), "unknown" ; 1 x "line" must be one of the lines to read ([18]); 1 x "line" must be one of the lines to read ([15]); 1 x "line" must be one of the lines to read ([14]); 1 x "line" must be one of the lines to read ([5]); 1 x "who" must be "user", "user and others", "", or a name copied exactly from its line; 1 x "line" must be one of the lines to read ([17]); 1 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5)
+  why answers were sent back: 13 x "replaces" must be null, or for "updated", "removed", "done" or "no longer" an E label sho; 4 x "attached_to" must be the id of another detail, "R", an E label shown (none), "unknown" or; 4 x "line" must be one of the lines to read ([19]); 3 x "line" must be one of the lines to read ([11]); 3 x "line" must be one of the lines to read ([6]); 3 x "line" must be one of the lines to read ([12]); 3 x "line" must be one of the lines to read ([16]); 2 x "line" must be one of the lines to read ([20]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5,; 2 x "line" must be one of the lines to read ([13]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3), "unkno; 2 x "line" must be one of the lines to read ([10]); 2 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2), "unknown" ; 1 x "line" must be one of the lines to read ([18]); 1 x "line" must be one of the lines to read ([15]); 1 x Each "detail" must be copied exactly from its line; 1 x "line" must be one of the lines to read ([14]); 1 x "line" must be one of the lines to read ([5]); 1 x "who" must be "user", "user and others", "", or a name copied exactly from its line; 1 x "line" must be one of the lines to read ([17]); 1 x "attached_to" must be the id of another detail, "R", an E label shown (E1, E2, E3, E4, E5)
 
 2. ROWS
-  922 rows from 491 flagged turns (1.88 per turn)
-  kind:   name 302, item 173, number 126, task 117, date 88, preference 75, title 41
-  status: new 787, no longer 48, removed 29, done 23, added 21, updated 8, replaced 6
-  who:    (empty) 663, user 230, (a name) 16, user and others 13; names: them 4, the recipients 2, Legal & Compliance 1, CFO Office 1, Anya Sharma 1, Dr. Anya Sharma 1, recipients 1, Sofia Rodriguez 1, Dr. Elara Vance 1, Sales Rep A 1
-  attached to: R (the thing itself) 690, same session 210, earlier session, another record 15, earlier session 7
-  kinds attached to a detail: name 71, date 67, preference 40, number 23, item 23, task 6, title 2; attached to kinds: name 96, number 63, task 41, title 17, item 11, preference 4
-  replacing statuses: 108; naming the row replaced: earlier session 87, earlier session, another record 12, none 9; by status (named of all): updated 7 of 8, removed 26 of 29, done 22 of 23, no longer 44 of 48
+  939 rows from 491 flagged turns (1.91 per turn)
+  kind:   name 307, item 178, number 130, task 119, date 88, preference 75, title 42
+  status: new 803, no longer 48, removed 30, done 23, added 21, updated 8, replaced 6
+  who:    (empty) 674, user 236, (a name) 16, user and others 13; names: them 4, the recipients 2, Legal & Compliance 1, CFO Office 1, Anya Sharma 1, Dr. Anya Sharma 1, recipients 1, Sofia Rodriguez 1, Dr. Elara Vance 1, Sales Rep A 1
+  attached to: R (the thing itself) 704, same session 212, earlier session, another record 15, earlier session 8
+  kinds attached to a detail: name 72, date 67, preference 40, number 25, item 23, task 6, title 2; attached to kinds: name 96, number 63, task 41, title 17, item 14, preference 4
+  replacing statuses: 109; naming the row replaced: earlier session 91, earlier session, another record 12, none 6; by status (named of all): updated 8 of 8, removed 29 of 30, done 22 of 23, no longer 44 of 48
   'replaced' rows (an old value not recorded as a row): 6
   bare field names (title, name, date, item, time, preference): date 26, preference 19, item 14, time 10
-  with a qualifier: 49: under 7, soon 4, a bit 4, a bit too 3, used to 3, more 3, from 2, to 2, later 1, don't really 1, a bit more 1, not very 1
-  numbers: 126, parsed 123; units: $ 78, steps 24, days 6, months 5, $ per week 5, None 3, 12, and 18-month intervals 1, € 1, year period 1, distinct phases of six months each 1
+  with a qualifier: 49: under 7, soon 4, a bit 4, a bit too 3, used to 3, more 3, from 2, later 1, don't really 1, at least 1, a bit more 1, not very 1
+  numbers: 130, parsed 125; units: $ 79, steps 24, days 6, months 5, $ per week 5, None 5, 12, and 18-month intervals 1, month 1, € 1, year period 1
   dates: 88, resolved to a day 63; not resolved: by the end of next month, by the next meeting, end of next week, every day, for the next 4 weeks, for the week, in 2 weeks, later, morning, next 18 months, next week, this week, this year, within the next 2 weeks, within the next 7 days, within the next few business days, within the next three months
-  173 field names; most used: task 69, expense 62, expense item 33, date 26, agenda item 23, step count 23, email recipient 20, preference 19, post hashtag 19, action item 18, key point 17, liked feature 16, liked genre 15, item 14, liked author 14
+  171 field names; most used: task 69, expense 62, expense item 33, date 26, agenda item 23, step count 23, email recipient 20, preference 19, post hashtag 19, action item 18, key point 17, liked feature 16, liked genre 15, key stakeholder 14, item 14
 
 3. AGREEMENT WITH THE LOG (where it can tell; E25)
   calendar_event add                                      7 of    7 100.0%
@@ -33,7 +32,7 @@ exit status:  0
   document: field new value                               4 of    4 100.0%
   document: field old value                               3 of    4  75.0%
   document: list item added                              26 of   27  96.3%
-  document: list item removed                            25 of   25 100.0%
+  document: list item removed                            27 of   27 100.0%
   food_expenses add                                      67 of   68  98.5%
   goal: amount                                            8 of    8 100.0%
   preference add: item, as new                           44 of   45  97.8%
@@ -61,7 +60,7 @@ exit status:  0
     todo_list delete: management_consultant session 145: Plan conference attendance
 
 4. THE TABLE at the end of each persona's history, and updates the links do not reach
-  financial_analyst: 285 entries; holding at the end 260: true 239, no longer 14, done 4, false 3; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
+  financial_analyst: 298 entries; holding at the end 269: true 251, no longer 14, done 4; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
   management_consultant: 316 entries; holding at the end 279: true 253, no longer 17, done 8, false 1; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
   sales_manager: 294 entries; holding at the end 258: true 230, no longer 17, done 7, false 4; updates with no link in a field whose values are linked (closing every earlier value of the field): 0
 
@@ -122,12 +121,12 @@ exit status:  0
         * [2] $900,000 |  | project budget |  | number | updated | 900,000 $ |  | R | s38:3 ($1,050,000)
 - financial_analyst session 89 (activity, update, said on 2025-06-04) [picked for: status updated]
     5. Yes, the budget should be updated from $1,700,000 to $1,550,000.
-        * [1] $1,700,000 | from | project budget |  | number | replaced | 1.7e+06 $ |  | R | 
-        * [2] $1,550,000 | to | project budget |  | number | updated | 1.55e+06 $ |  | R | 
+        * [1] $1,700,000 | from | project budget | user | number | replaced | 1.7e+06 $ |  | R | 
+        * [2] $1,550,000 |  | project budget | user | number | updated | 1.55e+06 $ |  | R | s56:2 ($1,700,000)
     7. Yes, please add 'Data Science Lead' to the stakeholders.
-        * [3] Data Science Lead |  | stakeholders |  | name | added |  |  | R | 
+        * [3] Data Science Lead |  | key stakeholder | user | name | added |  |  | R | 
     9. Please add 'Final project report including impact analysis and recommendations for future enhancements' to the deliverables.
-        * [4] Final project report including impact analysis and recommendations for future enhancements |  | deliverables |  | item | added |  |  | R | 
+        * [4] Final project report including impact analysis and recommendations for future enhancements |  | key deliverable | user | item | added |  |  | R | 
 - financial_analyst session 127 (activity, add, said on 2025-06-06) [picked for: qualifier on the hedge list (graded)]
     6. It's for LinkedIn.
         * [1] LinkedIn |  | social media platform |  | name | new |  |  | R | 
@@ -143,14 +142,30 @@ exit status:  0
         * [8] #EuropeanMarket |  | post hashtag |  | item | new |  |  | R | 
 - financial_analyst session 56 (activity, add, said on 2025-06-03) [picked for: qualifier on the hedge list (graded)]
     6. The title is "AI-Driven Credit Risk Scoring Model Enhancement."
+        * [1] AI-Driven Credit Risk Scoring Model Enhancement |  | project proposal title |  | title | new |  |  | R | 
     8. We're proposing an initiative to significantly enhance our long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources, aiming for improved accuracy and reduced default rates in our fintech lending products.
     10. The proposed budget for this project is $1,700,000.
+        * [2] $1,700,000 |  | project budget |  | number | new | 1.7e+06 $ |  | R | 
     12. We're looking at a 15-month timeline, structured into three distinct phases over the next period.
+        * [3] 15-month |  | project timeline |  | number | new | 15 month |  | R | 
     14. The project will be led by Dr. Anya Sharma, our Senior Financial Analyst.
+        * [4] Dr. Anya Sharma |  | project leader | user | name | new |  |  | R | 
     16. Our key stakeholders include the Head of Lending Operations, Head of Product Development, and the Chief Risk Officer (CRO).
+        * [5] Head of Lending Operations |  | key stakeholder |  | name | new |  |  | R | 
+        * [6] Head of Product Development |  | key stakeholder |  | name | new |  |  | R | 
+        * [7] Chief Risk Officer (CRO) |  | key stakeholder |  | name | new |  |  | R | 
     18. Our main objectives are to increase credit risk model predictive accuracy by at least 15% within the next 12 months, and reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.
+        * [8] increase credit risk model predictive accuracy by at least 15% within the next 12 months | at least | project objective |  | task | new |  |  | R | 
+        * [9] reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment |  | project objective |  | task | new |  |  | R | 
     20. The key deliverables will be a developed and validated AI-driven credit risk scoring model prototype within nine months, a detailed performance monitoring dashboard with automated alert system for model drift, and a full model integration plan and API documentation for existing lending platforms.
+        * [10] developed and validated AI-driven credit risk scoring model prototype within nine months |  | key deliverable |  | item | new |  |  | R | 
+        * [11] detailed performance monitoring dashboard with automated alert system for model drift |  | key deliverable |  | item | new |  |  | R | 
+        * [12] full model integration plan and API documentation for existing lending platforms |  | key deliverable |  | item | new |  |  | R | 
     22. For risk analysis, we're looking at the availability of specialized AI/ML engineering talent for implementation, which is a medium risk, and model explainability and interpretability for regulatory scrutiny, also a medium risk.
+        * [13] availability of specialized AI/ML engineering talent for implementation |  | risk |  | item | new |  |  | R | 
+        * [14] medium |  | risk level |  | number | new |  |  | 13 | 
+        * [15] model explainability and interpretability for regulatory scrutiny |  | risk |  | item | new |  |  | R | 
+        * [16] medium |  | risk level |  | number | new |  |  | 15 | 
 - management_consultant session 103 (activity, add, said on 2025-06-05) [picked for: date not resolved]
     17. I should also try to schedule some exercise time this week.
         * [1] schedule some exercise time |  | task | user | task | new |  |  | R | 
