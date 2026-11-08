@@ -1,0 +1,194 @@
+# Evidence E31
+script:       scripts/explore/E31_probe_split.py
+run at:       2026-11-07T23:57:41-08:00
+memrecon:     b112660 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1. RELIABILITY
+  81 candidates asked, 0 failed (kept whole), attempts {1: 81}, 71 fresh calls, 42 s
+  why answers were sent back: never
+
+2. CANDIDATES AND DECISIONS
+  1058 rows in E30; candidates (6+ words, 'and', not number/date/name, holding): 81
+  candidates by kind: item 63, task 14, preference 4
+  split: 24 (30%); one thing: 57
+  parts per split: 2 parts: 16, 3 parts: 7, 4 parts: 1
+  split by kind: item 15, task 9; by field (top 10): email purpose 6, action item 4, key points 2, email content 2, main message 2, project description 2, project timeline 2, mitigation 1, project methodology 1, email recipient 1
+  with ', and' in the detail: split 8 of 12; without: split 16 of 69
+
+3. EVERY SPLIT (whole -> parts)
+  - financial_analyst financial_analyst:27:1 [item, email purpose] provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase
+        > provide a preliminary financial analysis of the regional AI pilot program's performance
+        > outline key considerations for the next phase
+  - financial_analyst financial_analyst:27:4 [item, key points] include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts
+        > include identified areas for further cost optimization in infrastructure and data processing
+        > recommendations for scaling the pilot to additional regions with potential budgetary impacts
+  - financial_analyst financial_analyst:27:5 [task, action item] review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week
+        > review the attached preliminary financial report
+        > be prepared to discuss these findings at our strategy meeting next week
+  - financial_analyst financial_analyst:104:1 [task, email purpose] provide a preliminary financial analysis of the proposed pilot expansion to Mexico, outlining potential costs, revenue implications, and key financial considerations for scalability
+        > provide a preliminary financial analysis of the proposed pilot expansion to Mexico
+        > outlining potential costs
+        > revenue implications
+        > key financial considerations for scalability
+  - financial_analyst financial_analyst:104:8 [item, email content] key financial risks such as currency fluctuation exposure, regulatory compliance costs, and potential for slower-than-anticipated market adoption
+        > currency fluctuation exposure
+        > regulatory compliance costs
+        > potential for slower-than-anticipated market adoption
+  - financial_analyst financial_analyst:127:3 [item, main message] exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance
+        > exploring the financial implications of AI integration in mid-size manufacturing
+        > highlighting efficiency gains and cost reductions in the European market
+        > with a focus on supply chain optimization and predictive maintenance
+  - management_consultant management_consultant:38:2 [item, project description] comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution
+        > enhance the client digital onboarding experience
+        > streamline internal processes
+        > integrate a robust, regional compliance framework for a leading fintech institution
+  - management_consultant management_consultant:38:5 [item, project timeline] initial implementation in the first 6 months and continuous refinement thereafter
+        > initial implementation in the first 6 months
+        > continuous refinement thereafter
+  - management_consultant management_consultant:43:1 [item, email purpose] summarize the initial findings and proposed next steps for enhancing the strategic security posture of the regional manufacturing operations
+        > summarize the initial findings
+        > proposed next steps for enhancing the strategic security posture of the regional manufacturing operations
+  - management_consultant management_consultant:43:7 [task, action item] schedule a follow-up discussion to review these findings in detail and align on the proposed action plan within the next few business days
+        > schedule a follow-up discussion to review these findings in detail
+        > align on the proposed action plan within the next few business days
+  - management_consultant management_consultant:66:2 [item, project description] strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination
+        > strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability
+        > improving care coordination
+  - management_consultant management_consultant:66:5 [item, project timeline] phased rollout over the first year and optimization planned for the subsequent six months
+        > phased rollout over the first year
+        > optimization planned for the subsequent six months
+  - management_consultant management_consultant:66:21 [item, mitigation] mitigation strategies involving a dedicated legal and compliance workstream and a robust communication plan
+        > mitigation strategies involving a dedicated legal and compliance workstream
+        > a robust communication plan
+  - management_consultant management_consultant:66:25 [item, project methodology] comprehensive stakeholder workshops, expert interviews, and a robust change management program
+        > comprehensive stakeholder workshops
+        > expert interviews
+        > a robust change management program
+  - management_consultant management_consultant:107:1 [item, email purpose] update key stakeholders on the pilot innovation-focused fintech enterprise and outline the next steps
+        > update key stakeholders on the pilot innovation-focused fintech enterprise
+        > outline the next steps
+  - management_consultant management_consultant:107:2 [item, email recipient] Regional Market Leads for EMEA, APAC, and the Americas
+        > Regional Market Leads for EMEA
+        > APAC
+        > the Americas
+  - sales_manager sales_manager:4:7 [task, action item] I will review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days
+        > review Q3 sales forecasts
+        > adjust the pipeline for new compliance solutions within five days
+  - sales_manager sales_manager:20:1 [task, email purpose] provide an update on the Q3 performance for key enterprise accounts and outline strategic priorities for the upcoming period
+        > provide an update on the Q3 performance for key enterprise accounts
+        > outline strategic priorities for the upcoming period
+  - sales_manager sales_manager:20:4 [task, email content] analysis of key account health metrics and emerging trends in the telecommunications sector, along with proposed strategic initiatives for cross-selling and upselling opportunities
+        > analysis of key account health metrics and emerging trends in the telecommunications sector
+        > proposed strategic initiatives for cross-selling and upselling opportunities
+  - sales_manager sales_manager:20:5 [task, email action item] review the attached Q3 performance summary and be prepared to discuss these insights during our regional sync meeting next week to finalize our action plans
+        > review the attached Q3 performance summary
+        > be prepared to discuss these insights during our regional sync meeting next week to finalize our action plans
+  - sales_manager sales_manager:84:1 [task, email purpose] outline strategies for scaling our new electric vehicle charging infrastructure solutions across key international markets and solicit feedback for refinement
+        > outline strategies for scaling our new electric vehicle charging infrastructure solutions across key international markets
+        > solicit feedback for refinement
+  - sales_manager sales_manager:84:4 [item, key points] proposed phased rollout plan for global market penetration, focusing on high-growth automotive markets, resource allocation and support requirements for sales teams in new territories, and strategic partnerships and government incentive programs to accelerate adoption
+        > proposed phased rollout plan for global market penetration, focusing on high-growth automotive markets
+        > resource allocation and support requirements for sales teams in new territories
+        > strategic partnerships and government incentive programs to accelerate adoption
+  - sales_manager sales_manager:84:5 [task, action item] review the attached strategic overview document and be prepared to discuss key initiatives and provide regional insights during our global sales alignment call next week
+        > review the attached strategic overview document
+        > be prepared to discuss key initiatives
+        > provide regional insights during our global sales alignment call next week
+  - sales_manager sales_manager:92:3 [item, main message] being delighted to see our mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction, and asking what innovations are driving success in this dynamic landscape
+        > being delighted to see our mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enterprise solutions as key to sustained growth and client satisfaction
+        > asking what innovations are driving success in this dynamic landscape
+
+4. KEPT WHOLE (up to 40, in order)
+  - financial_analyst financial_analyst:6:4 [item, agenda item] a review of current AI-driven drug discovery project budgets and spend
+  - financial_analyst financial_analyst:8:3 [item, liked music feature] the swing and energy in his big band sound
+  - financial_analyst financial_analyst:8:4 [preference, liked music feature] love the swing and energy in his big band sound
+  - financial_analyst financial_analyst:11:3 [item, agenda item] Forecasting and Risk Assessment for the Next Operating Period
+  - financial_analyst financial_analyst:11:4 [item, agenda item] Discussion on Current Market Conditions and Impact on Real Estate Investments
+  - financial_analyst financial_analyst:16:2 [item, project description] enhance operational efficiency and cost-effectiveness across our regional logistics network through strategic infrastructure upgrades and process re-engineering
+  - financial_analyst financial_analyst:16:5 [item, project timeline] key milestones scheduled at 6, 12, and 18-month intervals
+  - financial_analyst financial_analyst:16:13 [item, project objective] enhance regional warehouse utilization by 20% through optimized layout and material handling processes
+  - financial_analyst financial_analyst:16:15 [item, key deliverable] updated operational procedures and training modules for logistics personnel
+  - financial_analyst financial_analyst:16:17 [item, risk analysis] potential for initial operational disruption during system integration and process changes
+  - financial_analyst financial_analyst:16:18 [item, risk analysis] fluctuations in capital expenditure costs due to market volatility for equipment and technology
+  - financial_analyst financial_analyst:32:1 [task, project objective] Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months
+  - financial_analyst financial_analyst:42:3 [item, liked author] tackles complex social issues with such depth and personal reflection
+  - financial_analyst financial_analyst:56:14 [item, key deliverable] developed and validated AI-driven credit risk scoring model prototype within nine months
+  - financial_analyst financial_analyst:56:17 [item, key deliverable] full model integration plan and API documentation for existing lending platforms
+  - financial_analyst financial_analyst:56:20 [item, risk analysis] model explainability and interpretability for regulatory scrutiny
+  - financial_analyst financial_analyst:85:6 [item, reason for dislike] her roles and delivery to be a bit too similar in every movie
+  - financial_analyst financial_analyst:89:3 [item, key deliverable] Final project report including impact analysis and recommendations for future enhancements
+  - financial_analyst financial_analyst:104:2 [task, email purpose] loop in the finance committee to discuss funding strategies and how we allocate capital for this expanded pilot
+  - financial_analyst financial_analyst:104:5 [task, email purpose] loop in the finance committee to discuss funding strategies and how we allocate capital for this expanded pilot
+  - financial_analyst financial_analyst:149:6 [preference, disliked author] Gladwell feels a bit too broad and theoretical for me now
+  - management_consultant management_consultant:4:3 [item, agenda item] assessment of initial ROI and impact on production efficiency
+  - management_consultant management_consultant:38:18 [item, project deliverable] Training Materials for Operations and Compliance Teams
+  - management_consultant management_consultant:42:3 [preference, liked author's work] how he makes complex historical and philosophical ideas so accessible and engaging
+  - management_consultant management_consultant:43:6 [item, key point] Proposed a phased implementation of enhanced access controls and monitoring systems
+  - management_consultant management_consultant:61:2 [item, agenda item] discussion of identified technical roadblocks and mitigation strategies
+  - management_consultant management_consultant:61:3 [item, agenda item] planning for Phase 2 rollout of account management and fraud detection modules
+  - management_consultant management_consultant:61:4 [item, agenda item] analysis of initial pilot user feedback and performance metrics
+  - management_consultant management_consultant:61:8 [task, action item] Sofia Rodriguez needs to consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting
+  - management_consultant management_consultant:66:13 [item, project objective] identify and evaluate key integration points for existing national digital health platforms
+  - management_consultant management_consultant:66:17 [item, project deliverable] Detailed Integration Blueprint and API Strategy Document
+  - management_consultant management_consultant:66:22 [item, mitigation] a dedicated legal and compliance workstream
+  - management_consultant management_consultant:66:24 [item, project methodology] methodology leverages Agile principles for rapid prototyping and iterative development, combined with a structured Waterfall approach for foundational strategic planning and compliance
+  - management_consultant management_consultant:69:3 [item, agenda item] Resource allocation and timeline adjustments for upcoming period
+  - management_consultant management_consultant:98:4 [item, liked topic] learning about new innovations and how they shape our future
+  - management_consultant management_consultant:107:6 [item, email key point] strong user engagement and positive market reception in test regions
+  - management_consultant management_consultant:107:7 [item, email key point] strategic alignment review confirming continued potential for significant market disruption and revenue growth
+  - management_consultant management_consultant:114:4 [item, reason for liking] the way he handled epic themes with such intimacy and emotional depth
+  - sales_manager sales_manager:3:2 [item, agenda item] identifying key pain points and bottlenecks
+  - sales_manager sales_manager:3:3 [item, agenda item] discussing resource allocation and support requirements
+
+5. THE TABLE at the end of each persona's history: E30's rows alone, then with the parts (both with D49's closing)
+  financial_analyst: holding at the end 304 -> 318; done 10, false 2, no longer 27, true 279
+  management_consultant: holding at the end 322 -> 345; done 13, false 3, no longer 34, true 295
+  sales_manager: holding at the end 291 -> 307; done 12, false 4, no longer 35, true 256
+
+6. HAND-CHECK SAMPLE: decisions on E27's 37 sessions
+  - financial_analyst session 6 line 8 [4] a review of current AI-driven drug discovery project budgets and spend
+        one thing
+  - financial_analyst session 27 line 7 [1] provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase
+        split: provide a preliminary financial analysis of the regional AI pilot program's performance | outline key considerations for the next phase
+  - financial_analyst session 27 line 11 [4] include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts
+        split: include identified areas for further cost optimization in infrastructure and data processing | recommendations for scaling the pilot to additional regions with potential budgetary impacts
+  - financial_analyst session 27 line 13 [5] review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week
+        split: review the attached preliminary financial report | be prepared to discuss these findings at our strategy meeting next week
+  - financial_analyst session 32 line 5 [1] Achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months
+        one thing
+  - financial_analyst session 56 line 20 [14] developed and validated AI-driven credit risk scoring model prototype within nine months
+        one thing
+  - financial_analyst session 56 line 20 [17] full model integration plan and API documentation for existing lending platforms
+        one thing
+  - financial_analyst session 56 line 22 [20] model explainability and interpretability for regulatory scrutiny
+        one thing
+  - financial_analyst session 89 line 9 [3] Final project report including impact analysis and recommendations for future enhancements
+        one thing
+  - financial_analyst session 127 line 10 [3] exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a focus on supply chain optimization and predictive maintenance
+        split: exploring the financial implications of AI integration in mid-size manufacturing | highlighting efficiency gains and cost reductions in the European market | with a focus on supply chain optimization and predictive maintenance
+  - management_consultant session 38 line 8 [2] comprehensive initiative to enhance the client digital onboarding experience, streamline internal processes, and integrate a robust, regional compliance framework for a leading fintech institution
+        split: enhance the client digital onboarding experience | streamline internal processes | integrate a robust, regional compliance framework for a leading fintech institution
+  - management_consultant session 38 line 12 [5] initial implementation in the first 6 months and continuous refinement thereafter
+        split: initial implementation in the first 6 months | continuous refinement thereafter
+  - management_consultant session 38 line 20 [18] Training Materials for Operations and Compliance Teams
+        one thing
+  - management_consultant session 61 line 8 [2] discussion of identified technical roadblocks and mitigation strategies
+        one thing
+  - management_consultant session 61 line 8 [3] planning for Phase 2 rollout of account management and fraud detection modules
+        one thing
+  - management_consultant session 61 line 8 [4] analysis of initial pilot user feedback and performance metrics
+        one thing
+  - management_consultant session 61 line 12 [8] Sofia Rodriguez needs to consolidate and present a summary of all pilot user feedback, highlighting critical issues, by the next meeting
+        one thing
+  - sales_manager session 4 line 9 [2] identifying potential risks and mitigation strategies for upcoming contract renewals
+        one thing
+  - sales_manager session 4 line 11 [4] initiate discussions with legal and product teams regarding proactive solutions for anticipated regulatory shifts
+        one thing
+  - sales_manager session 4 line 13 [7] I will review Q3 sales forecasts and adjust the pipeline for new compliance solutions within five days
+        split: review Q3 sales forecasts | adjust the pipeline for new compliance solutions within five days
+  - sales_manager session 36 line 15 [3] raw energy and harder rock sound
+        one thing
+
+written: results/probes/E31_handcheck.json
