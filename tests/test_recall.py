@@ -60,11 +60,14 @@ SESSION = {"session_id": 5, "date": "2025-06-05", "conversation": [
 
 
 def test_prompts_load_and_never_mention_policies_or_flags():
-    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}"), ("rewrite_v3", "{memory}")):
+    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}"), ("rewrite_v3", "{memory}"), ("rewrite_v4", "{memory}")):
         system, user = load_prompt(name)
         text = system + user
         assert "{conversation}" in user and slot in user and "share_memory" not in text
-        assert not any(w in text.lower() for w in ("discard", "replace", "keep", "depth"))
+        # v4's "Do not replace what the memory says with what the user is saying now" is about the rewrite's
+        # content, not storage; the policies themselves are never described
+        allowed = "do not replace what the memory says with what the user is saying now"
+        assert not any(w in text.lower().replace(allowed, "") for w in ("discard", "replace", "keep", "depth", "stored"))
 
 
 def test_parse_answers():
