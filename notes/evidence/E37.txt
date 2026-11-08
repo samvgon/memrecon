@@ -1,0 +1,191 @@
+# Evidence E37
+script:       scripts/explore/E37_select_order.py
+run at:       2026-11-08T13:48:56-08:00
+memrecon:     3dae6ef (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Stage 0 control run: 73328e6d45 (select prompt in that run: select_v1)
+Turns with 2 or 3 memories shown: 373 (2 shown: 154, 3 shown: 219; note 159, log 214); 1557 questions
+
+1557 questions in 791 s (403 answered from the cache)
+Newest first reproduces E35's answer: 373 of 373
+Failed answers: newest first 0, newest first, asked again 0, random order 0
+
+Compared with newest first (each question; failed ones left out)
+                                     questions      same set    same first   same answer
+  note, 2 shown, newest first, asked again        66    62   93.9%    60   90.9%    59   89.4%
+  note, 2 shown, random order               66    47   71.2%    44   66.7%    37   56.1%
+  note, 3 shown, newest first, asked again        93    87   93.5%    88   94.6%    83   89.2%
+  note, 3 shown, random order              279   218   78.1%   221   79.2%   172   61.6%
+  note, all shown, newest first, asked again       159   149   93.7%   148   93.1%   142   89.3%
+  note, all shown, random order            345   265   76.8%   265   76.8%   209   60.6%
+  log, 2 shown, newest first, asked again        88    82   93.2%    83   94.3%    81   92.0%
+  log, 2 shown, random order                88    65   73.9%    56   63.6%    53   60.2%
+  log, 3 shown, newest first, asked again       126   118   93.7%   120   95.2%   116   92.1%
+  log, 3 shown, random order               378   266   70.4%   254   67.2%   192   50.8%
+  log, all shown, newest first, asked again       214   200   93.5%   203   94.9%   197   92.1%
+  log, all shown, random order             466   331   71.0%   310   66.5%   245   52.6%
+  both, 2 shown, newest first, asked again       154   144   93.5%   143   92.9%   140   90.9%
+  both, 2 shown, random order              154   112   72.7%   100   64.9%    90   58.4%
+  both, 3 shown, newest first, asked again       219   205   93.6%   208   95.0%   199   90.9%
+  both, 3 shown, random order              657   484   73.7%   475   72.3%   364   55.4%
+  both, all shown, newest first, asked again       373   349   93.6%   351   94.1%   339   90.9%
+  both, all shown, random order            811   596   73.5%   575   70.9%   454   56.0%
+  ("same first" counts two empty answers as the same; "same answer" is the same memories in the same order)
+
+How often each position is chosen, and how often the first choice is the memory listed first
+                                 questions    1st chosen    2nd chosen    3rd chosen   none chosen  first choice = 1st
+  2 shown, newest first                154    93   60.4%    78   50.6%                  35   22.7%    77 of 119    64.7%
+  2 shown, newest first, asked again       154    89   57.8%    80   51.9%                  37   24.0%    74 of 117    63.2%
+  2 shown, random order                154    84   54.5%    95   61.7%                  38   24.7%    65 of 116    56.0%
+  3 shown, newest first                219   144   65.8%   126   57.5%   115   52.5%    46   21.0%   108 of 173    62.4%
+  3 shown, newest first, asked again       219   145   66.2%   131   59.8%   116   53.0%    46   21.0%   110 of 173    63.6%
+  3 shown, random order                657   405   61.6%   374   56.9%   408   62.1%   129   19.6%   222 of 528    42.0%
+  Under newest first, position and recency are the same thing; under random orders they are not.
+
+When it chooses every memory shown (2 or more): does it keep the listed order?
+  newest first                    149 answers: listed order   84  56.4%, reversed   22  14.8%, other   43
+  newest first, asked again       152 answers: listed order   88  57.9%, reversed   21  13.8%, other   43
+  random order                    362 answers: listed order  126  34.8%, reversed   77  21.3%, other  159
+
+The same memory listed first or last in the same turn (random orders and newest first; what it says held fixed)
+  memories seen both first and last in their turn: 886; chosen more often when first 89, when last 72, the same 725
+  sign test, first against last: p = 0.207
+
+== Examples: turns where a random order changed the chosen set (up to 15) ==
+--- financial_analyst log session 102 line 5
+  5. User: For key decisions, please add: "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold."
+  A (2025-06-02) Please remove "Mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold." from the key …
+  B (2025-06-02) Please remove "Comprehensive cost-benefit analysis report for proposed infrastructure investments" from the deliverables.
+  C (2025-06-01) We mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold and approved reallocation o…
+  newest first                shown ABC -> chose C
+  newest first, asked again   shown ABC -> chose C
+  random order                shown ACB -> chose A
+  random order                shown CBA -> chose C
+  random order                shown BCA -> chose AC
+--- financial_analyst log session 103 line 11
+  11. User: Speaking of anticipating things, I just realized I walked 5,836 steps today.
+  A (2025-06-04) I actually walked 6,700 steps today
+  B (2025-06-02) I walked 11,434 steps today.
+  C (2025-06-01) I actually hit my step goal today; I walked 10,000 steps.
+  newest first                shown ABC -> chose ABC
+  newest first, asked again   shown ABC -> chose ABC
+  random order                shown BAC -> chose ABC
+  random order                shown ACB -> chose none
+  random order                shown BCA -> chose ABC
+--- financial_analyst log session 104 line 13
+  13. User: Please review the attached preliminary financial overview and be prepared to discuss these points during our strategy meeting next week to refine our financial modeling for the Mexico pilot.
+  A (2025-06-04) I need to update the email titled 'To provide a preliminary financial analysis of the regional AI pilot program's performance and outline key conside…
+  B (2025-06-02) I'd like the recipients to review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next we…
+  newest first                shown AB -> chose BA
+  newest first, asked again   shown AB -> chose BA
+  random order                shown BA -> chose B
+--- financial_analyst log session 104 line 7
+  7. User: The email's purpose is to provide a preliminary financial analysis of the proposed pilot expansion to Mexico, outlining potential costs, revenue implications, and key financial consideration…
+  A (2025-06-04) I need to update the email titled 'To provide a preliminary financial analysis of the regional AI pilot program's performance and outline key conside…
+  B (2025-06-02) The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next p…
+  C (2025-06-01) We mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold and approved reallocation o…
+  newest first                shown ABC -> chose ABC
+  newest first, asked again   shown ABC -> chose AB
+  random order                shown BAC -> chose BAC
+  random order                shown BCA -> chose BA
+  random order                shown CAB -> chose ABC
+--- financial_analyst log session 104 line 9
+  9. User: The email should go to the Lead Project Manager for the Mexico Pilot and the Head of North American Operations. We also need to loop in the finance committee to discuss funding strategies an…
+  A (2025-06-04) I need to update the email titled 'To provide a preliminary financial analysis of the regional AI pilot program's performance and outline key conside…
+  B (2025-06-02) The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next p…
+  C (2025-06-01) I also need to update the agenda items to include 'Discussion on funding allocation for pilot AI initiatives in patient engagement'.
+  newest first                shown ABC -> chose none
+  newest first, asked again   shown ABC -> chose none
+  random order                shown BCA -> chose none
+  random order                shown BAC -> chose BAC
+  random order                shown ACB -> chose none
+--- financial_analyst log session 115 line 12
+  12. User: Definitely, especially when I have to review audit findings for work, it keeps me up.
+  A (2025-06-03) I finished reviewing the audit findings.
+  B (2025-06-01) I need to review some audit findings later today.
+  newest first                shown AB -> chose A
+  newest first, asked again   shown AB -> chose A
+  random order                shown BA -> chose AB
+--- financial_analyst log session 119 line 12
+  12. User: Speaking of efficiency, I spent $17.18 on lunch today, so I'm trying to be efficient with my budget.
+  A (2025-06-04) I spent $9.41 on lunch today.
+  B (2025-06-01) I'm actually trying to keep my lunch spending under $60 per week. It's a new goal to help me save money and eat healthier.
+  C (2025-06-01) I spent $11.83 on lunch today.
+  newest first                shown ABC -> chose BAC
+  newest first, asked again   shown ABC -> chose BAC
+  random order                shown BCA -> chose BAC
+  random order                shown ACB -> chose B
+  random order                shown CBA -> chose BAC
+--- financial_analyst log session 122 line 10
+  10. User: Speaking of balance, I just spent $41.42 on dinner, so I'm trying to balance my budget too.
+  A (2025-06-06) I spent $17.18 on lunch today, so I'm trying to be efficient with my budget.
+  B (2025-06-04) I spent $42.37 on dinner last night.
+  C (2025-06-02) I just spent $47.15 on dinner tonight.
+  newest first                shown ABC -> chose ABC
+  newest first, asked again   shown ABC -> chose ABC
+  random order                shown CAB -> chose ABC
+  random order                shown CBA -> chose ABC
+  random order                shown BCA -> chose A
+--- financial_analyst log session 127 line 10
+  10. User: The main message is about exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost reductions in the European market, with a …
+  A (2025-06-01) The agenda for our meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial im…
+  B (2025-06-01) For the meeting notes, the title was "Strategic AI Integration Financial Review - North American Market Expansion."
+  newest first                shown AB -> chose A
+  newest first, asked again   shown AB -> chose A
+  random order                shown BA -> chose none
+--- financial_analyst log session 140 line 12
+  12. User: Speaking of meaningful results, I used to love the Swiss Alps, but lately I'm really drawn to the French Riviera for travel. The sunshine and coastline are just calling my name!
+  A (2025-06-05) I've actually changed my mind about the Swiss Alps; I used to dislike them, but now I really like them!
+  B (2025-06-02) I've always disliked the idea of visiting the Swiss Alps; I much prefer warmer destinations.
+  newest first                shown AB -> chose B
+  newest first, asked again   shown AB -> chose A
+  random order                shown BA -> chose A
+--- financial_analyst log session 141 line 10
+  10. User: Speaking of challenges, I just spent $8.94 on breakfast this morning, and it makes me think about budgeting.
+  A (2025-06-05) Yes, I spent $6.01 on breakfast this morning.
+  B (2025-06-04) I spent $61.58 on groceries this morning.
+  C (2025-06-02) I just spent $10.82 on breakfast.
+  newest first                shown ABC -> chose AC
+  newest first, asked again   shown ABC -> chose AC
+  random order                shown ACB -> chose ACB
+  random order                shown CAB -> chose CAB
+  random order                shown BCA -> chose ACB
+--- financial_analyst log session 145 line 10
+  10. User: The main message is about analyzing the ROI of automation in manufacturing, focusing on strategic growth beyond just cost savings. Our internal review of pilot programs shows a significant …
+  A (2025-06-06) The main message is about exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost re…
+  B (2025-06-02) The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next p…
+  C (2025-06-01) The agenda for our meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial im…
+  newest first                shown ABC -> chose none
+  newest first, asked again   shown ABC -> chose none
+  random order                shown ACB -> chose none
+  random order                shown BCA -> chose A
+  random order                shown CAB -> chose A
+--- financial_analyst log session 153 line 13
+  13. User: That's a fun one! I actually need to remember to call my parents today.
+  A (2025-06-06) I no longer need to track "Call parents" on my to-do list.
+  B (2025-06-04) I actually need to call my parents today, so that's on my mind.
+  C (2025-06-02) I need to remember to call my parents later today.
+  newest first                shown ABC -> chose A
+  newest first, asked again   shown ABC -> chose A
+  random order                shown CBA -> chose A
+  random order                shown BCA -> chose A
+  random order                shown ACB -> chose BCA
+--- financial_analyst log session 27 line 11
+  11. User: For key points, I want to include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with …
+  A (2025-06-01) This project aims to enhance operational efficiency and cost-effectiveness across our regional logistics network through strategic infrastructure upg…
+  B (2025-06-01) We mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold and approved reallocation o…
+  newest first                shown AB -> chose none
+  newest first, asked again   shown AB -> chose none
+  random order                shown BA -> chose BA
+--- financial_analyst log session 27 line 7
+  7. User: The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase.
+  A (2025-06-01) I also need to update the agenda items to include 'Discussion on funding allocation for pilot AI initiatives in patient engagement'.
+  B (2025-06-01) I need to update my meeting notes titled 'Strategic AI Integration Financial Review - North American Market Expansion'. I have some changes to the at…
+  C (2025-06-01) The action items include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the en…
+  newest first                shown ABC -> chose ABC
+  newest first, asked again   shown ABC -> chose ABC
+  random order                shown CBA -> chose none
+  random order                shown BCA -> chose none
+  random order                shown ACB -> chose ACB

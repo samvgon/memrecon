@@ -1,7 +1,7 @@
 # Evidence E36
 script:       scripts/explore/E36_rewrite_replay.py
-run at:       2026-11-08T13:11:59-08:00
-memrecon:     cce69a5 (scripts clean)
+run at:       2026-11-08T13:32:20-08:00
+memrecon:     3dae6ef (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
@@ -14,9 +14,9 @@ Cases replayed, by arm and v4's class in E35:
   total                            208
 
 v4: 208 cases in 0 s
-v5a: 208 cases in 221 s
-v5b: 208 cases in 218 s
-Total 439 s
+v5a: 208 cases in 0 s
+v5b: 208 cases in 0 s
+Total 0 s
 v4 replay reproduces E35's rewrite: 208 of 208 (208 answered from the cache)
 
 Class of each answer, by the group the case was in under v4 in E35 (rows: version; % of the group)
@@ -640,3 +640,201 @@ Headline (all arms): replaced by a different event, as a share of the cases in e
   v4:     [shortened] The user finds it interesting how everyday activities, such as spending money on coffee, reveal complex underlying systems like economics or celestial mechanics.
   v5a:    [replaced by a different event] The user is interested in the hidden complexity behind everyday activities and transactions, such as the economic systems behind buying coffee.
   v5b:    [shortened] The user is interested in the hidden complexity behind everyday activities and has previously noted spending money on coffee as an example of this, specifically mentioning spending $8.39 on coffee in an earlier conversation.
+
+== The form of the answers ==
+Merged: the rewrite keeps every number of the memory and adds one from the user's message (two events in one
+memory; dates left out of the comparison). First person: "I", "my" or "me" (quotations are not left out,
+so a quoted title can count). Framing: the rewrite mentions a conversation ("in an earlier conversation").
+                                                v4           v5a           v5b
+  merged, note                           6    7.0%     6    7.0%     2    2.3%
+  merged, log                            8    6.6%    20   16.4%    10    8.2%
+  first person, note                     0    0.0%     0    0.0%     0    0.0%
+  first person, log                      0    0.0%     0    0.0%     0    0.0%
+  mentions a conversation, note          0    0.0%     4    4.7%     2    2.3%
+  mentions a conversation, log           4    3.3%    31   25.4%    21   17.2%
+
+== Every merged answer under v5a or v5b ==
+--- financial_analyst log session 13 line 18 (memory from 2025-06-01, conversation 2025-06-01)
+  USER:   Speaking of costs, I spent $11.83 on lunch today.
+  MEMORY: I just spent $9.50 on a coffee this morning.
+  v4:     [replaced by a different event] The user spent $11.83 on lunch today.
+  v5a:    [kept + words from the message] The user spent $9.50 on a coffee this morning and $11.83 on lunch today.
+  v5b:    [kept] The user spent $9.50 on a coffee this morning.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- financial_analyst log session 156 line 14 (memory from 2025-06-06, conversation 2025-06-07)
+  USER:   Speaking of daily activities, I actually walked 8,795 steps today.
+  MEMORY: I walked 9,045 steps today, which felt pretty good.
+  v4:     [replaced by a different event] The user walked 8,795 steps on June 7, 2025.
+  v5a:    [shortened] The user walked 9,045 steps on June 6, 2025, and 8,795 steps on June 7, 2025.
+  v5b:    [shortened] The user walked 9,045 steps on 2025-06-06 and felt good about it.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- financial_analyst log session 17 line 13 (memory from 2025-06-01, conversation 2025-06-01)
+  USER:   I'm actually trying to keep my lunch spending under $60 per week. It's a new goal to help me save money and eat healthier.
+  MEMORY: I spent $11.83 on lunch today.
+  v4:     [replaced by a different event] The user is trying to keep their lunch spending under $60 per week as a new goal to save money and eat healthier.
+  v5a:    [kept + words from the message] The user is trying to keep their lunch spending under $60 per week as a new goal to save money and eat healthier, and they previously spent $11.83 on lunch on this day.
+  v5b:    [kept + words from the message] The user is trying to keep their lunch spending under $60 per week to save money and eat healthier, and they previously spent $11.83 on lunch on this day.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- financial_analyst log session 36 line 14 (memory from 2025-06-01, conversation 2025-06-02)
+  USER:   It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses.
+  MEMORY: I just spent $9.50 on a coffee this morning.
+  v4:     [replaced by a different event] The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee.
+  v5a:    [shortened] The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee and previously noting a $9.50 coffee purchase.
+  v5b:    [shortened] The user is trying to be more mindful of their expenses, having recently spent $9.50 on a coffee the previous day and $6.96 on a coffee on the current day.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- financial_analyst log session 36 line 14 (memory from 2025-06-02, conversation 2025-06-02)
+  USER:   It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses.
+  MEMORY: I just spent $5.29 on coffee, which is always a useful start to my day.
+  v4:     [replaced by a different event] The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee.
+  v5a:    [replaced by a different event] The user is trying to be more mindful of their expenses, having recently spent $6.96 on coffee, following an earlier instance where they spent $5.29 on coffee.
+  v5b:    [shortened] The user mentioned spending $5.29 on coffee in an earlier conversation on the same day.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- financial_analyst log session 41 line 11 (memory from 2025-06-02, conversation 2025-06-02)
+  USER:   That's amazing. Speaking of complex data, I walked 11,434 steps today.
+  MEMORY: just 3,000 steps
+  v4:     [replaced by a different event] The user walked 11,434 steps on 2025-06-02.
+  v5a:    [shortened] The user previously reported walking 3,000 steps, but on 2025-06-02, they reported walking 11,434 steps.
+  v5b:    [shortened] The user previously reported walking 3,000 steps on 2025-06-02.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- financial_analyst log session 48 line 19 (memory from 2025-06-02, conversation 2025-06-03)
+  USER:   It's really cool. I even managed to hit 10,151 steps today, which is quite a milestone for me.
+  MEMORY: I walked 11,434 steps today.
+  v4:     [shortened] The user mentioned hitting a milestone of 10,151 steps on 2025-06-03, and previously recorded walking 11,434 steps on 2025-06-02.
+  v5a:    [shortened] The user mentioned walking 11,434 steps on 2025-06-02, and on 2025-06-03, they shared that they hit 10,151 steps, which they consider a milestone.
+  v5b:    [kept + words from the message] The user is interested in fitness milestones and previously walked 11,434 steps on June 2, 2025.
+  merged: v4 True, v5a True, v5b False; group in E35: other
+--- financial_analyst log session 49 line 16 (memory from 2025-06-02, conversation 2025-06-03)
+  USER:   I actually just spent $5.97 on coffee this morning.
+  MEMORY: I just spent $5.29 on coffee, which is always a useful start to my day.
+  v4:     [replaced by a different event] The user spends money on coffee, having recently spent $5.97 on it.
+  v5a:    [shortened] The user spends money on coffee daily, having spent $5.29 on it the previous day and $5.97 on it today.
+  v5b:    [shortened] The user spends money on coffee daily, having spent $5.29 on it the previous day and $5.97 on it today.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- financial_analyst log session 89 line 5 (memory from 2025-06-03, conversation 2025-06-04)
+  USER:   Yes, the budget should be updated from $1,700,000 to $1,550,000.
+  MEMORY: The proposed budget for this project is $1,700,000.
+  v4:     [kept + words from the message] The user is updating the project proposal titled 'AI-Driven Credit Risk Scoring Model Enhancement' and has specified that the budget needs to be changed from $1,700,000 to $1,550,000.
+  v5a:    [kept + words from the message] The user is updating the project proposal for 'AI-Driven Credit Risk Scoring Model Enhancement', changing the budget from $1,700,000 to $1,550,000.
+  v5b:    [kept + words from the message] The user is updating the budget for the project proposal titled 'AI-Driven Credit Risk Scoring Model Enhancement' from $1,700,000 to $1,550,000.
+  merged: v4 True, v5a True, v5b True; group in E35: other
+--- financial_analyst note session 36 line 14 (memory from 2025-06-02, conversation 2025-06-02)
+  USER:   It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses.
+  MEMORY: The user spent $5.29 on coffee.
+  v4:     [replaced by a different event] The user spent $6.96 on a coffee and is trying to be more mindful of their expenses.
+  v5a:    [kept + words from the message] The user is trying to be more mindful of their expenses, having recently spent $6.96 on coffee, and previously spent $5.29 on coffee.
+  v5b:    [kept] The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- financial_analyst note session 48 line 19 (memory from 2025-06-01, conversation 2025-06-03)
+  USER:   It's really cool. I even managed to hit 10,151 steps today, which is quite a milestone for me.
+  MEMORY: The user is motivated to start walking 13,000 steps per day to boost their fitness and energy levels.
+  v4:     [kept + words from the message] The user is motivated to start walking 13,000 steps per day to boost their fitness and energy levels, and they recently hit a milestone of 10,151 steps.
+  v5a:    [kept + words from the message] The user is motivated to start walking 13,000 steps per day to boost their fitness and energy levels, and they recently hit a milestone of 10,151 steps.
+  v5b:    [identical] The user is motivated to start walking 13,000 steps per day to boost their fitness and energy levels.
+  merged: v4 True, v5a True, v5b False; group in E35: other
+--- management_consultant log session 129 line 5 (memory from 2025-06-02, conversation 2025-06-06)
+  USER:   Yes, please update the budget from $900,000 to $1,100,000.
+  MEMORY: The estimated budget for this project is $1,050,000.
+  v4:     [updated as the user said] The user is working on the 'FinTech Digital Onboarding Optimization & Compliance Framework' project proposal and has requested to update its budget from $900,000 to $1,100,000.
+  v5a:    [kept + words from the message] The user previously had an estimated budget of $1,050,000 for a project, but in the current conversation, they are requesting to update the budget for the 'FinTech Digital Onboarding Optimization & Compliance Framework' project p…
+  v5b:    [kept + words from the message] The user previously had an estimated budget of $1,050,000 for a project, but in the current conversation, they are requesting to update the budget for the 'FinTech Digital Onboarding Optimization & Compliance Framework' project p…
+  merged: v4 False, v5a True, v5b True; group in E35: updated as the user said
+--- management_consultant log session 154 line 20 (memory from 2025-06-04, conversation 2025-06-07)
+  USER:   Yes, I've been trying to be more mindful of my own habits, and I walked 6,828 steps today.
+  MEMORY: I walked 13,611 steps today, so my personal system is feeling pretty good.
+  v4:     [replaced by a different event] The user is mindful of their physical activity and tracks their daily steps, having walked 6,828 steps on June 7, 2025.
+  v5a:    [shortened] The user is tracking their daily physical activity, having walked 13,611 steps on June 4th and 6,828 steps on June 7th.
+  v5b:    [shortened] The user walked 13,611 steps on June 4, 2025, and felt their personal system was in good shape.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- management_consultant log session 32 line 13 (memory from 2025-06-01, conversation 2025-06-02)
+  USER:   It certainly does; I just grabbed a coffee for $3.50.
+  MEMORY: I just grabbed a coffee for $4.98.
+  v4:     [replaced by a different event] The user mentioned that they just grabbed a coffee for $3.50.
+  v5a:    [shortened] The user mentioned buying a coffee for $3.50 on 2025-06-02, whereas in a previous conversation on 2025-06-01, they had mentioned buying a coffee for $4.98.
+  v5b:    [shortened] The user bought a coffee for $4.98 on 2025-06-01.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- management_consultant log session 66 line 11 (memory from 2025-06-02, conversation 2025-06-03)
+  USER:   The proposed budget for this project is €750,000.
+  MEMORY: The estimated budget for this project is $1,050,000.
+  v4:     [replaced by a different event] The user is working on a project proposal titled "Pan-European Digital Health Ecosystem Integration Strategy," which aims to unify disparate digital health platforms across key European markets to enhance patient data interoperab…
+  v5a:    [kept + words from the message] The user previously mentioned an estimated budget of $1,050,000 for their project, but in the current conversation, they stated the proposed budget is €750,000.
+  v5b:    [kept + words from the message] The user previously estimated the budget for a project to be $1,050,000, but in the current conversation regarding the 'Pan-European Digital Health Ecosystem Integration Strategy', they stated the proposed budget is €750,000.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- management_consultant note session 76 line 12 (memory from 2025-06-02, conversation 2025-06-04)
+  USER:   Yeah, the cost of some things can add up; I just spent $9.06 on coffee this morning.
+  MEMORY: The user bought a coffee for $8.47 on the morning of 2025-06-02.
+  v4:     [kept + words from the message] The user mentioned spending $9.06 on coffee this morning (2025-06-04), following a previous instance on 2025-06-02 where they bought coffee for $8.47.
+  v5a:    [kept + words from the message] The user mentioned spending $9.06 on coffee this morning (2025-06-04), and previously noted buying coffee for $8.47 on 2025-06-02.
+  v5b:    [identical] The user bought a coffee for $8.47 on the morning of 2025-06-02.
+  merged: v4 True, v5a True, v5b False; group in E35: other
+--- management_consultant note session 76 line 12 (memory from 2025-06-03, conversation 2025-06-04)
+  USER:   Yeah, the cost of some things can add up; I just spent $9.06 on coffee this morning.
+  MEMORY: The user spent $9.88 on morning coffee.
+  v4:     [replaced by a different event] The user spent $9.06 on coffee this morning.
+  v5a:    [kept + words from the message] The user spent $9.06 on coffee this morning, and previously spent $9.88 on morning coffee the day before.
+  v5b:    [replaced by a different event] The user spent $9.06 on coffee this morning.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- sales_manager log session 122 line 12 (memory from 2025-06-04, conversation 2025-06-05)
+  USER:   Speaking of tracking, I walked 7,884 steps today.
+  MEMORY: I just realized I walked 8,548 steps today.
+  v4:     [shortened] The user mentioned walking 7,884 steps on June 5, 2025, and previously noted walking 8,548 steps on June 4, 2025.
+  v5a:    [shortened] The user walked 8,548 steps on June 4, 2025, and 7,884 steps on June 5, 2025.
+  v5b:    [shortened] The user walked 8,548 steps on June 4, 2025.
+  merged: v4 True, v5a True, v5b False; group in E35: other
+--- sales_manager log session 125 line 18 (memory from 2025-06-02, conversation 2025-06-06)
+  USER:   Yes, I just spent $10.19 on breakfast, so that's part of my routine today.
+  MEMORY: my morning started with a quick $5.56 breakfast.
+  v4:     [replaced by a different event] The user mentioned spending $10.19 on breakfast as part of their daily routine.
+  v5a:    [shortened] The user mentioned spending $5.56 on breakfast in a previous conversation four days prior, and recently noted spending $10.19 on breakfast as part of their daily routine.
+  v5b:    [shortened] The user spent $5.56 on breakfast on June 2, 2025.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- sales_manager log session 163 line 12 (memory from 2025-06-05, conversation 2025-06-07)
+  USER:   That makes sense; it reminds me I spent $110.03 on groceries earlier today.
+  MEMORY: I just spent $29.95 on groceries at the store.
+  v4:     [replaced by a different event] The user mentioned spending $110.03 on groceries earlier today on 2025-06-07.
+  v5a:    [shortened] The user mentioned spending $110.03 on groceries earlier today on 2025-06-07, and previously mentioned spending $29.95 on groceries on 2025-06-05.
+  v5b:    [shortened] The user spent $110.03 on groceries on 2025-06-07 and previously spent $29.95 on groceries on 2025-06-05.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- sales_manager log session 42 line 10 (memory from 2025-06-01, conversation 2025-06-02)
+  USER:   That's smart advice. I just spent $7.01 on coffee, so I'm trying to be more mindful of small purchases.
+  MEMORY: I just spent $5.49 on coffee.
+  v4:     [replaced by a different event] The user is trying to be more mindful of small purchases, having recently spent $7.01 on coffee.
+  v5a:    [kept + words from the message] The user is trying to be more mindful of small purchases, having recently spent $7.01 on coffee, following a previous instance of spending $5.49 on coffee.
+  v5b:    [kept + words from the message] The user is trying to be more mindful of small purchases, having recently spent $5.49 on coffee.
+  merged: v4 False, v5a True, v5b False; group in E35: replaced by a different event
+--- sales_manager log session 52 line 12 (memory from 2025-06-01, conversation 2025-06-02)
+  USER:   Speaking of influences, I walked 6,470 steps today, which is a good start towards my fitness goals. It's interesting how even small daily activities can add up.
+  MEMORY: I made a good one today by walking 12,595 steps. It's a great way to clear my head.
+  v4:     [replaced by a different event] The user is focused on fitness goals and tracks their daily step count, having walked 6,470 steps on June 2, 2025. Previously, on June 1, 2025, they walked 12,595 steps, which they found helpful for clearing their head.
+  v5a:    [shortened] The user is focused on their fitness goals and tracks their daily step count, having walked 12,595 steps the previous day to clear their head and 6,470 steps today.
+  v5b:    [shortened] The user is focused on fitness goals and finds walking beneficial for clearing their head, having walked 12,595 steps the previous day and 6,470 steps today.
+  merged: v4 True, v5a True, v5b True; group in E35: replaced by a different event
+--- sales_manager log session 62 line 12 (memory from 2025-06-03, conversation 2025-06-03)
+  USER:   That makes sense. I also spent $7.69 on breakfast this morning, so I'm thinking about my own language use.
+  MEMORY: I also just spent $9.01 on coffee this morning
+  v4:     [replaced by a different event] The user spent $7.69 on breakfast this morning and mentioned thinking about their own language use.
+  v5a:    [shortened] The user spent $7.69 on breakfast and $9.01 on coffee this morning.
+  v5b:    [shortened] The user spent $9.01 on coffee and $7.69 on breakfast on the morning of June 3, 2025.
+  merged: v4 False, v5a True, v5b True; group in E35: replaced by a different event
+--- sales_manager log session 65 line 13 (memory from 2025-06-01, conversation 2025-06-03)
+  USER:   Yes, it's about drilling down, much like how I managed to get 10,800 steps in today.
+  MEMORY: I made a good one today by walking 12,595 steps. It's a great way to clear my head.
+  v4:     [shortened] The user is interested in data analysis and values asking the right questions to dig deeper into insights. They also enjoy walking for mental clarity, having recently achieved 10,800 steps on June 3, 2025, and previously recorded…
+  v5a:    [shortened] The user is interested in data analysis and finds value in asking the right questions to dig deeper into insights. They also enjoy walking for mental clarity, having recently walked 12,595 steps on June 1st and 10,800 steps on Ju…
+  v5b:    [shortened] The user walks regularly to clear their head and has previously recorded walking 12,595 steps on June 1, 2025, and 10,800 steps on June 3, 2025.
+  merged: v4 True, v5a True, v5b True; group in E35: other
+--- sales_manager note session 105 line 14 (memory from 2025-06-04, conversation 2025-06-05)
+  USER:   That's right! Speaking of patterns, I just spent $4.84 on coffee this morning.
+  MEMORY: The user spent $4.32 on a coffee this morning.
+  v4:     [kept + words from the message] The user spent $4.84 on coffee this morning (June 5, 2025), which is an increase from the $4.32 they spent on coffee the previous day (June 4, 2025).
+  v5a:    [kept + words from the message] The user spent $4.32 on coffee on 2025-06-04 and $4.84 on coffee on 2025-06-05.
+  v5b:    [kept + words from the message] The user spent $4.32 on a coffee on 2025-06-04 and $4.84 on a coffee on 2025-06-05.
+  merged: v4 True, v5a True, v5b True; group in E35: other
+--- sales_manager note session 143 line 13 (memory from 2025-06-04, conversation 2025-06-06)
+  USER:   It sure is, like finding good data for my step tracker; I only got 5,739 steps in today.
+  MEMORY: The user walked 8,548 steps on 2025-06-04.
+  v4:     [kept + words from the message] The user mentioned they only got 5,739 steps in today (2025-06-06), which is lower than their step count of 8,548 steps on 2025-06-04.
+  v5a:    [kept + words from the message] The user has a step tracker and was concerned about their step count, having recorded 5,739 steps on 2025-06-06, which is lower than the 8,548 steps they recorded on 2025-06-04.
+  v5b:    [kept + words from the message] The user has a step tracker and was concerned about their step count, noting they only got 5,739 steps on 2025-06-06, whereas they had walked 8,548 steps on 2025-06-04.
+  merged: v4 True, v5a True, v5b True; group in E35: other
+
+== Every first-person answer under v5a or v5b ==
