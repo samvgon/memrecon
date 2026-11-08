@@ -37,6 +37,8 @@ STATUSES = ("new", "added", "updated", "replaced", "removed", "done", "no longer
 WHO = ("user", "user and others", "someone else", "")  # version 1; version 2 drops "someone else" for a name copied from the line
 KEYS = {"line", "detail", "qualifier", "field", "who", "kind", "status"}
 KEYS_V2 = KEYS | {"id", "attached_to"}
+KEYS_V3 = KEYS_V2 | {"replaces"}
+REPLACING = ("updated", "removed", "done", "no longer")  # statuses that may name the earlier row they replace (version 3)
 
 
 @dataclass
@@ -55,7 +57,8 @@ class Row:
     unit: str | None = None
     resolved: str | None = None
     row_id: str = ""  # unique across the answer key: persona:session:id (version 2); empty for version 1 rows
-    attached_to: str | None = None  # row_id of the detail this one belongs to (version 2)
+    attached_to: str | None = None  # row_id of the detail this one belongs to (version 2); a root id; "unknown" (v3)
+    replaces: str | None = None  # row_id of the earlier row it replaces, removes, finishes or no longer holds (v3)
 
     def to_json(self) -> dict:
         d = asdict(self)
@@ -69,11 +72,44 @@ _MULT = {"k": 1e3, "thousand": 1e3, "m": 1e6, "mil": 1e6, "million": 1e6, "b": 1
 _NUMBER = re.compile(r"(?P<cur>[$€£¥])?\s*(?P<num>\d+(?:,\d{3})*(?:\.\d+)?)\s*(?P<mult>k|thousand|million|mil|bn|billion|m|b)?\b\s*(?P<rest>.*)$", re.I)
 
 
+_WORD_UNITS = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+                                         "fifteen sixteen seventeen eighteen nineteen".split())}
+_WORD_TENS = {w: 10 * i for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "_"}
+_WORD_SCALES = {"hundred": 100, "thousand": 1e3, "million": 1e6, "billion": 1e9}
+
+
+def words_to_number(text: str) -> tuple[float | None, str]:
+    """'ten thousand steps' -> (10000.0, 'steps'); 'five days' -> (5.0, 'days'); no number words -> (None, text)."""
+    tokens = text.split()
+    total, current, used = 0.0, 0.0, 0
+    for j, tok in enumerate(tokens):
+        parts = [x for x in re.sub(r"[^a-z-]", "", tok.lower()).split("-") if x]
+        known = all(x in _WORD_UNITS or x in _WORD_TENS or x in _WORD_SCALES or (x == "and" and used) for x in parts)
+        if not parts or not known:
+            break
+        for x in parts:
+            if x in _WORD_UNITS:
+                current += _WORD_UNITS[x]
+            elif x in _WORD_TENS:
+                current += _WORD_TENS[x]
+            elif x == "hundred":
+                current = (current or 1) * 100
+            elif x in _WORD_SCALES:
+                total += (current or 1) * _WORD_SCALES[x]
+                current = 0
+        used = j + 1
+    if used == 0:
+        return None, text
+    return total + current, " ".join(tokens[used:]).strip(" .,;:")
+
+
 def split_number(detail: str) -> tuple[float | None, str | None]:
-    """'10k steps' -> (10000.0, 'steps'); '$1.2 million' -> (1200000.0, '$'); '15%' -> (15.0, '%')."""
+    """'10k steps' -> (10000.0, 'steps'); '$1.2 million' -> (1200000.0, '$'); '15%' -> (15.0, '%');
+    number words too: 'ten thousand steps' -> (10000.0, 'steps')."""
     m = _NUMBER.search(detail)
     if not m:
-        return None, None
+        value, rest = words_to_number(re.sub(r"^(a|an)\s+(?=hundred|thousand|million|billion)", "one ", detail.strip(), flags=re.I))
+        return (round(value, 6), rest or None) if value is not None else (None, None)
     value = float(m.group("num").replace(",", "")) * _MULT.get((m.group("mult") or "").lower(), 1)
     rest = m.group("rest").strip(" .,;:").lstrip("-").strip()  # "18-month timeline" -> "month timeline"
     unit = " ".join(x for x in (m.group("cur") or "", rest) if x)
@@ -136,19 +172,23 @@ def resolve_date(detail: str, conversation_date: str) -> str | None:
 # -- extraction ----------------------------------------------------------------------------------
 
 
-def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1) -> list[dict]:
+def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, existing: dict[str, str] | None = None) -> list[dict]:
     """The details, each checked: keys, allowed values, a line that was to be read, and the detail and
     qualifier copied exactly from that line. The same row twice is unusable.
     Version 2 also checks ids (1, 2, ... each once), attached_to (null or another detail's id) and a named
-    "who" copied exactly from the detail's line."""
+    "who" copied exactly from the detail's line. Version 3: attached_to may also be "R", "unknown" or an E
+    label of `existing` (label -> row_id), and "replaces" is null or an E label, for REPLACING statuses only."""
+    existing = existing or {}
     data = extract_block(reply, "details")
     if set(data) != {"details"} or not isinstance(data["details"], list):
         raise UnusableAnswer('The object must be {"details": [...]}.')
-    keys = KEYS_V2 if version >= 2 else KEYS
+    keys = KEYS_V3 if version >= 3 else KEYS_V2 if version >= 2 else KEYS
     out, seen = [], set()
     for item in data["details"]:
         if not isinstance(item, dict) or set(item) != keys:
-            names = '"id", "line", "detail", "qualifier", "field", "who", "kind", "status" and "attached_to"' if version >= 2 else '"line", "detail", "qualifier", "field", "who", "kind" and "status"'
+            names = ('"id", "line", "detail", "qualifier", "field", "who", "kind", "status", "attached_to" and "replaces"' if version >= 3
+                     else '"id", "line", "detail", "qualifier", "field", "who", "kind", "status" and "attached_to"' if version >= 2
+                     else '"line", "detail", "qualifier", "field", "who", "kind" and "status"')
             raise UnusableAnswer(f"Each detail must have exactly the keys {names}.")
         line = item["line"]
         if not isinstance(line, int) or isinstance(line, bool):
@@ -184,8 +224,16 @@ def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1) -
             raise UnusableAnswer('Each "id" must be a different whole number: 1, 2, 3 and so on.')
         for it in out:
             a = it["attached_to"]
-            if a is not None and (not isinstance(a, int) or isinstance(a, bool) or a not in ids or a == it["id"]):
-                raise UnusableAnswer(f'"attached_to" must be null or the id of another detail in this answer; detail {it["id"]} has {json.dumps(a)}.')
+            if version >= 3 and isinstance(a, str):
+                if a not in ("R", "unknown") and a not in existing:
+                    raise UnusableAnswer(f'"attached_to" must be the id of another detail, "R", an E label shown ({", ".join(existing) or "none"}), "unknown" or null; detail {it["id"]} has {json.dumps(a)}.')
+            elif a is not None and (not isinstance(a, int) or isinstance(a, bool) or a not in ids or a == it["id"]):
+                what = 'the id of another detail in this answer, "R", an E label, "unknown" or null' if version >= 3 else "null or the id of another detail in this answer"
+                raise UnusableAnswer(f'"attached_to" must be {what}; detail {it["id"]} has {json.dumps(a)}.')
+            if version >= 3:
+                r = it["replaces"]
+                if r is not None and (it["status"] not in REPLACING or r not in existing):
+                    raise UnusableAnswer(f'"replaces" must be null, or for "updated", "removed", "done" or "no longer" an E label shown ({", ".join(existing) or "none"}); detail {it["id"]} has {json.dumps(r)}.')
     return out
 
 
@@ -208,6 +256,7 @@ class ProbeExtractor:
         self.max_tokens = max_tokens
         self.tag = tag
         self.fields: dict[tuple, list[str]] = {}
+        self.rows: list[Row] = []  # every row so far, for "already recorded" (version 3)
         self.calls: list[dict] = []
         self.feedback: list[str] = []  # why answers were sent back (for reporting)
 
@@ -219,10 +268,12 @@ class ProbeExtractor:
             return ProbeOutcome(sid, True, 0, [])
         system, template = load_prompt(self.prompt)
         fields = self.fields.get(record, [])
-        user = template.format(date=session.get("date", ""), lines=", ".join(str(n) for n in sorted(readable)),
-                               fields=", ".join(fields) if fields else "(none)", conversation=conversation)
         version = int(self.prompt.rsplit("_v", 1)[1]) if "_v" in self.prompt else 1
-        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable, version), sid)
+        recorded, existing = self.recorded(record, readable) if version >= 3 else ("", {})
+        # placeholders a version's template does not use are ignored (recorded is used from version 3 on)
+        user = template.format(date=session.get("date", ""), lines=", ".join(str(n) for n in sorted(readable)),
+                               fields=", ".join(fields) if fields else "(none)", conversation=conversation, recorded=recorded)
+        items, attempts, error = self._ask(system, user, lambda r: parse_probe_answer(r, readable, version, existing), sid)
         if items is None:
             return ProbeOutcome(sid, False, attempts, [], error)
         rows = []
@@ -232,7 +283,11 @@ class ProbeExtractor:
                       sid, it["line"], session.get("date", ""))
             if version >= 2:
                 row.row_id = rid(it["id"])
-                row.attached_to = rid(it["attached_to"]) if it["attached_to"] is not None else None
+                a = it["attached_to"]
+                row.attached_to = (None if a is None else rid(a) if isinstance(a, int) else root_id(self.persona, record) if a == "R"
+                                   else "unknown" if a == "unknown" else existing[a])
+            if version >= 3 and it["replaces"] is not None:
+                row.replaces = existing[it["replaces"]]
             if row.kind == "number":
                 row.number, row.unit = split_number(row.detail)
             if row.kind == "date":
@@ -241,7 +296,29 @@ class ProbeExtractor:
             if row.field not in fields:
                 fields.append(row.field)
         self.fields[record] = fields
+        self.rows += rows
         return ProbeOutcome(sid, True, attempts, rows)
+
+    def recorded(self, record: tuple, readable: dict[int, str]) -> tuple[str, dict[str, str]]:
+        """What is already recorded, as shown to version 3: R, then E1, E2 ... for the entries that still
+        hold for this record, and for other records' entries whose detail appears in the lines to read
+        (a liked item the user now says they no longer like is another record under A10). Returns the
+        text and the map from E label to row_id."""
+        if not self.rows:
+            return "R: the thing this conversation is about (nothing recorded yet)", {}
+        now = true_at(build_table(self.rows), max(r.session for r in self.rows))
+        text = norm(" ".join(readable.values()))
+        own = [e for e in now if e["record"] == record and e.get("row_id")]
+        others = [e for e in now if e["record"] != record and e.get("row_id") and len(norm(e["detail"])) >= 3 and norm(e["detail"]) in text]
+        shown, seen = [], set()
+        for e in own + others[:15]:
+            if e["row_id"] not in seen:
+                seen.add(e["row_id"])
+                shown.append(e)
+        labels = {f"E{i}": e["row_id"] for i, e in enumerate(shown, 1)}
+        lines = ["R: the thing this conversation is about"] + [
+            f"E{i} ({e['field']}{', ' + e['state'] if e['state'] != 'true' else ''}): {e['detail']}" for i, e in enumerate(shown, 1)]
+        return "\n".join(lines), labels
 
     def _ask(self, system: str, user: str, parse, sid: int):
         """As ingestion: up to MAX_ATTEMPTS, feedback with the answer format, twice the room if cut off."""
@@ -279,6 +356,11 @@ class ProbeExtractor:
 # -- what is true when ---------------------------------------------------------------------------
 
 
+def root_id(persona: str, record: tuple) -> str:
+    """The row_id standing for a record itself (version 3's "R"): no row of its own, a link target."""
+    return f"{persona}:R:" + "/".join(str(x) for x in record)
+
+
 def norm(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[\"'“”‘’*`]", "", text)).strip(" .,!?;:").lower()
 
@@ -311,23 +393,43 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
             entries.append(new)
 
     def parent(row):
+        if row.attached_to and (":R:" in row.attached_to or row.attached_to == "unknown"):
+            return row.attached_to  # the record itself, or unknown
         return norm(detail_of.get(row.attached_to, "")) if row.attached_to else ""
+
+    def entry_parent(e):
+        a = e.get("attached_to")
+        if a and (":R:" in a or a == "unknown"):
+            return a
+        return norm(e.get("attached_detail") or "")
 
     def add(row, state):
         entries.append({"record": row.record, "field": row.field, "detail": row.detail, "qualifier": row.qualifier,
-                        "row_id": row.row_id, "attached_to": row.attached_to, "attached_detail": detail_of.get(row.attached_to) if row.attached_to else None,
+                        "row_id": row.row_id, "attached_to": row.attached_to, "attached_detail": (row.attached_to if row.attached_to and (":R:" in row.attached_to or row.attached_to == "unknown")
+                                            else detail_of.get(row.attached_to) if row.attached_to else None),
+                        "replaces": row.replaces,
                         "who": row.who, "kind": row.kind, "number": row.number, "unit": row.unit, "resolved": row.resolved,
                         "status": row.status, "state": state, "from_session": row.session, "from_date": row.date,
                         "until_session": None, "until_date": None})
 
     for row in sorted(rows, key=lambda r: (r.session, r.line)):
+        if row.replaces and row.status in REPLACING:
+            # version 3: the earlier row is named, so exactly that one closes
+            hits = [e for e in entries if e.get("row_id") == row.replaces and e["until_session"] is None and e["state"] in ("true", "done")]
+            if hits:
+                state = {"updated": "false", "removed": "false", "done": "done", "no longer": "no longer"}[row.status]
+                for e in hits:
+                    close(e, row, state)
+                if row.status == "updated":
+                    add(row, "true")
+                continue
         if row.status in ("new", "added"):
             add(row, "true")
         elif row.status == "updated":
             # a linked update closes the field's earlier values linked to the same thing (one action item's
             # deadline, not another's); an unlinked one closes every earlier value of the field, as in version 1
             for e in open_entries(row):
-                if e["field"] == row.field and e["state"] == "true" and (not row.attached_to or norm(e.get("attached_detail") or "") == parent(row)):
+                if e["field"] == row.field and e["state"] == "true" and (not row.attached_to or entry_parent(e) == parent(row)):
                     close(e, row)
             add(row, "true")
         else:
@@ -366,7 +468,8 @@ def grading_view(entries: list[dict]) -> list[dict]:
 
     Primary probes (graded by code): kinds number (value and unit), date (the resolved day, or the text
     when unresolved), name, title and list item, in states "true" (should be in memory) and "false"
-    (should not). Each keeps its qualifier only when it is a real hedge or limit, and its "who" only when
+    (should not). Each keeps its qualifier only when it is a number or date and the qualifier is a real
+    hedge or limit (D47: qualifiers are collected for every kind, scored only there), and its "who" only when
     it is not "user" (we, someone else). Secondary probes (graded by the judge): kinds task and
     preference, and every entry in state "done" or "no longer" (the field is kept: "no longer" means the
     field's claim no longer holds). Number, unit and resolved day are recomputed from the detail here, so
@@ -381,6 +484,6 @@ def grading_view(entries: list[dict]) -> list[dict]:
         if e["kind"] == "date":
             derived["resolved"] = resolve_date(e["detail"], e.get("from_date") or "")
         out.append({**e, **derived, "grade": "code" if primary else "judge",
-                    "qualifier": graded_qualifier(e.get("qualifier") or ""),
+                    "qualifier": graded_qualifier(e.get("qualifier") or "") if e["kind"] in ("number", "date") else "",
                     "who": e.get("who") if e.get("who") not in ("user", None) else ""})
     return out

@@ -242,10 +242,10 @@ harness. A version used in a run is never edited; changes go in the next version
 
 ## 6. The drift measure's answer key (probes)
 
-`src/memrecon/probes.py`, prompts `probe_extract_v1.md` (E26) and `probe_extract_v2.md` (E28, D46), run by the
-judge (D44–D46). Harness side only.
+`src/memrecon/probes.py`, prompts `probe_extract_v1.md` (E26), `probe_extract_v2.md` (E28, D46) and
+`probe_extract_v3.md` (E29, D47), run by the judge (D44–D47). Harness side only.
 
-**Row** (one per extracted detail; stored append-only, never edited; E26 and E28 write them to
+**Row** (one per extracted detail; stored append-only, never edited; E26, E28 and E29 write them to
 `results/probes/E<n>_<persona>.jsonl`):
 
 | Column | What it is | Comes from |
@@ -254,31 +254,41 @@ judge (D44–D46). Harness side only.
 | `record` | The record the session is about (A10; goals by subcategory). | harness (Memora's log) |
 | `field` | What the detail is, in terms of what it belongs to (`meeting notes title`, `agenda item`, `action item deadline`, `liked author`); reuses the record's earlier field names, shown as "fields so far". | extractor |
 | `detail` | The detail, copied exactly from the line (checked by code). | extractor |
-| `qualifier` | Its qualifier or condition, copied exactly ("about", "at least", "every day"), or empty. | extractor |
+| `qualifier` | A word or phrase that limits, hedges or conditions the detail, copied exactly ("about", "at least", "only if approved"), or empty. Collected for every kind; scored only for numbers and dates (D47). Not "about" meaning "on the subject of", nor "from"/"to" in a change (version 3's definition). | extractor |
 | `who` | Only for something someone did, decided or is to do: `user`, `user and others` ("we"), or, from version 2, the person, team or organisation named in the line, copied exactly (version 1: `someone else`); empty otherwise. | extractor |
 | `kind` | `number`, `date`, `name`, `title`, `item`, `task`, `preference`. | extractor |
-| `status` | `new` (first told), `added` (to something told before), `updated` (replaces an earlier value), `replaced` (the earlier value), `removed`, `done`, `no longer` (the field's claim no longer holds). | extractor |
+| `status` | What the statement did when it was made, fixed (a row is never re-labelled when a later session changes it): `new` (first told), `added` (to something told before), `updated` (replaces an earlier value), `replaced` (the earlier value, when not already a row), `removed`, `done`, `no longer` (the field's claim no longer holds). | extractor |
 | `session`, `line`, `date` | Where it was said, and the conversation date ("said on"). | harness |
 | `number`, `unit` | For kind number: value and unit ("10k steps" → 10000, "steps"). | code |
 | `resolved` | For kind date: the calendar day, from the conversation date, when it names one day ("next Tuesday"); empty for ranges ("next week"). | code |
-| `attached_to` | The `row_id` of the detail this one belongs to (a deadline, timeframe, owner or amount of an action item, decision or task), or empty. Version 2; links reach only details from the same session. | extractor (an id), harness (the row_id) |
+| `attached_to` | What the detail belongs to: the `row_id` of another detail (a deadline, timeframe, owner or amount of an action item, decision or task); from version 3 also an earlier session's row (an E label), the record itself (a root id, `persona:R:<record>`, "R" to the model: "This post is for LinkedIn"), or `unknown` (it clearly belongs to something the line does not name). Empty: it stands on its own. Version 2's links reach only the same session. | extractor (an id or label), harness (the row_id) |
+| `replaces` | Version 3: for `updated`, `removed`, `done` and `no longer`, the `row_id` of the earlier row it replaces, removes, finishes or no longer holds (from an E label), or empty when that row is not recorded. | extractor (a label), harness (the row_id) |
 
 **Table entry** (computed from all rows by `build_table`, never stored): the row's columns plus `state`
 (`true` should be in memory, `false` should not, `done`, `no longer`), `from_session` / `from_date` and
 `until_session` / `until_date` (empty while it still holds), and `row_id`, `attached_to` and
-`attached_detail` (the text of the row it belongs to). A linked `updated` closes the field's earlier values
+`attached_detail` (the text of the row it belongs to, or the root id or `unknown`), and `replaces`. A row
+with `replaces` closes exactly that row (an `updated` one then holds in its place); without it, a linked `updated` closes the field's earlier values
 linked to the same thing (one action item's deadline, not another's); an unlinked one closes all the field's
 earlier values; `added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
 `true_at(entries, session)` gives what holds just after a session.
 
 **Grading view** (`grading_view`, D45): each entry with `grade` (`code` for kinds number, date, name, title,
-item in states true or false; `judge` otherwise), its `qualifier` only if on the hedge list (`HEDGES`), and
+item in states true or false; `judge` otherwise), its `qualifier` only for numbers and dates and only if on
+the hedge list (`HEDGES`), and
 `who` only if not `user`. Number, unit and resolved day are recomputed from the detail by code when
 grading, so rows extracted before a parser fix are graded with the current parser.
 
+**What version 3 is shown as already recorded** (`ProbeExtractor.recorded`): `R`, the record itself, then
+`E1`, `E2` ... for the record's entries that still hold and for other records' entries whose detail appears
+in the lines to read (up to 15; a liked item the user now says they no longer like is another record under
+A10), each with its field and, if not `true`, its state. The labels are local to one call; the harness maps
+them to `row_id`s.
+
 **Hand-check store** (the Probe Hand Check page's database): collection `labels`, one document per row
-(`persona~session~line~index`: `verdict` ok/wrong, `note`, and the row's `detail`, `field`, `status`,
-`kind`); collection `missing`, one per line (`persona~session~line`: `text`). Read back into
+(`v3~persona~session~line~index` for extractor version 3, `v2~...` for version 2; version 1 marks had no
+prefix: `verdict` ok/wrong, `note`, and the row's `detail`, `field`, `status`, `kind`, `row`, `attached_to`,
+`replaces` (version 3), `version`); collection `missing`, one per line (`v3~persona~session~line`: `text`). Read back into
 `notes/labels/` when the check is done.
 
 ## 7. Run summaries and monitoring

@@ -212,3 +212,82 @@ def test_v2_unlinked_update_closes_a_linked_old_value():
             row("p:5:1", "$900,000", "project budget", "updated", 5)]  # "update the budget to $900,000", title not restated
     now = {e["detail"] for e in true_at(build_table(rows), 5) if e["field"] == "project budget"}
     assert now == {"$900,000"}
+
+
+# -- version 3 (D47) -------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("detail,expected", [
+    ("ten thousand steps", (10000.0, "steps")), ("five days", (5.0, "days")), ("twenty-five dollars", (25.0, "dollars")),
+    ("one hundred and twenty steps", (120.0, "steps")), ("a hundred", (100.0, None)), ("and so on", (None, None)),
+])
+def test_split_number_reads_number_words(detail, expected):
+    assert split_number(detail) == expected
+
+
+def d3(i, detail, field, kind="item", status="new", who="", attached=None, replaces=None, qualifier="", line=3):
+    return {**d2(i, detail, field, kind, status, who, attached, line), "qualifier": qualifier, "replaces": replaces}
+
+
+def test_prompt_v3_loads():
+    system, user = load_prompt("probe_extract_v3")
+    assert '"replaces"' in system and '"unknown"' in system and "{recorded}" in user and "share_memory" not in system + user
+
+
+def test_v3_checks_root_unknown_e_labels_and_replaces():
+    readable = {3: "Please update the budget from $1,050,000 to about $900,000."}
+    existing = {"E1": "p:1:2"}
+    ok = answer(d3(1, "$900,000", "project budget", "number", "updated", attached="R", replaces="E1", qualifier="about"))
+    assert parse_probe_answer(ok, readable, 3, existing)[0]["replaces"] == "E1"
+    assert parse_probe_answer(answer(d3(1, "$900,000", "project budget", "number", attached="unknown")), readable, 3, existing)
+    with pytest.raises(UnusableAnswer, match="E label shown"):
+        parse_probe_answer(answer(d3(1, "$900,000", "project budget", "number", attached="E4")), readable, 3, existing)
+    with pytest.raises(UnusableAnswer, match='"replaces"'):  # only replacing statuses name a row
+        parse_probe_answer(answer(d3(1, "$900,000", "project budget", "number", "new", replaces="E1")), readable, 3, existing)
+    with pytest.raises(UnusableAnswer, match="exactly the keys"):  # a version 2 answer to the version 3 prompt
+        parse_probe_answer(answer(d2(1, "$900,000", "project budget", "number")), readable, 3, existing)
+
+
+def test_extractor_v3_shows_what_is_recorded_and_maps_labels():
+    first = {**SESSION, "session_id": 1, "operation": "add", "conversation": SESSION["conversation"][:2] + [
+        {"turn": 3, "speaker": "user_agent", "message": "The project budget is $1,050,000.", "share_memory": True}]}
+    client = ScriptedClient(answer(d3(1, "$1,050,000", "project budget", "number", attached="R")),
+                            answer(d3(1, "$900,000", "project budget", "number", "updated", attached="R", replaces="E1", qualifier="about")))
+    ex = ProbeExtractor(client, persona="p", prompt="probe_extract_v3")
+    a = ex.extract(first, ("content", "notes_1"))
+    assert "nothing recorded yet" in client.calls[0]["messages"][1]["content"]
+    assert a.rows[0].attached_to == "p:R:content/notes_1"
+    b = ex.extract(SESSION, ("content", "notes_1"))
+    assert "E1 (project budget): $1,050,000" in client.calls[1]["messages"][1]["content"]
+    assert b.rows[0].replaces == "p:1:1"
+    now = true_at(build_table(ex.rows), 7)
+    assert [(e["detail"], e["attached_detail"]) for e in now] == [("$900,000", "p:R:content/notes_1")]
+
+
+def test_v3_replaces_closes_exactly_the_named_row():
+    def row(rid, detail, field, status, session, attached=None, replaces=None, kind="item"):
+        r = R(detail, status, session, field=field, kind=kind, record=("content", "notes_1"))
+        r.row_id, r.attached_to, r.replaces = rid, attached, replaces
+        return r
+    rows = [row("p:1:1", "draft the memo", "action item", "new", 1), row("p:1:2", "send the deck", "action item", "new", 1),
+            row("p:4:1", "draft the memo", "action item", "done", 4, replaces="p:1:1")]
+    states = {(e["detail"], e["state"]) for e in true_at(build_table(rows), 4)}
+    assert states == {("draft the memo", "done"), ("send the deck", "true")}
+
+
+def test_v3_linked_update_on_the_root_closes_the_roots_value():
+    def row(rid, detail, status, session, attached):
+        r = R(detail, status, session, field="post platform", kind="name", record=("content", "post_1"))
+        r.row_id, r.attached_to = rid, attached
+        return r
+    root = "p:R:content/post_1"
+    rows = [row("p:1:1", "LinkedIn", "new", 1, root), row("p:3:1", "Twitter", "updated", 3, root)]
+    assert {e["detail"] for e in true_at(build_table(rows), 3)} == {"Twitter"}
+
+
+def test_qualifiers_are_scored_only_on_numbers_and_dates():
+    a = R("10k steps", "new", 1, field="step count", kind="number")
+    a.qualifier = "about"
+    b = R("Atlas", "new", 1, field="project title", kind="title")
+    b.qualifier = "about"
+    view = {e["detail"]: e["qualifier"] for e in grading_view(build_table([a, b]))}
+    assert view == {"10k steps": "about", "Atlas": ""}
