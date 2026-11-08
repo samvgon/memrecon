@@ -7,7 +7,7 @@ Recall then has two steps (D54, Sam):
 1. **select** (prompts/select_v1.md, one call per turn): the agent sees the memories found, listed by
    date, newest first, and chooses the ones useful for responding to the user's latest message, most useful first, or
    none. Each one chosen is counted (`MemoryStore.select`).
-2. **rewrite** (prompts/rewrite_v1.md, one call per chosen memory, in the order chosen, each on its own):
+2. **rewrite** (prompts/rewrite_v2.md, one call per chosen memory, in the order chosen, each on its own):
    the agent rewrites the memory for the conversation right now.
 
 The **write policy** then decides what is stored:
@@ -38,7 +38,7 @@ from memrecon.memory import At, MemoryStore
 RECALL_K = 3  # D37
 RECALL_THRESHOLD = 0.70  # D37
 SELECT_PROMPT = "select_v1"
-REWRITE_PROMPT = "rewrite_v1"
+REWRITE_PROMPT = "rewrite_v2"  # D55
 
 
 # -- write policies -------------------------------------------------------------------------------

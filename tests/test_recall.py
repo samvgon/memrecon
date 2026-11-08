@@ -60,7 +60,7 @@ SESSION = {"session_id": 5, "date": "2025-06-05", "conversation": [
 
 
 def test_prompts_load_and_never_mention_policies_or_flags():
-    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}")):
+    for name, slot in (("select_v1", "{memories}"), ("rewrite_v1", "{memory}"), ("rewrite_v2", "{memory}")):
         system, user = load_prompt(name)
         text = system + user
         assert "{conversation}" in user and slot in user and "share_memory" not in text
