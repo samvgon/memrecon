@@ -598,5 +598,117 @@ def grading_view(entries: list[dict]) -> list[dict]:
             derived["number"], derived["unit"] = split_duration(e["detail"])
         out.append({**e, **derived, "grade": "code" if primary else "judge",
                     "qualifier": graded_qualifier(e.get("qualifier") or "") if e["kind"] in ("number", "date") else "",
-                    "who": e.get("who") if e.get("who") not in ("user", None) else ""})
+                    # D50: "who" is graded only on actions, decisions and assignments (kind task), by the judge
+                    "who": e.get("who") if e["kind"] == "task" and e.get("who") not in ("user", None) else ""})
     return out
+
+
+# -- code grading of a memory store (D50) --------------------------------------------------------
+
+OVERLAP = 0.8  # share of a long detail's content words one memory must hold (D50; reported at 0.6 and 1.0 too)
+LONG_WORDS = 5  # a detail of this many words or more is matched by overlap, a shorter one exactly
+_STOP = set("a an the of to for and or in on at by with from as is are be this that these those our my your their its "
+            "it we i you he she they his her into over under about across through within per via".split())
+_HONORIFIC = re.compile(r"^(dr|mr|mrs|ms|prof|sir|dame)\.?\s+", re.I)
+_MULT2 = {"k": 1e3, "thousand": 1e3, "m": 1e6, "mil": 1e6, "million": 1e6, "b": 1e9, "bn": 1e9, "billion": 1e9}
+_NUM2 = re.compile(r"(\d+(?:,\d{3})*(?:\.\d+)?)\s*(k|thousand|million|mil|bn|billion|m|b)?\b", re.I)
+_ISO = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+_UNIT_WORD = re.compile(r"\b([a-z]+(?:[\s-][a-z]+)?)[\s-](minute|hour|day|week|month|quarter|year)s?\b", re.I)
+_MONTH_NAMES = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+
+
+def numbers_in(text: str) -> set[float]:
+    """Number values in a text (k / million / billion expanded, number words read; ISO dates left out)."""
+    out = set()
+    for m in _NUM2.finditer(_ISO.sub(" ", text)):
+        out.add(round(float(m.group(1).replace(",", "")) * _MULT2.get((m.group(2) or "").lower(), 1), 6))
+    for m in _UNIT_WORD.finditer(text):
+        for start in range(len(m.group(1).split())):
+            v, rest = words_to_number(" ".join(m.group(1).split()[start:]))
+            if v is not None and not rest:
+                out.add(round(v, 6))
+                break
+    return out
+
+
+def aliases(detail: str) -> list[str]:
+    """The forms a short detail may take in a memory (D50): as told; without a leading article or a final
+    stop; without a title ("Dr. Anya Sharma" -> "Anya Sharma"); a bracket either dropped ("David Chen
+    (Product Lead)" -> "David Chen") or, when it is the initials of what precedes it, standing for it
+    ("Chief Risk Officer (CRO)" -> "Chief Risk Officer" or "CRO")."""
+    d = detail.strip().strip(".").strip()
+    d = re.sub(r"^(a|an|the)\s+", "", d, flags=re.I)
+    forms = {d}
+    m = re.match(r"^(.*?)\s*\(([^)]+)\)\s*$", d)
+    if m:
+        base, inner = m.group(1).strip(), m.group(2).strip()
+        forms.add(base)
+        initials = "".join(w[0] for w in re.findall(r"[A-Za-z][\w&'-]*", base) if w.lower() not in ("of", "and", "for", "the", "&")).upper()
+        if inner.replace(".", "").upper() == initials and len(inner) >= 2:
+            forms.add(inner)
+    for f in list(forms):
+        h = _HONORIFIC.sub("", f)
+        if h != f:
+            forms.add(h)
+    return [f for f in forms if f]
+
+
+def content_words(text: str) -> set[str]:
+    words = re.findall(r"[a-z0-9]+", re.sub(r"['’]s\b", "", text.lower()))  # "supply-chain" = "supply chain"; "client's" = "client"
+    return {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words if w not in _STOP}
+
+
+def _contains(memory_norm: str, form: str) -> bool:
+    f = norm(form)
+    return bool(f) and re.search(r"(?<![a-z0-9])" + re.escape(f) + r"(?![a-z0-9])", memory_norm) is not None
+
+
+def date_forms(day: str) -> list[str]:
+    """'2025-06-03' -> '2025-06-03', 'June 3', 'Jun 3', '3 June', 'June 3rd' ..."""
+    try:
+        y, m, d = (int(x) for x in day.split("-"))
+    except ValueError:
+        return []
+    month = _MONTH_NAMES[m - 1]
+    suffix = "th" if 10 <= d % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(d % 10, "th")
+    out = [day]
+    for name in (month, month[:3]):
+        out += [f"{name} {d}", f"{name} {d}{suffix}", f"{d} {name}", f"{d}{suffix} {name}", f"{d}{suffix} of {name}"]
+    return out
+
+
+def code_match(entry: dict, memory_text: str, overlap: float = OVERLAP) -> bool:
+    """Whether one memory holds a primary probe (D50). Numbers by value (and the unit's word when it has
+    one besides a currency); dates by the text as told, the resolved day in any common form, or a
+    duration's number and unit; names, titles and items: a short one (under LONG_WORDS words) by any of
+    its aliases as whole words, a long one by the share of its content words the memory holds."""
+    detail, kind = entry["detail"], entry["kind"]
+    mem = norm(memory_text)
+    if kind == "number":
+        value, unit = entry.get("number"), entry.get("unit")
+        if value is None:
+            value, unit = split_number(detail)
+        if value is None:  # a level ("medium-high"): as text
+            return any(_contains(mem, f) for f in aliases(detail))
+        if value not in numbers_in(memory_text):
+            return False
+        word = re.sub(r"[$€£¥%]", "", unit or "").strip().split(" ")[0] if unit else ""
+        return not word or content_words(word) <= content_words(memory_text)
+    if kind == "date":
+        if any(_contains(mem, f) for f in aliases(detail)):
+            return True
+        day = entry.get("resolved")
+        if day and any(_contains(mem, f) for f in date_forms(day)):
+            return True
+        value, unit = split_duration(detail)
+        return value is not None and value in numbers_in(memory_text) and re.search(rf"\b{unit}s?\b", mem) is not None
+    if len(detail.split()) < LONG_WORDS:
+        return any(_contains(mem, f) for f in aliases(detail))
+    want = content_words(detail)
+    return bool(want) and len(want & content_words(memory_text)) / len(want) >= overlap
+
+
+def qualifier_kept(entry: dict, memory_text: str) -> bool | None:
+    """For a probe with a graded qualifier: whether the same memory still holds it; None if it has none."""
+    q = entry.get("qualifier") or ""
+    return _contains(norm(memory_text), q) if q else None

@@ -5,7 +5,8 @@ import pytest
 
 from memrecon.ingest import UnusableAnswer, load_prompt
 from memrecon.probes import (ProbeExtractor, ProbeSplitter, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, parse_split_answer,
-                             resolve_date, split_candidate, split_duration, split_number, true_at)
+                             resolve_date, split_candidate, split_duration, split_number, true_at,
+                             aliases, code_match, numbers_in, qualifier_kept)
 
 SESSION = {
     "session_id": 7,
@@ -412,3 +413,57 @@ def test_closing_a_row_closes_what_belongs_to_it():
             row("p:5:1", "Hiring and onboarding plan review", "agenda item", "removed", 5, replaces="p:1:3")]
     now = {(e["detail"], e["state"]) for e in true_at(build_table(rows), 5)}
     assert now == {("draft the memo by Friday", "done"), ("by Friday", "done")}
+
+
+# -- code grading of memories (D50) ---------------------------------------------------------------
+
+def P(detail, kind, **kw):
+    return {"detail": detail, "kind": kind, **kw}
+
+
+def test_aliases():
+    assert set(aliases("Chief Risk Officer (CRO)")) == {"Chief Risk Officer (CRO)", "Chief Risk Officer", "CRO"}
+    assert set(aliases("David Chen (Product Lead)")) == {"David Chen (Product Lead)", "David Chen"}
+    assert "Anya Sharma" in aliases("Dr. Anya Sharma")
+    assert aliases("a review of current budgets") == ["review of current budgets"]
+
+
+def test_numbers_in():
+    assert {1550000.0, 10000.0, 7.0} <= numbers_in("Budget $1.55M, about 10k steps, within seven days, on 2025-06-03")
+    assert 2025.0 not in numbers_in("on 2025-06-03")
+
+
+@pytest.mark.parametrize("probe,memory,expected", [
+    (P("$1,550,000", "number", number=1550000.0, unit="$"), "The project budget is $1.55 million.", True),
+    (P("10,151 steps", "number", number=10151.0, unit="steps"), "The user walked 10,151 steps on June 3.", True),
+    (P("10,151 steps", "number", number=10151.0, unit="steps"), "The user spent $10,151.", False),
+    (P("medium-high", "number"), "The risk is medium-high.", True),
+    (P("within seven days", "date"), "Sales Rep A will schedule it within 7 days.", True),
+    (P("today", "date", resolved="2025-06-03"), "On June 3, 2025 the user walked 10,151 steps.", True),
+    (P("today", "date", resolved="2025-06-03"), "The user walked 10,151 steps.", False),
+    (P("Chief Risk Officer (CRO)", "item"), "Stakeholders include the CRO.", True),
+    (P("Dr. Anya Sharma", "name"), "Anya Sharma leads the project.", True),
+    (P("Queen", "name"), "The user likes Queensland.", False),
+    (P("cost-benefit analysis of proposed AI-powered supply chain optimization tools", "item"),
+     "Agenda: a cost-benefit analysis of the proposed AI-powered supply-chain optimization tools.", True),
+    (P("cost-benefit analysis of proposed AI-powered supply chain optimization tools", "item"),
+     "Agenda: a review of supply chain tools.", False),
+])
+def test_code_match(probe, memory, expected):
+    assert code_match(probe, memory) is expected
+
+
+def test_qualifier_kept():
+    p = P("10k steps", "number", number=10000.0, unit="steps", qualifier="about")
+    assert qualifier_kept(p, "The user aims for about 10,000 steps a day.") is True
+    assert qualifier_kept(p, "The user aims for 10,000 steps a day.") is False
+    assert qualifier_kept(P("$5", "number"), "$5") is None
+
+
+def test_who_is_graded_only_on_tasks():
+    a = R("$900,000", "new", 1, field="project budget", kind="number")
+    a.who = "user and others"
+    b = R("send the deck", "new", 1, field="action item", kind="task")
+    b.who = "CFO Office"
+    view = {e["detail"]: e["who"] for e in grading_view(build_table([a, b]))}
+    assert view == {"$900,000": "", "send the deck": "CFO Office"}

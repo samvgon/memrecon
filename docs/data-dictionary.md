@@ -285,8 +285,24 @@ Decisions are kept in `results/probes/E31_decisions_<persona>.jsonl` (`row_id`, 
 **Grading view** (`grading_view`, D45): each entry with `grade` (`code` for kinds number, date, name, title,
 item in states true or false; `judge` otherwise), its `qualifier` only for numbers and dates and only if on
 the hedge list (`HEDGES`), and
-`who` only if not `user`. Number, unit and resolved day are recomputed from the detail by code when
+`who` only for kind `task` and only if not `user` (D50; judge-graded). Number, unit and resolved day are recomputed from the detail by code when
 grading, so rows extracted before a parser fix are graded with the current parser.
+
+**Code grading of memories** (`code_match`, D50): whether one memory holds a code-graded probe.
+- *Number*: by value (`numbers_in` reads "$1.55M", "10k", "seven days"; ISO dates left out), and the unit's
+  word when it has one besides a currency ("10,151 steps" needs "steps").
+- *Date*: the text as told, the resolved day in any common form (`date_forms`: "2025-06-03", "June 3",
+  "3rd of June"), or a duration's number and unit ("within seven days" = "within 7 days").
+- *Name, title, item*: under `LONG_WORDS` (5) words, any alias (`aliases`: without a leading article or final
+  stop, without a title such as "Dr.", a bracket dropped, or an abbreviation in brackets standing for what
+  precedes it) as whole words; 5 words or more, the share of its content words (`content_words`: stop words
+  dropped, plural "s" dropped, hyphens split) the memory holds, at least `OVERLAP` (0.8).
+- *Qualifier* (`qualifier_kept`): a graded qualifier must be in the same memory as its detail.
+
+**Probe terms used in scoring** (E32): *recall*, the share of probes that should hold (state `true`) found
+in some active memory; *found when told*, found right after the session the detail was told in; *lost*,
+found when told and not at the end; *old value*, a value that held and was later updated or removed,
+found in an active memory (may be history, not an error).
 
 **What version 3 is shown as already recorded** (`ProbeExtractor.recorded`): `R`, the record itself, then
 `E1`, `E2` ... for the record's entries that still hold and for other records' entries whose detail appears
