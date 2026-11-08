@@ -291,3 +291,12 @@ def test_qualifiers_are_scored_only_on_numbers_and_dates():
     b.qualifier = "about"
     view = {e["detail"]: e["qualifier"] for e in grading_view(build_table([a, b]))}
     assert view == {"10k steps": "about", "Atlas": ""}
+
+
+def test_v3_accepts_an_id_written_in_quotes():
+    readable = {3: LINE}
+    rows = parse_probe_answer(answer(d3(1, "a cost projection", "action item", attached="R"),
+                                     d3(2, "by the end of next month", "action item deadline", "date", attached="1")), readable, 3, {})
+    assert rows[1]["attached_to"] == 1
+    with pytest.raises(UnusableAnswer, match="attached_to"):  # a quoted id that is not in the answer is still wrong
+        parse_probe_answer(answer(d3(1, "a cost projection", "action item", attached="7")), readable, 3, {})

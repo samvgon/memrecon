@@ -224,6 +224,8 @@ def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, e
             raise UnusableAnswer('Each "id" must be a different whole number: 1, 2, 3 and so on.')
         for it in out:
             a = it["attached_to"]
+            if version >= 3 and isinstance(a, str) and a.strip().isdigit() and int(a) in ids:
+                a = it["attached_to"] = int(a)  # an id written in quotes ("1") means the same detail (E29 pilot)
             if version >= 3 and isinstance(a, str):
                 if a not in ("R", "unknown") and a not in existing:
                     raise UnusableAnswer(f'"attached_to" must be the id of another detail, "R", an E label shown ({", ".join(existing) or "none"}), "unknown" or null; detail {it["id"]} has {json.dumps(a)}.')
