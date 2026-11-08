@@ -93,6 +93,10 @@ Add to this file whenever a new term, table or column appears.
 | **updated as the user said** | The same shape of rewrite when the user's message says something changed ("no longer", "used to", "completed", "from X to Y"): the rewrite takes in the change, usually keeping the old state ("previously enjoyed …, now …"). Counted apart from losses (E36). |
 | **rewrite class** (E36) | One of: identical; kept (at least 80% of the memory's content words, nothing from the message); kept + words from the message; shortened; replaced by a different event; updated as the user said; failed (no usable answer). A heuristic for choosing a prompt, not the judge. |
 | **memory slots** | What a rewrite prompt may show of the memory (`recall.memory_slots`): `{memory}` ("(2025-06-01) text", versions 1–4), `{memory_text}`, `{memory_date}`, `{when}` ("2 days before this one", "the same day as this one"; versions 5a and 5b) and `{gap}` ("2 days before the conversation date", "the same date as the conversation"; version 5c). |
+| **answer** (to a Memora question) | What the agent says to one of Memora's 15 questions per persona, asked on its question date from the end-of-history store: top 50 memories by similarity, shown newest first with dates (`answer_v1.md`, D60). Judged against the question's yes/no sub-questions for FAMA. |
+| **sub-question** | One of Memora's yes/no `evaluation_questions` about an answer: `memory_presence` ("should mention", expected yes) or `forgetting_absence` ("should not mention", expected no). |
+| **judge item** (D21) | One sub-question about one answer, labelled by Sam with her own yes/no answer about the answer as written; `tune` items are for writing the judge prompt, `check` items for the pass/fail check. |
+| **overlap** (judge items) | How much of a sub-question's own words (template words such as "Does the response mention" left out) appear in the answer: none (under a third), some, most (at least 80%). A stratum for the judge sample, not a grade. |
 | **drift** | How far a memory's content has moved from the latest legitimate state of what the user said. Measured by probes, never counted. |
 | **probe** | One checkable detail of the answer key (a number, date, name, title, list item…) with its expected state at a point in time. |
 | **answer key** | The probe table built from the user's words by the extractor (section 6). |
@@ -400,3 +404,14 @@ header: `script`, `run at`, `memrecon` (commit, and whether scripts were clean),
 
 **`scripts/explore/E<n>_<name>.py`**: one script per question about the data; its docstring states the
 question, method and limits. `scripts/explore/README.md` lists them.
+
+**Answers** (`scripts/run_stage0_answers.py`, D60): `results/stage0/answers/<control config id>/<persona>/<arm>/answers.jsonl`,
+one line per question: `category`, `question_id`, `question`, `date`, `sub_questions` (`id`, `text`, `expected`, `type`),
+`persona`, `arm`, `snapshot` (the store snapshot answered from), `active` (live memories in it), `shown` (memory IDs, newest
+first), `scores` (their similarity to the question), `shown_text`, `shown_dates`, `answer` (null if no usable answer),
+`error`, `attempts`.
+
+**Judge sample** (`scripts/make_judge_sample.py`, D21, D60): `notes/labels/<date>-judge-sample.jsonl`, frozen, one line per
+item: `item` (J01–J70, the order shown), `set` (`tune` or `check`), `persona`, `arm`, `category`, `question_id`, `question`,
+`date`, `answer`, `sub_id`, `sub_question`, `type`, `expected` (Memora's expected answer; not shown when labelling),
+`overlap`. Sam's labels go in a separate file beside it.

@@ -18,6 +18,8 @@ Some agent-memory systems rewrite a memory when they recall it, so it fits the t
 | `scripts/download_data.sh` | Downloads the Memora dataset at the pinned commit. |
 | `scripts/make_split.py` | Recreates or checks the frozen development/test persona split (`notes/split.json`). |
 | `scripts/run_stage0_control.py` | Stage 0's control check: discard leaves no trace (ingest only vs recall + discard, compared after every session). |
+| `scripts/run_stage0_answers.py` | Answers Memora's questions from the end-of-history memory of the Stage 0 control run (D60), for the judge check and FAMA. |
+| `scripts/make_judge_sample.py` | Makes the frozen, stratified sample of 70 judge items for hand labelling (D21, D60). |
 | `scripts/explore/` | Numbered data-exploration scripts (E01–E34); their saved outputs are in `notes/evidence/`. See its README. |
 | `src/memrecon/llm.py` | The only way experiment code calls a model. |
 | `src/memrecon/embed.py`, `src/memrecon/retrieval.py` | Embeddings (cached) and retrieval: which memories are relevant to a turn. |
