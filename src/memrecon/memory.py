@@ -34,7 +34,8 @@ actually drifted is measured (probes, embedding distance), never counted.
 Lineage, kept for the harness and **never shown to the model** (D28):
 `written_from` ("user", "memory" or "both"), `parents` (memory IDs it was
 written from), `sources` (every user turn in its ancestry), `superseded_by`,
-`retired` (None, "superseded" or "forgotten"), `versions`, `times_recalled`.
+`retired` (None, "superseded" or "forgotten"), `versions`, `times_recalled`,
+`times_selected` (D54).
 The model sees memories only through `present()`: their text and the date of
 the conversation their information came from (D36: relative dates count from
 it), under labels numbered afresh for each call and mapped back by the
@@ -44,13 +45,13 @@ the conversation it was made in.
 Snapshots are canonical JSON (sorted keys, no clock times, IDs assigned in
 insertion order), so two runs that did the same things give byte-identical
 snapshots. The Stage 0 check (D19, D26) compares `content_json()`, which
-leaves out `times_recalled` and the event count: an ingest-only run never
+leaves out `times_recalled`, `times_selected` and the event count: an ingest-only run never
 recalls, while everything retrieval and the write policies can see must
 match exactly.
 
 **Event file** (part of the audit log, D30): given an `EventLog`, the store
 appends one line per operation, in order, as it happens (log, note, forget,
-recall, keep, replace, present), with what it touched and, for writes, the
+recall, select, keep, replace, present), with what it touched and, for writes, the
 text and depth. Snapshots show the state after each session; the event file
 shows how it got there. Lines are flushed and synced as they are written; a
 line cut off by a crash is skipped when reading. Event numbers continue
@@ -105,7 +106,8 @@ class Memory:
     versions: list[Version]
     created_at: At
     date: str = ""  # date of the conversation its information came from (D36); shown to the model
-    times_recalled: int = 0
+    times_recalled: int = 0  # retrieval found it for a turn (D25)
+    times_selected: int = 0  # the agent chose it as useful for the turn, so it was rewritten (D54)
     superseded_by: str | None = None
     retired: str | None = None  # None, "superseded" or "forgotten"
     retired_at: At | None = None
@@ -201,6 +203,12 @@ class MemoryStore:
         self._emit("recall", at, id=mid, times_recalled=m.times_recalled)
         return m.text
 
+    def select(self, mid: str, at: At | None = None) -> None:
+        """The agent chose this recalled memory as useful for the turn (counter +1), so it is rewritten (D54)."""
+        m = self._live(mid)
+        m.times_selected += 1
+        self._emit("select", at, id=mid, times_selected=m.times_selected)
+
     def keep(self, mid: str, rewritten: str, at: At) -> str:
         """Keep the rewrite as a new memory beside the one it came from (depth + 1)."""
         self._no_policies_on_log()
@@ -280,6 +288,7 @@ class MemoryStore:
             d = asdict(m)
             if not include_recall_counts:
                 del d["times_recalled"]
+                del d["times_selected"]
             memories.append(d)
         data = {
             "format": SNAPSHOT_FORMAT,

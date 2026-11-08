@@ -30,6 +30,7 @@ Add to this file whenever a new term, table or column appears.
 | **discard** | Write policy: the rewrite is used for the task and thrown away; the memory is unchanged (its recall counter goes up). The no-rewrite control. |
 | **replace** | Write policy: the rewrite overwrites the memory (same ID; the old text is kept only in its version history). |
 | **keep** | Write policy: the rewrite is stored as a new memory and the original stays. The proposal calls this "added (both kept)". |
+| **rewrite** | The agent's version of a recalled memory for the current discussion (D53). A rewrite identical to the memory is no rewrite. |
 | **verify** | Stage 2 write policy (not built yet): the rewrite is written back only after a check against the original. |
 | **arm** | One condition of a run: a memory mode (note, log, oracle) combined with a write policy. |
 | **note arm** | Memories are notes the agent model writes from what the user said. |
@@ -85,7 +86,7 @@ Add to this file whenever a new term, table or column appears.
 
 | Term | Meaning here |
 |---|---|
-| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37). Under keep and replace, each recall is a rewrite. |
+| **recall** | A memory retrieved for a user turn (top 3 reaching the relevance threshold, 0.70, D37), during the session and before it is ingested. The agent chooses which are useful for the turn (`select_v1.md`) and rewrites each of those on its own (`rewrite_v1.md`, D53, D54); the write policy decides what is stored. |
 | **natural recall** | Recall by the replayed conversation's own user turns (D14). |
 | **injected query** | Planned: extra recall queries about specific details, to build depth where natural recall is too rare (E17). |
 | **drift** | How far a memory's content has moved from the latest legitimate state of what the user said. Measured by probes, never counted. |
@@ -153,7 +154,8 @@ evidence blocks are for auditing only.
 | `versions` | Text history: `text`, `depth`, `since_user`, `at`. | store |
 | `created_at` | `At`: `session_id`, `turn` when written. | harness |
 | `date` | Date of the conversation its information came from. Shown to the model. | harness |
-| `times_recalled` | Recall counter. Not in `content_json` (D26). | store |
+| `times_recalled` | Recall counter: retrieval found it for a turn. Not in `content_json` (D26). | store |
+| `times_selected` | The agent chose it as useful for a turn, so it was rewritten (D54). Not in `content_json`. | store |
 | `superseded_by` | ID of the memory that replaced it, if any. | store |
 | `retired`, `retired_at` | `None`, `superseded` or `forgotten`, and when. | store |
 
@@ -169,6 +171,7 @@ byte for byte in the Stage 0 no-trace check (D19, D26).
 | `log`, `note` | `id`, `text`, `depth`, `since_user`, `date`, `supersedes`, `sources` |
 | `forget` | `ids` |
 | `recall` | `id`, `times_recalled` |
+| `select` | `id`, `times_selected` |
 | `keep` | `id` (new), `parent`, `text`, `depth`, `since_user` |
 | `replace` | `id`, `text`, `depth`, `since_user` |
 | `present` | `labels` (number shown → memory ID) |
@@ -239,6 +242,37 @@ and `unchanged` for an identical replace), `calls` (one per model call: `session
 **Prompt files**, `src/memrecon/prompts/<name>.md`: a leading comment (never sent; why the version exists),
 then `=== SYSTEM ===` and `=== USER ===` sent exactly as written, with `{placeholders}` filled by the
 harness. A version used in a run is never edited; changes go in the next version.
+
+**Recall records** (`src/memrecon/recall.py`, D53, D54; harness side only). `Recaller.recall_session(session)`
+goes through the session's user turns in order and returns a **RecallOutcome** (`session_id`, `turns`, and
+the totals `found`, `selected` and `failures`); each turn where retrieval found something is a **TurnRecall**:
+
+| Field | What it is |
+|---|---|
+| `turn` | Line number of the user turn in the session. |
+| `found`, `scores` | Memory IDs retrieval found (top 3 reaching 0.70, D37), most similar first, and their similarities. Each is counted in `times_recalled`. |
+| `shown` | The order step 1 listed them in (newest first). |
+| `selected` | Those the agent chose as useful for the turn (step 1, `select_v1.md`), most useful first; each counted in `times_selected` and rewritten on its own (step 2, `rewrite_v1.md`), in that order. |
+| `rewrites` | Memory ID → its rewrite, for analysis (e.g. details a rewrite adds that were not in the memory). |
+| `written` | IDs the write policy wrote to (replace: the same ID; keep: the new child; discard: none). |
+| `unchanged` | Selected memories whose rewrite was identical to their text (no rewrite under any policy). |
+| `select_ok`, `rewrite_failed`, `errors` | Whether step 1's answer was usable (if not, nothing is rewritten that turn); memories whose rewrite failed (skipped); the reasons. |
+
+In step 1 the memories found are listed newest first (by the date their information came from, then the
+order they were written, latest first), so the order carries no similarity; the numbers only label them.
+
+**Write policies** (`WritePolicy.apply(store, id, rewritten, at)`): `discard`, `replace`, `keep` so far
+(`policy(name)` looks one up). The model is never told which policy runs.
+
+**Stage 0 control results** (`scripts/run_stage0_control.py`, `src/memrecon/stage0.py`, D19, D26):
+`results/stage0/control/<config id>/` holds `config.json` (arms, prompts, recall k and threshold, agent
+model, sessions), `report.md`, and per persona and arm one folder per attempt, `run_<n>/` (never reused):
+`sessions/session_NNN.json` (one per session: `equal`, `difference`, `turns_found`, `found`, `selected`,
+`rewrites`, `unchanged`, `failures`, `choices` (step 1's answers by pattern: `none`, `one shown`, `all, in
+listed order`, `all, reversed`, `some`), `ingest_ok_a`, `ingest_ok_b`, `seconds`, and each turn's recall),
+`A/` and `B/` (store **A**, ingest only; store **B**, recall + discard, then ingest: `events.jsonl` and
+`snapshots/session_NNN.json`, B's with the monitor's `.summary.json`), and `summary.json` once finished
+(an attempt without one was interrupted). A pilot (`--sessions N`) has its own config id.
 
 ## 6. The drift measure's answer key (probes)
 
