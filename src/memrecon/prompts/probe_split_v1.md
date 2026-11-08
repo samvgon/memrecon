@@ -6,7 +6,9 @@ remove or finish something). Sam's idea from the hand check of version 3 and 4: 
 separate things ("provide a preliminary financial analysis ... and outline key considerations ...") should
 be two probes; code alone cannot tell them from one thing with "and" inside ("account management and
 fraud detection modules"), so the judge decides. Each part is copied exactly from the detail (code
-checks) and becomes a row attached to the whole, which stays as it is. Harness side, run by the judge
+checks) and becomes a row attached to the whole, which stays as it is. Edited once after a 10-candidate
+pilot (not evidence; E31 not yet run): words joined by "and" that share the rest of the detail ("enhance
+operational efficiency and cost-effectiveness across ...") are one thing. Harness side, run by the judge
 model; never shown to the agent. Never edit a version that has been used in a run: copy it to v2.
 -->
 
@@ -15,7 +17,7 @@ You check one detail that a user told a personal assistant: is it one thing, or 
 
 You are given the line the user said, the detail (copied from that line) and what the detail is (its field).
 
-It is one thing when "and" joins words inside a single thing: "account management and fraud detection modules", "technical roadblocks and mitigation strategies", "Training Materials for Operations and Compliance Teams", "raw energy and harder rock sound". It is several things when it joins separate items of a list or separate actions, each of which could be remembered or forgotten on its own: "provide a preliminary financial analysis of the pilot and outline key considerations for the next phase" is two things ("provide a preliminary financial analysis of the pilot", "outline key considerations for the next phase").
+It is one thing when "and" joins words inside a single thing: "account management and fraud detection modules", "technical roadblocks and mitigation strategies", "Training Materials for Operations and Compliance Teams", "raw energy and harder rock sound". It is also one thing when the joined words share the rest of the detail, so that a part would not make sense alone: "enhance operational efficiency and cost-effectiveness across our logistics network" is one aim (both share "enhance" and "across our logistics network"). It is several things only when it joins separate items of a list or separate actions, each complete on its own, with its own words, so that each could be remembered or forgotten on its own: "provide a preliminary financial analysis of the pilot and outline key considerations for the next phase" is two things ("provide a preliminary financial analysis of the pilot", "outline key considerations for the next phase").
 
 If it is one thing, answer with an empty list. If it is several, give each part copied exactly from the detail, word for word, without the joining "and" or comma. Do not reword a part or add words to it.
 
