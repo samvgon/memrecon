@@ -6,7 +6,7 @@ import pytest
 from memrecon.ingest import UnusableAnswer, load_prompt
 from memrecon.probes import (ProbeExtractor, ProbeSplitter, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, parse_split_answer,
                              resolve_date, split_candidate, split_duration, split_number, true_at,
-                             aliases, code_match, numbers_in, qualifier_kept)
+                             aliases, code_match, match_with_parent, numbers_in, parent_entry, qualifier_kept)
 
 SESSION = {
     "session_id": 7,
@@ -467,3 +467,45 @@ def test_who_is_graded_only_on_tasks():
     b.who = "CFO Office"
     view = {e["detail"]: e["who"] for e in grading_view(build_table([a, b]))}
     assert view == {"$900,000": "", "send the deck": "CFO Office"}
+
+
+# -- D51: a no-longer preference closes its record; attached details are found with their parent ----
+
+def test_no_longer_preference_closes_its_reasons_and_examples():
+    rec = ("preference", "j.j. abrams")
+
+    def row(rid, detail, field, status, session, attached=None, replaces=None, kind="item", record=rec):
+        r = R(detail, status, session, field=field, kind=kind, record=record)
+        r.row_id, r.attached_to, r.replaces = rid, attached, replaces
+        return r
+    root = "p:R:preference/j.j. abrams"
+    rows = [row("p:66:1", "J.J. Abrams", "liked director", "new", 66, root, kind="name"),
+            row("p:66:2", "Super 8", "liked film", "new", 66, root, kind="name"),
+            row("p:66:3", "action, mystery, and character development", "liked feature", "new", 66, root),
+            row("p:70:1", "Star Trek", "liked film", "new", 70, root, kind="name"),
+            row("p:72:1", "J.J. Abrams", "liked director", "no longer", 72, replaces="p:66:1", kind="name",
+                record=("preference", "rian johnson")),
+            row("p:72:2", "Rian Johnson", "liked director", "new", 72, kind="name", record=("preference", "rian johnson"))]
+    now = {(e["detail"], e["state"]) for e in true_at(build_table(rows), 72)}
+    assert now == {("J.J. Abrams", "no longer"), ("Super 8", "no longer"), ("Star Trek", "no longer"),
+                   ("action, mystery, and character development", "no longer"), ("Rian Johnson", "true")}
+
+
+def test_document_removal_does_not_close_the_rest_of_the_document():
+    def row(rid, detail, status, session, replaces=None):
+        r = R(detail, status, session, field="agenda item", kind="item", record=("content", "notes_1"))
+        r.row_id, r.attached_to, r.replaces = rid, "p:R:content/notes_1", replaces
+        return r
+    rows = [row("p:1:1", "Hiring plan", "new", 1), row("p:1:2", "Budget review", "new", 1), row("p:5:1", "Hiring plan", "removed", 5, "p:1:1")]
+    assert {e["detail"] for e in true_at(build_table(rows), 5)} == {"Budget review"}
+
+
+def test_an_attached_detail_is_found_only_with_its_parent():
+    by_row = {"p:1:1": {"detail": "review the project budget", "kind": "task"}}
+    deadline = {"detail": "later today", "kind": "date", "resolved": "2025-06-01", "attached_to": "p:1:1"}
+    parent = parent_entry(deadline, by_row)
+    assert parent is by_row["p:1:1"]
+    assert not match_with_parent(deadline, "The user spent $9.50 on a coffee on 2025-06-01.", parent)
+    assert match_with_parent(deadline, "On 2025-06-01 the user needs to review the project budget later today.", parent)
+    assert parent_entry({**deadline, "attached_to": "p:R:content/x"}, by_row) is None
+    assert parent_entry({**deadline, "origin": "split"}, by_row) is None

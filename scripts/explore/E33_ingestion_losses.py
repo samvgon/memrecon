@@ -6,7 +6,7 @@ lost more of them by the end (2s2 99, 2s3 84, v1 56, v5 62) and kept more old va
 held it, in the session it was lost? For each old value still found, is it kept as history, in a memory
 never superseded, or carried into a newer memory? For details never found, how near did the memories
 come (possible scoring artifacts, e.g. a relative date rewritten as a calendar date)?
-Method: as E32 (the frozen key, D50; E23's cached calls; code_match at overlap 0.8), but tracking, after
+Method: as E32 (the frozen key, D50, with D51's two fixes; E23's cached calls; overlap 0.8), but tracking, after
 every session, every active memory that holds each probe. A loss is a session after which a probe that
 was found is no longer found; its cause comes from what happened to the memories that held it:
 superseded (by a memory written in that session) or forgotten, and whether that session was about the
@@ -29,7 +29,7 @@ from memrecon.embed import Embedder
 from memrecon.ingest import Ingestor
 from memrecon.llm import client as model_client
 from memrecon.memory import MemoryStore
-from memrecon.probes import Row, build_table, code_match, content_words, grading_view, numbers_in, true_at
+from memrecon.probes import Row, build_table, content_words, grading_view, match_with_parent, numbers_in, parent_entry, true_at
 from memrecon.retrieval import Retriever
 
 K = 3
@@ -63,6 +63,13 @@ def record_of(s):
         return k
     d = s.get("operation_details") or {}
     return ("goal", str(d.get("subcategory"))) if s.get("session_type") == "goal" else ("session", s["session_id"])
+
+
+def rtype(record):
+    """What kind of record a probe belongs to, for the breakdowns."""
+    return {"preference": "preferences", "content": "documents", "food_expenses": "expenses and steps",
+            "step_tracker": "expenses and steps", "todo_list": "to-dos and calendar", "calendar_event": "to-dos and calendar",
+            "goal": "goals"}.get(record[0] if record else "", "other")
 
 
 def short(t, n=150):
@@ -103,6 +110,7 @@ for persona in personas:
         ing = Ingestor(agent, store, retriever, persona=persona, tag="E33", candidate_threshold=0.0,
                        note_prompt=arm if arm not in TWO_STEP else "ingest_note_v5", extract_prompt=ext, decide_prompt=dec)
         cache = {}
+        by_row = {e["row_id"]: e for e in entries if e.get("row_id")}  # a detail's parent, to find them together (D51)
         holders = {}  # probe key -> set of memory ids holding it after the previous session
         info = {}  # probe key -> probe dict
         last_loss = {}  # probe key -> loss record (the latest)
@@ -122,7 +130,7 @@ for persona in personas:
                 for m in active:
                     c = (pk, m.text)
                     if c not in cache:
-                        cache[c] = code_match(p, m.text)
+                        cache[c] = match_with_parent(p, m.text, parent_entry(p, by_row))
                     if cache[c]:
                         hold.add(m.id)
                 now[pk] = hold
@@ -156,7 +164,7 @@ for persona in personas:
                         continue
                     if found_when_told.get(pk):
                         loss = last_loss.get(pk)
-                        result[arm]["lost"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"],
+                        result[arm]["lost"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"], "type": rtype(p["record"]),
                                                     **(loss or {"fate": "(found when told, never seen lost)", "where": ""})})
                     else:
                         own = [m for m in store.memories.values() if any(src.session_id == p["from_session"] for src in m.sources)]
@@ -167,21 +175,21 @@ for persona in personas:
                             other = "a memory from its session has a calendar date"
                         elif p["kind"] == "number" and any(numbers_in(m.text) for m in own):
                             other = "a memory from its session has other numbers"
-                        result[arm]["never"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"],
+                        result[arm]["never"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"], "type": rtype(p["record"]),
                                                      "own_memories": len(own), "best": best, "other": other,
                                                      "example": short(own[0].text) if own else ""})
                 # old values found at the end
                 for p in grading_view([e for e in entries if e["state"] == "true" and e["until_session"] is not None]):
                     if p["grade"] != "code":
                         continue
-                    hits = [m for m in active if code_match(p, m.text)]
+                    hits = [m for m in active if match_with_parent(p, m.text, parent_entry(p, by_row))]
                     if not hits:
                         continue
                     m = hits[0]
                     cls = ("says it changed" if HISTORY.search(m.text)
                            else "written before the change, never superseded" if m.created_at.session_id < p["until_session"]
                            else "written at or after the change, without saying so")
-                    result[arm]["old"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"], "class": cls,
+                    result[arm]["old"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"], "class": cls, "type": rtype(p["record"]),
                                                "memory": short(m.text)})
         calls.update(("fresh" if not c["cached"] else "cached") for c in ing.calls)
 elapsed = time.monotonic() - start
@@ -200,6 +208,9 @@ for a in ARMS:
     ops = Counter(x.get("op") for x in lost)
     print("      by the losing session's operation: " + ", ".join(f"{k} {n}" for k, n in ops.most_common()))
     print("      by kind: " + ", ".join(f"{k} {n}" for k, n in Counter(x["kind"] for x in lost).most_common()))
+    print("      by record type: " + ", ".join(f"{k} {n}" for k, n in Counter(x["type"] for x in lost).most_common())
+          + "; folded (superseded in another record's session) by record type: "
+          + ", ".join(f"{k} {n}" for k, n in Counter(x["type"] for x in lost if x["fate"] == "superseded" and x["where"] == "another record").most_common()))
 print()
 
 print("2. EXAMPLES OF LOSSES (up to 4 per arm and cause: the detail; the memory that held it; what replaced it)")
@@ -223,7 +234,8 @@ for a in ARMS:
     b = Counter("no memory from its session" if x["own_memories"] == 0 else "best overlap 0" if x["best"] == 0
                 else "best overlap < 0.5" if x["best"] < 0.5 else "best overlap 0.5-0.8" if x["best"] < 0.8 else "overlap >= 0.8 (short detail, words differ)"
                 for x in nv)
-    print(f"  {SHORT[a]}: {len(nv)}; " + ", ".join(f"{k} {n}" for k, n in b.most_common())
+    print(f"  {SHORT[a]}: {len(nv)}; by record type " + ", ".join(f"{k} {n}" for k, n in Counter(x["type"] for x in nv).most_common()) + "; "
+          + ", ".join(f"{k} {n}" for k, n in b.most_common())
           + "; " + ", ".join(f"{k} {n}" for k, n in Counter(x["other"] for x in nv if x["other"]).most_common()))
     for x in [x for x in nv if x["other"]][:EXAMPLES]:
         print(f"      - {x['persona']} [{x['kind']}] {short(x['detail'], 60)} | memory: {x['example']}")
@@ -232,7 +244,8 @@ print()
 print("4. OLD VALUES FOUND AT THE END (held once, updated or removed by the end): the memory that has it")
 for a in ARMS:
     old = result[a]["old"]
-    print(f"  {SHORT[a]}: {len(old)}; " + ", ".join(f"{k} {n}" for k, n in Counter(x["class"] for x in old).most_common()))
+    print(f"  {SHORT[a]}: {len(old)}; " + ", ".join(f"{k} {n}" for k, n in Counter(x["class"] for x in old).most_common())
+          + "; by record type " + ", ".join(f"{k} {n}" for k, n in Counter(x["type"] for x in old).most_common()))
     for cls in ("written before the change, never superseded", "written at or after the change, without saying so"):
         for x in [x for x in old if x["class"] == cls][:2]:
             print(f"      - [{cls}] {x['persona']} {short(x['detail'], 60)} | {x['memory']}")

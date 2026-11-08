@@ -8,7 +8,9 @@ Method: the answer key is E30's rows and E31's parts for the development persona
 (build_table, with D49's closing); after each session, the probes that hold then (true_at) and are graded
 by code (grading_view: kinds number, date, name, title, item in states true or false) are checked against
 every active memory of each arm (code_match, D50: numbers by value, dates by text, day or duration, short
-details by alias as whole words, long ones by content-word overlap >= 0.8 in one memory). A record any
+details by alias as whole words, long ones by content-word overlap >= 0.8 in one memory; D51: a detail
+attached to another detail only in a memory that also holds that detail, and a preference no longer
+liked closes its reasons and examples in the key). A record any
 of whose sessions failed extraction in E30 (flagged lines in an add, update or delete session and no rows)
 is left out, since its key may be incomplete. Arms are replayed from E23's cached calls (same prompts,
 retrieval and candidate threshold 0.0); no new model calls are expected.
@@ -32,7 +34,7 @@ from memrecon.embed import Embedder
 from memrecon.ingest import Ingestor
 from memrecon.llm import client as model_client
 from memrecon.memory import MemoryStore
-from memrecon.probes import Row, build_table, code_match, grading_view, qualifier_kept, true_at
+from memrecon.probes import Row, build_table, grading_view, match_with_parent, parent_entry, qualifier_kept, true_at
 from memrecon.retrieval import Retriever
 
 K = 3
@@ -118,6 +120,7 @@ for persona in personas:
         ing = Ingestor(agent, store, retriever, persona=persona, tag="E32", candidate_threshold=0.0,
                        note_prompt=arm if arm not in TWO_STEP else "ingest_note_v5", extract_prompt=ext, decide_prompt=dec)
         cache = {}
+        by_row = {e["row_id"]: e for e in entries if e.get("row_id")}  # a detail's parent, to find them together (D51)
         first_seen = {}  # probe key -> found right after the session it was told in
         last = sessions[-1]["session_id"]
         for s in sessions:
@@ -136,7 +139,7 @@ for persona in personas:
                     for t in texts:
                         c = (pk, t, ov)
                         if c not in cache:
-                            cache[c] = code_match(p, t, ov)
+                            cache[c] = match_with_parent(p, t, parent_entry(p, by_row), ov)
                         if cache[c]:
                             hit = t
                             break
@@ -158,7 +161,7 @@ for persona in personas:
                         if p["grade"] == "code"]
                 for p in gone:
                     score[arm]["old"].append({"persona": persona, "detail": p["detail"], "kind": p["kind"],
-                                              "found": any(code_match(p, t) for t in texts)})
+                                              "found": any(match_with_parent(p, t, parent_entry(p, by_row)) for t in texts)})
             progress(f"{persona} {SHORT[arm]} session {sid}: ok={out.ok} active={len(texts)} probes={len(probes)}")
         calls.update(("fresh" if not c["cached"] else "cached") for c in ing.calls)
 elapsed = time.monotonic() - start

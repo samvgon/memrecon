@@ -476,6 +476,16 @@ def _matches(a: str, b: str) -> bool:
     return bool(a) and bool(b) and (a == b or a in b or b in a)
 
 
+def is_record_item(e: dict) -> bool:
+    """Whether a table entry is a preference record's own item (the liked or disliked thing the record is
+    named after under A10), e.g. "J.J. Abrams" in record ("preference", "j.j. abrams")."""
+    rec = e.get("record") or ()
+    if len(rec) != 2 or rec[0] != "preference":
+        return False
+    item, d = norm(str(rec[1])), norm(e.get("detail") or "")
+    return bool(item) and bool(d) and (item == d or item in d or d in item)
+
+
 def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("preference",)) -> list[dict]:
     """What is true when, computed from all rows (never stored, never edited).
 
@@ -503,6 +513,12 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
             for child in [c for c in entries if c.get("attached_to") == e["row_id"] and c["until_session"] is None
                           and c["state"] in ("true", "done") and c is not e]:
                 close(child, row, state)
+        # a liked or disliked thing that no longer holds takes its reasons and examples with it (D51): when a
+        # preference record's own item is no longer liked or is removed, its other details close too
+        if row.status in ("no longer", "removed") and is_record_item(e):
+            for other in [c for c in entries if c["record"] == e["record"] and c is not e and c["until_session"] is None
+                          and c["state"] in ("true", "done") and c["from_session"] < row.session]:
+                close(other, row, state)
 
     def parent(row):
         if row.attached_to and (":R:" in row.attached_to or row.attached_to == "unknown"):
@@ -519,7 +535,7 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
         entries.append({"record": row.record, "field": row.field, "detail": row.detail, "qualifier": row.qualifier,
                         "row_id": row.row_id, "attached_to": row.attached_to, "attached_detail": (row.attached_to if row.attached_to and (":R:" in row.attached_to or row.attached_to == "unknown")
                                             else detail_of.get(row.attached_to) if row.attached_to else None),
-                        "replaces": row.replaces,
+                        "replaces": row.replaces, "origin": getattr(row, "origin", "extract"),
                         "who": row.who, "kind": row.kind, "number": row.number, "unit": row.unit, "resolved": row.resolved,
                         "status": row.status, "state": state, "from_session": row.session, "from_date": row.date,
                         "until_session": None, "until_date": None})
@@ -706,6 +722,27 @@ def code_match(entry: dict, memory_text: str, overlap: float = OVERLAP) -> bool:
         return any(_contains(mem, f) for f in aliases(detail))
     want = content_words(detail)
     return bool(want) and len(want & content_words(memory_text)) / len(want) >= overlap
+
+
+PARENT_OVERLAP = 0.5  # to find a detail's parent in the same memory, half its content words are enough (D51)
+
+
+def parent_entry(entry: dict, by_row: dict[str, dict]) -> dict | None:
+    """The table entry a detail is attached to, when it is another detail (not the record itself, not
+    "unknown", not the whole a split part came from): a deadline's action item, a timeframe's objective."""
+    a = entry.get("attached_to")
+    if not a or ":R:" in a or a == "unknown" or entry.get("origin") == "split":
+        return None
+    return by_row.get(a)
+
+
+def match_with_parent(entry: dict, memory_text: str, parent: dict | None, overlap: float = OVERLAP) -> bool:
+    """D51: a detail attached to another detail counts only in a memory that also holds that detail (found
+    at PARENT_OVERLAP), so "later today" or "medium risk" is not found in any memory of the same day or
+    another proposal."""
+    if not code_match(entry, memory_text, overlap):
+        return False
+    return parent is None or code_match(parent, memory_text, PARENT_OVERLAP)
 
 
 def qualifier_kept(entry: dict, memory_text: str) -> bool | None:

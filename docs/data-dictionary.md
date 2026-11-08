@@ -298,6 +298,13 @@ grading, so rows extracted before a parser fix are graded with the current parse
   precedes it) as whole words; 5 words or more, the share of its content words (`content_words`: stop words
   dropped, plural "s" dropped, hyphens split) the memory holds, at least `OVERLAP` (0.8).
 - *Qualifier* (`qualifier_kept`): a graded qualifier must be in the same memory as its detail.
+- *With its parent* (`match_with_parent`, `parent_entry`, D51): a detail attached to another detail (a
+  deadline, a timeframe, an amount, a risk level; not one attached to the record itself, and not a split
+  part) counts only in a memory that also holds that detail, found at `PARENT_OVERLAP` (0.5).
+
+**A preference no longer liked** (`is_record_item`, D51): when a preference record's own item (the thing it
+is named after) is marked `no longer` or `removed`, every other open entry of that record told before
+closes with it, in the same state (its reasons and examples no longer hold as current likes).
 
 **Probe terms used in scoring** (E32): *recall*, the share of probes that should hold (state `true`) found
 in some active memory; *found when told*, found right after the session the detail was told in; *lost*,
