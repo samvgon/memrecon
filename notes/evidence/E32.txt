@@ -1,0 +1,75 @@
+# Evidence E32
+script:       scripts/explore/E32_ingestion_drift.py
+run at:       2026-11-08T00:52:18-08:00
+memrecon:     ef39a84 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+1. THE ANSWER KEY (development personas)
+  financial_analyst: 343 table entries; code-graded 233, judge-graded 110; failed extraction sessions [38, 94], records left out 2
+  management_consultant: 403 table entries; code-graded 291, judge-graded 112; failed extraction sessions [], records left out 0
+  sales_manager: 341 table entries; code-graded 224, judge-graded 117; failed extraction sessions [109, 119], records left out 2
+  model calls in the replay: {'cached': 3687} (fresh calls mean the cache did not cover a session)
+  wall time 12 s
+
+2. RECALL AT THE END (probes that should hold, found in some active memory; long details at overlap 0.8)
+  arm    probes   recall   by kind
+  v1        630    84.0%   item 80.5% of 323, date 91.5% of 117, number 90.6% of 106, name 78.7% of 61, title 78.3% of 23
+  v5        630    81.7%   item 76.2% of 323, date 90.6% of 117, number 91.5% of 106, name 78.7% of 61, title 78.3% of 23
+  2s2       630    79.4%   item 72.8% of 323, date 89.7% of 117, number 93.4% of 106, name 70.5% of 61, title 78.3% of 23
+  2s3       630    81.7%   item 75.2% of 323, date 92.3% of 117, number 94.3% of 106, name 75.4% of 61, title 78.3% of 23
+  long details (5+ words) at overlap 0.6 / 0.8 / 1.0: v1 87.6% / 83.7% / 78.4%; v5 81.0% / 75.8% / 72.5%; 2s2 73.9% / 69.9% / 66.7%; 2s3 81.0% / 78.4% / 75.2%
+
+3. RECALL OVER TIME (each session's probes that hold then; mean over sessions, and by thirds of the history)
+  v1    mean 0.843; first / middle / last third 0.826 / 0.861 / 0.842
+  v5    mean 0.855; first / middle / last third 0.888 / 0.850 / 0.828
+  2s2   mean 0.868; first / middle / last third 0.964 / 0.839 / 0.802
+  2s3   mean 0.885; first / middle / last third 0.964 / 0.863 / 0.830
+
+4. KEPT FROM INGESTION TO THE END (probes found right after the session they were told in: still found at the end?)
+  v1    found when told  92.5% of 630; of those, still found at the end  90.4% (56 lost)
+  v5    found when told  91.1% of 630; of those, still found at the end  89.2% (62 lost)
+  2s2   found when told  94.4% of 630; of those, still found at the end  83.4% (99 lost)
+  2s3   found when told  94.4% of 630; of those, still found at the end  85.9% (84 lost)
+
+5. QUALIFIERS (numbers and dates with a graded qualifier, at the end: kept in the memory that holds the detail)
+  v1    6 of 7
+  v5    6 of 7
+  2s2   5 of 7
+  2s3   6 of 7
+
+6. OLD VALUES (values that held once and were updated or removed by the end, still found in an active memory;
+   a memory may keep one as history, 'changed from $X', so this is not by itself an error)
+  v1    47 of 112; values only ever told as old ('replaced', 'removed' with no earlier row) found 1 of 6
+  v5    42 of 112; values only ever told as old ('replaced', 'removed' with no earlier row) found 1 of 6
+  2s2   53 of 112; values only ever told as old ('replaced', 'removed' with no earlier row) found 3 of 6
+  2s3   63 of 112; values only ever told as old ('replaced', 'removed' with no earlier row) found 5 of 6
+
+7. PAIRED AT THE END (probes that should hold: found by one arm and not the other; exact sign test)
+  v1 vs v5: only v1 41, only v5 27, p = 0.114
+  v1 vs 2s2: only v1 67, only 2s2 38, p = 0.00602
+  v1 vs 2s3: only v1 51, only 2s3 37, p = 0.165
+  v5 vs 2s2: only v5 59, only 2s2 44, p = 0.167
+  v5 vs 2s3: only v5 49, only 2s3 49, p = 1
+  2s2 vs 2s3: only 2s2 13, only 2s3 28, p = 0.0275
+  (probes are not independent: several come from one session or record, so p is descriptive)
+
+8. EXAMPLES: probes the best and worst arm disagree on at the end (up to 8 each way)
+  found by v1, not by 2s2:
+    - financial_analyst [number] $9.89
+    - financial_analyst [item] exploring the financial implications of AI integration in mid-size manufacturing, highlighting efficiency gains and cost
+    - financial_analyst [item] exploring the financial implications of AI integration in mid-size manufacturing
+    - financial_analyst [item] highlighting efficiency gains and cost reductions in the European market
+    - financial_analyst [item] with a focus on supply chain optimization and predictive maintenance
+    - financial_analyst [item] #SupplyChainOptimization
+    - financial_analyst [item] #AIManufacturing
+    - financial_analyst [item] #FinancialAnalysis
+  found by 2s2, not by v1:
+    - financial_analyst [name] the French Riviera
+    - financial_analyst [item] travel
+    - financial_analyst [item] sunshine
+    - financial_analyst [item] coastline
+    - financial_analyst [item] travel
+    - financial_analyst [date] weekend
+    - financial_analyst [item] best friend's birthday
+    - financial_analyst [date] August 21st
