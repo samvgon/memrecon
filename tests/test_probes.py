@@ -4,7 +4,8 @@ import json
 import pytest
 
 from memrecon.ingest import UnusableAnswer, load_prompt
-from memrecon.probes import ProbeExtractor, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, resolve_date, split_duration, split_number, true_at
+from memrecon.probes import (ProbeExtractor, ProbeSplitter, Row, build_table, graded_qualifier, grading_view, parse_probe_answer, parse_split_answer,
+                             resolve_date, split_candidate, split_duration, split_number, true_at)
 
 SESSION = {
     "session_id": 7,
@@ -348,3 +349,66 @@ def test_v4_dates_carry_their_duration():
                                    d3(2, "within seven days", "action item deadline", "date", attached=1)))
     rows = ProbeExtractor(client, persona="p", prompt="probe_extract_v4").extract(first, ("content", "notes_1")).rows
     assert (rows[1].number, rows[1].unit) == (7.0, "day")
+
+
+# -- split pass and closing what belongs to a closed row (D49) ------------------------------------
+
+LINE27 = "The email is to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase."
+WHOLE27 = "provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase"
+
+
+def parts(*xs):
+    return "<parts>" + json.dumps({"parts": list(xs)}) + "</parts>"
+
+
+def test_prompt_split_loads():
+    system, user = load_prompt("probe_split_v1")
+    assert "{detail}" in user and "{line}" in user and "share_memory" not in system + user
+
+
+def test_split_candidates_are_long_details_with_and():
+    whole = Row(("content", "e"), "email purpose", WHOLE27, "", "", "item", "new", 27, 7, "2025-06-02")
+    assert split_candidate(whole)
+    assert not split_candidate(Row(("content", "e"), "agenda item", "budgets and spend", "", "", "item", "new", 1, 3, ""))  # short
+    assert not split_candidate(Row(("content", "e"), "key point", WHOLE27, "", "", "item", "removed", 1, 3, ""))  # closes something
+    assert not split_candidate(Row(("content", "e"), "lead", "Johnson and Johnson Consumer Health Group Inc", "", "", "name", "new", 1, 3, ""))
+
+
+def test_parse_split_answer():
+    assert parse_split_answer(parts(), WHOLE27) == []
+    two = parse_split_answer(parts("provide a preliminary financial analysis of the regional AI pilot program's performance",
+                                   "outline key considerations for the next phase"), WHOLE27)
+    assert len(two) == 2
+    with pytest.raises(UnusableAnswer, match="copied exactly"):
+        parse_split_answer(parts("provide a financial analysis", "outline key considerations for the next phase"), WHOLE27)
+    with pytest.raises(UnusableAnswer, match="two or more"):
+        parse_split_answer(parts("outline key considerations for the next phase"), WHOLE27)
+    with pytest.raises(UnusableAnswer, match="not a part"):
+        parse_split_answer(parts(WHOLE27, "and"), WHOLE27)
+
+
+def test_splitter_adds_parts_attached_to_the_whole():
+    whole = Row(("content", "e"), "email purpose", WHOLE27, "", "", "item", "new", 27, 7, "2025-06-02", row_id="p:27:1", attached_to="p:R:content/e")
+    client = ScriptedClient(parts("provide a preliminary financial analysis of the regional AI pilot program's performance",
+                                  "outline key considerations for the next phase"))
+    out = ProbeSplitter(client, persona="p").split(whole, LINE27)
+    assert out.ok and [(r.row_id, r.attached_to, r.status, r.origin) for r in out.rows] == [
+        ("p:27:1.1", "p:27:1", "new", "split"), ("p:27:1.2", "p:27:1", "new", "split")]
+    assert client.calls[0]["meta"]["step"] == "probe_split"
+    now = {e["detail"] for e in true_at(build_table([whole] + out.rows), 27)}
+    assert now == {WHOLE27, out.rows[0].detail, out.rows[1].detail}
+
+
+def test_closing_a_row_closes_what_belongs_to_it():
+    def row(rid, detail, field, status, session, attached=None, replaces=None, kind="item"):
+        r = R(detail, status, session, field=field, kind=kind)
+        r.row_id, r.attached_to, r.replaces = rid, attached, replaces
+        return r
+    rows = [row("p:1:1", "draft the memo by Friday", "action item", "new", 1, kind="task"),
+            row("p:1:2", "by Friday", "action item deadline", "new", 1, attached="p:1:1", kind="date"),
+            row("p:1:3", "Hiring and onboarding plan review", "agenda item", "new", 1),
+            row("p:1:3.1", "Hiring", "agenda item", "new", 1, attached="p:1:3"),
+            row("p:4:1", "draft the memo", "action item", "done", 4, replaces="p:1:1", kind="task"),
+            row("p:5:1", "Hiring and onboarding plan review", "agenda item", "removed", 5, replaces="p:1:3")]
+    now = {(e["detail"], e["state"]) for e in true_at(build_table(rows), 5)}
+    assert now == {("draft the memo by Friday", "done"), ("by Friday", "done")}

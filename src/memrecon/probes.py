@@ -60,6 +60,7 @@ class Row:
     row_id: str = ""  # unique across the answer key: persona:session:id (version 2); empty for version 1 rows
     attached_to: str | None = None  # row_id of the detail this one belongs to (version 2); a root id; "unknown" (v3)
     replaces: str | None = None  # row_id of the earlier row it replaces, removes, finishes or no longer holds (v3)
+    origin: str = "extract"  # "extract" (the extractor's own row) or "split" (a part found by the split pass, D49)
 
     def to_json(self) -> dict:
         d = asdict(self)
@@ -363,6 +364,8 @@ class ProbeExtractor:
             f"E{i} ({e['field']}{', ' + e['state'] if e['state'] != 'true' else ''}): {e['detail']}" for i, e in enumerate(shown, 1)]
         return "\n".join(lines), labels
 
+    step = "probe_extract"
+
     def _ask(self, system: str, user: str, parse, sid: int):
         """As ingestion: up to MAX_ATTEMPTS, feedback with the answer format, twice the room if cut off."""
         reminder = " " + answer_format(system)
@@ -371,7 +374,7 @@ class ProbeExtractor:
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
                 result = self.client.chat(messages, max_tokens=limit, tag=self.tag,
-                                          meta={"step": "probe_extract", "persona": self.persona, "session": sid, "attempt": attempt})
+                                          meta={"step": self.step, "persona": self.persona, "session": sid, "attempt": attempt})
                 usage = getattr(result, "usage", None) or {}
                 self.calls.append({"session": sid, "attempt": attempt, "cached": getattr(result, "cached", False),
                                    "prompt_tokens": usage.get("prompt_tokens"), "completion_tokens": usage.get("completion_tokens")})
@@ -394,6 +397,66 @@ class ProbeExtractor:
                     {"role": "user", "content": f"That answer could not be used: {e} Answer again, following the instructions exactly.{reminder}"},
                 ]
         return None, MAX_ATTEMPTS, error
+
+
+# -- split pass (D49) ----------------------------------------------------------------------------
+
+SPLIT_PROMPT = "probe_split_v1"
+SPLIT_MIN_WORDS = 6  # a detail shorter than this is not checked
+SPLIT_STATUSES = ("new", "added", "updated")  # parts of a removed or finished item close with it (cascade in build_table)
+
+
+def split_candidate(row: Row) -> bool:
+    """A long detail with "and" in it, of a kind that can hold several things: asked whether it is one
+    thing or several. Numbers, dates and names are never split."""
+    return (row.kind not in ("number", "date", "name") and row.status in SPLIT_STATUSES
+            and len(row.detail.split()) >= SPLIT_MIN_WORDS and re.search(r"\band\b", row.detail, re.I) is not None)
+
+
+def parse_split_answer(reply: str, detail: str) -> list[str]:
+    """[] for one thing; otherwise two or more parts, each copied exactly from the detail, all different."""
+    data = extract_block(reply, "parts")
+    parts = data.get("parts")
+    if set(data) != {"parts"} or not isinstance(parts, list) or not all(isinstance(x, str) for x in parts):
+        raise UnusableAnswer('The block must be {"parts": [...]}, a list of strings (empty for one thing).')
+    parts = [x.strip() for x in parts]
+    if not parts:
+        return []
+    if len(parts) < 2:
+        raise UnusableAnswer('Give two or more parts, or an empty list if the detail is one thing.')
+    for x in parts:
+        if not x or x not in detail:
+            raise UnusableAnswer(f'Each part must be copied exactly from the detail, word for word; "{x}" is not in it.')
+        if norm(x) in ("and", norm(detail)):
+            raise UnusableAnswer(f'"{x}" is not a part: a part is one of the separate things, not "and" or the whole detail.')
+    if len({norm(x) for x in parts}) != len(parts):
+        raise UnusableAnswer("The same part appears more than once.")
+    return parts
+
+
+class ProbeSplitter(ProbeExtractor):
+    """The split pass (D49): for each long detail with "and", the judge says whether it is one thing or
+    several; each part becomes a row of its own, attached to the whole (which stays as it is). Rows are
+    added, never edited."""
+    step = "probe_split"
+
+    def __init__(self, client, persona: str = "", prompt: str = SPLIT_PROMPT, max_tokens: int = 1024, tag: str | None = None) -> None:
+        super().__init__(client, persona, prompt, max_tokens, tag)
+
+    def split(self, row: Row, line_text: str) -> ProbeOutcome:
+        system, template = load_prompt(self.prompt)
+        user = template.format(line=line_text, detail=row.detail, field=row.field)
+        parts, attempts, error = self._ask(system, user, lambda r: parse_split_answer(r, row.detail), row.session)
+        if parts is None:
+            return ProbeOutcome(row.session, False, attempts, [], error)
+        out = []
+        for k, part in enumerate(parts, 1):
+            # a part is "new" whatever the whole's status: the whole does any closing, and an "updated" part
+            # would close its sibling parts (same field, same parent)
+            p = Row(row.record, row.field, part, "", row.who, row.kind, "new", row.session, row.line, row.date,
+                    row_id=f"{row.row_id}.{k}", attached_to=row.row_id, origin="split")
+            out.append(p)
+        return ProbeOutcome(row.session, True, attempts, out)
 
 
 # -- what is true when ---------------------------------------------------------------------------
@@ -434,6 +497,12 @@ def build_table(rows: list[Row], cross_record_kinds: tuple[str, ...] = ("prefere
             new = {**e, "state": state, "from_session": row.session, "from_date": row.date,
                    "until_session": None, "until_date": None, "status": row.status}
             entries.append(new)
+        # what belongs to it closes with it (D49): an action item's deadline, an objective's target, the
+        # parts the split pass found in an item
+        if e.get("row_id"):
+            for child in [c for c in entries if c.get("attached_to") == e["row_id"] and c["until_session"] is None
+                          and c["state"] in ("true", "done") and c is not e]:
+                close(child, row, state)
 
     def parent(row):
         if row.attached_to and (":R:" in row.attached_to or row.attached_to == "unknown"):

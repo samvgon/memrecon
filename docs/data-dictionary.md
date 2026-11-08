@@ -243,9 +243,10 @@ harness. A version used in a run is never edited; changes go in the next version
 ## 6. The drift measure's answer key (probes)
 
 `src/memrecon/probes.py`, prompts `probe_extract_v1.md` (E26), `probe_extract_v2.md` (E28, D46) and
-`probe_extract_v3.md` (E29, D47) and `probe_extract_v4.md` (E30, D48), run by the judge (D44–D48). Harness side only.
+`probe_extract_v3.md` (E29, D47) and `probe_extract_v4.md` (E30, D48), run by the judge (D44–D48), then
+the split pass, `probe_split_v1.md` (E31, D49). Harness side only.
 
-**Row** (one per extracted detail; stored append-only, never edited; E26, E28, E29 and E30 write them to
+**Row** (one per extracted detail; stored append-only, never edited; E26, E28, E29 and E30 write them to, and E31 writes the split pass's parts to
 `results/probes/E<n>_<persona>.jsonl`):
 
 | Column | What it is | Comes from |
@@ -263,6 +264,7 @@ harness. A version used in a run is never edited; changes go in the next version
 | `resolved` | For kind date: the calendar day, from the conversation date, when it names one day ("next Tuesday"); empty for ranges ("next week"). | code |
 | `attached_to` | What the detail belongs to: the `row_id` of another detail (a deadline, timeframe, owner or amount of an action item, decision or task); from version 3 also an earlier session's row (an E label), the record itself (a root id, `persona:R:<record>`, "R" to the model: "This post is for LinkedIn"), or `unknown` (it clearly belongs to something the line does not name). Empty: it stands on its own. Version 2's links reach only the same session. | extractor (an id or label), harness (the row_id) |
 | `replaces` | Version 3: for `updated`, `removed`, `done` and `no longer`, the `row_id` of the earlier row it replaces, removes, finishes or no longer holds (from an E label), or empty when that row is not recorded. | extractor (a label), harness (the row_id) |
+| `origin` | `extract` (the extractor's own row) or `split` (a part the split pass found in a long detail, D49: `row_id` `<whole>.<k>`, attached to the whole, status `new`, other columns from the whole except the qualifier). | harness |
 
 **Table entry** (computed from all rows by `build_table`, never stored): the row's columns plus `state`
 (`true` should be in memory, `false` should not, `done`, `no longer`), `from_session` / `from_date` and
@@ -271,7 +273,14 @@ harness. A version used in a run is never edited; changes go in the next version
 with `replaces` closes exactly that row (an `updated` one then holds in its place); without it, a linked `updated` closes the field's earlier values
 linked to the same thing (one action item's deadline, not another's); an unlinked one closes all the field's
 earlier values; `added` does not; `replaced`, `removed`, `done` and `no longer` close or mark the matching value.
-`true_at(entries, session)` gives what holds just after a session.
+When an entry closes, the open entries attached to it close with it, in the same state (D49): an action
+item's deadline when the item is done, a removed item's parts. `true_at(entries, session)` gives what holds
+just after a session.
+
+**Split pass** (`ProbeSplitter`, D49): a row is a candidate (`split_candidate`) when its detail is at least 6
+words, contains "and", is not a number, date or name, and its status is `new`, `added` or `updated`. The
+judge answers with no parts (one thing) or two or more, each copied exactly from the detail (code checks).
+Decisions are kept in `results/probes/E31_decisions_<persona>.jsonl` (`row_id`, `detail`, `parts`, `ok`).
 
 **Grading view** (`grading_view`, D45): each entry with `grade` (`code` for kinds number, date, name, title,
 item in states true or false; `judge` otherwise), its `qualifier` only for numbers and dates and only if on
