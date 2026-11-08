@@ -214,8 +214,13 @@ def parse_probe_answer(reply: str, readable: dict[int, str], version: int = 1, e
         elif item["who"] not in WHO:
             raise UnusableAnswer('"who" must be "user", "user and others", "someone else" or "".')
         key = (line, item["detail"], item["status"], item["field"])
+        if version >= 3:
+            # the same words can be two details of different things ("a medium risk ... also a medium risk",
+            # E29 financial_analyst session 56), told apart by what each is attached to
+            key += (json.dumps(item.get("attached_to")),)
         if key in seen:
-            raise UnusableAnswer("The same detail appears more than once; list each detail once.")
+            raise UnusableAnswer("The same detail appears more than once; list each detail once"
+                                 + (" (if the same words are details of two different things, attach each to the thing it belongs to)." if version >= 3 else "."))
         seen.add(key)
         out.append(item)
     if version >= 2:

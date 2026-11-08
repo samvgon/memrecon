@@ -300,3 +300,13 @@ def test_v3_accepts_an_id_written_in_quotes():
     assert rows[1]["attached_to"] == 1
     with pytest.raises(UnusableAnswer, match="attached_to"):  # a quoted id that is not in the answer is still wrong
         parse_probe_answer(answer(d3(1, "a cost projection", "action item", attached="7")), readable, 3, {})
+
+
+def test_v3_same_words_attached_to_different_things_are_two_details():
+    line = "The risks are talent availability, which is a medium risk, and explainability, also a medium risk."
+    readable = {3: line}
+    two = answer(d3(1, "talent availability", "key risk", attached="R"), d3(2, "explainability", "key risk", attached="R"),
+                 d3(3, "medium risk", "risk level", "name", attached=1), d3(4, "medium risk", "risk level", "name", attached=2))
+    assert len(parse_probe_answer(two, readable, 3, {})) == 4
+    with pytest.raises(UnusableAnswer, match="attach each"):
+        parse_probe_answer(answer(d3(1, "medium risk", "risk level", "name", attached="R"), d3(2, "medium risk", "risk level", "name", attached="R")), readable, 3, {})
