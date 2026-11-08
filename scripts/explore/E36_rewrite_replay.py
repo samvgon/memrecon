@@ -16,9 +16,11 @@ each prompt version; v4 is answered from the call cache, so it reproduces E35 (c
 classified the same way. Development personas only.
 Classification (rough, from words and numbers; read the examples): identical; "replaced by a different
 event" when a number of the memory is lost and a number of the user's message appears, or when under
-half of the memory's content words stay and more come from the message, and the message does not say
-something changed; "updated as the user said" for the same when the message does say so ("no longer",
-"used to", "completed", "changed", "from X to Y", ...); otherwise kept (at least 80% of the memory's
+half of the memory's content words stay and more come from the message, and the user has not said that
+something changed; "updated as the user said" for the same when they have, in that message ("no
+longer", "used to", "completed", "changed", "from X to Y", ...) or earlier in the session, where only a
+change of preference counts ("no longer", "moved on", "used to love", ...; the pilot's Ryan Reynolds
+case said so a line earlier); otherwise kept (at least 80% of the memory's
 content words), kept plus words from the message, or shortened.
 Config: MEMRECON_E36_CONFIG (default: the newest full Stage 0 control run). Pilot: MEMRECON_E36_PILOT=N
 replays only N cases (not evidence). Answers are saved to results/e36/answers.jsonl.
@@ -51,6 +53,7 @@ OUT = ROOT / "results" / "e36"
 STOP = {"user", "i", "my"}
 CHANGE = re.compile(r"\b(update|updated|change|changed|instead|no longer|anymore|used to|not as keen|shifted|completed|"
                     r"finished|remove|moved on|now prefer|from \S+ to)\b", re.I)
+EARLIER = re.compile(r"\b(no longer|anymore|not as keen|shifted|moved on|now prefer|used to (?:really )?(?:like|love|enjoy))\b", re.I)
 GROUPS = ["replaced by a different event", "updated as the user said", "other"]
 CLASSES = ["identical", "kept", "kept + words from the message", "shortened", "replaced by a different event",
            "updated as the user said", "failed"]
@@ -69,7 +72,7 @@ def cw(text):
     return content_words(text) - STOP
 
 
-def classify(old, new, msg):
+def classify(old, new, msg, said):
     if new is None:
         return "failed"
     if new == old:
@@ -80,7 +83,7 @@ def classify(old, new, msg):
     no, nn, nm = numbers_in(old), numbers_in(new), numbers_in(msg)
     swapped = bool(no - nn) and bool((nn & nm) - no)
     if swapped or (kept < 0.5 and from_msg > len(o & n)):
-        return "updated as the user said" if CHANGE.search(msg) else "replaced by a different event"
+        return "updated as the user said" if CHANGE.search(msg) or EARLIER.search(said) else "replaced by a different event"
     if kept >= 0.8:
         return "kept" if from_msg == 0 else "kept + words from the message"
     return "shortened"
@@ -140,9 +143,11 @@ for persona in dev_personas():
                     msg = s["conversation"][t["turn"] - 1]["message"]
                     c = {"key": f"{persona}|{arm}|{sid}|{t['turn']}|{mid}", "persona": persona, "arm": arm, "session": sid,
                          "line": t["turn"], "mid": mid, "old": old, "memory_date": mdate, "date": s.get("date", ""),
-                         "message": msg, "conversation": render_conversation({"conversation": s["conversation"][: t["turn"]]})[0],
+                         "message": msg,
+                         "said": " ".join(x["message"] for x in s["conversation"][: t["turn"]] if x.get("speaker") == "user_agent"),
+                         "conversation": render_conversation({"conversation": s["conversation"][: t["turn"]]})[0],
                          "e35": v4}
-                    c["e35_class"] = classify(old, v4, msg)
+                    c["e35_class"] = classify(old, v4, msg, c["said"])
                     cases.append(c)
 
 rng = random.Random(SEED)
@@ -177,7 +182,7 @@ for version in VERSIONS:
         text, error = rc._ask(system, user, parse_rewrite_answer, At(c["session"], c["line"]), "rewrite")
         answers[(version, c["key"])] = text
         c[SHORT[version]] = text
-        c[SHORT[version] + "_class"] = classify(c["old"], text, c["message"])
+        c[SHORT[version] + "_class"] = classify(c["old"], text, c["message"], c["said"])
         c[SHORT[version] + "_cached"] = all(x["cached"] for x in rc.calls)
     print(f"{SHORT[version]}: {len(chosen)} cases in {time.monotonic() - t0:.0f} s")
 print(f"Total {time.monotonic() - start:.0f} s")
