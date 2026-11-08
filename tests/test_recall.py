@@ -175,3 +175,10 @@ def test_memory_slots_and_the_date_line():
     rew = client.calls[1]["messages"][1]["content"]
     assert "Memory, from an earlier conversation on 2025-06-01 (4 days before this one):\nThe project budget is $1,700,000." in rew
     assert "different events of the same kind" in client.calls[1]["messages"][0]["content"]
+
+
+def test_call_settings_reach_the_client():
+    store = store_with(BUDGET, STEPS)
+    client = ScriptedClient(useful())
+    Recaller(client, store, Retriever(ToyEmbedder()), Discard(), persona="p", call_settings={"seed": 1}).recall_session(SESSION)
+    assert client.calls[0]["seed"] == 1

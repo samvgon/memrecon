@@ -178,7 +178,8 @@ def by_date(store: MemoryStore, ids: list[str]) -> list[str]:
 class Recaller:
     def __init__(self, client, store: MemoryStore, retriever, write_policy: WritePolicy, persona: str = "",
                  select_prompt: str = SELECT_PROMPT, rewrite_prompt: str = REWRITE_PROMPT, k: int = RECALL_K,
-                 threshold: float = RECALL_THRESHOLD, max_tokens: int = 2048, tag: str | None = None) -> None:
+                 threshold: float = RECALL_THRESHOLD, max_tokens: int = 2048, tag: str | None = None,
+                 call_settings: dict | None = None) -> None:
         self.client = client
         self.store = store
         self.retriever = retriever
@@ -190,6 +191,7 @@ class Recaller:
         self.threshold = threshold
         self.max_tokens = max_tokens
         self.tag = tag
+        self.call_settings = dict(call_settings or {})  # extra request settings, e.g. {"seed": 1} to ask again (E37)
         self.calls: list[dict] = []  # one entry per answer received (harness only)
         self.feedback: list[str] = []  # why answers were sent back
 
@@ -249,7 +251,7 @@ class Recaller:
         limit, error = self.max_tokens, None
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
-                result = self.client.chat(messages, max_tokens=limit, tag=self.tag,
+                result = self.client.chat(messages, max_tokens=limit, tag=self.tag, **self.call_settings,
                                           meta={"step": step, "persona": self.persona, "session": at.session_id,
                                                 "turn": at.turn, "policy": self.policy.name, "attempt": attempt})
                 usage = getattr(result, "usage", None) or {}

@@ -24,6 +24,9 @@ case said so a line earlier); otherwise kept (at least 80% of the memory's
 content words), kept plus words from the message, or shortened.
 Config: MEMRECON_E36_CONFIG (default: the newest full Stage 0 control run). Pilot: MEMRECON_E36_PILOT=N
 replays only N cases (not evidence). Answers are saved to results/e36/answers.jsonl.
+Added after the first run (Sam, Nov 8), all answered from the cache: how often an answer merges two events
+(keeps every number of the memory and adds one from the user's message), is written in the first person,
+or mentions a conversation ("in an earlier conversation"), with every merged and first-person answer.
 Limits: one model, one run of each version (calls are cached, so a rerun repeats the answers); the
 classification is a heuristic, not the judge; v5b's sentence was written after seeing these cases.
 """
@@ -241,4 +244,45 @@ for c in sorted(chosen, key=lambda c: c["key"]):
 print("\n== Other cases where v5a or v5b replaced the memory by a different event ==")
 for c in sorted(chosen, key=lambda c: c["key"]):
     if group_of(c["e35_class"]) == "other" and any(c[v + "_class"] == "replaced by a different event" for v in ("v5a", "v5b")):
+        show(c)
+
+
+# -- the form of the answers (added after the first run, answered from the cache; Sam, Nov 8) ---------
+
+DATES = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b(?:January|February|March|April|May|June|July|August|September|October|"
+                   r"November|December)\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s*\d{4})?|\b20\d\d\b")
+FIRST_PERSON = re.compile(r"(?:^|[.!?]\s+|,\s+|\band\s+)(?:I|I'm|I've|I'd|My)\b|\b(?:my|me|myself)\b")
+FRAMING = re.compile(r"\b(?:earlier|current|this|previous|a previous|an earlier) conversation\b", re.I)
+
+
+def amounts(text):
+    return numbers_in(DATES.sub(" ", text or ""))
+
+
+def merged(c, v):
+    """Both events in one memory: every number of the memory kept, and a number from the user's message added."""
+    old, new, msg = amounts(c["old"]), amounts(c[v]), amounts(c["message"])
+    return bool(old) and new is not None and old <= new and bool((new & msg) - old)
+
+
+print("\n== The form of the answers ==")
+print("Merged: the rewrite keeps every number of the memory and adds one from the user's message (two events in one")
+print("memory; dates left out of the comparison). First person: \"I\", \"my\" or \"me\" (quotations are not left out,")
+print("so a quoted title can count). Framing: the rewrite mentions a conversation (\"in an earlier conversation\").")
+print(f"  {'':34}" + "".join(f"{v:>14}" for v in SHORT.values()))
+for label, test in (("merged", lambda c, v: merged(c, v)),
+                    ("first person", lambda c, v: bool(c[v]) and bool(FIRST_PERSON.search(c[v]))),
+                    ("mentions a conversation", lambda c, v: bool(c[v]) and bool(FRAMING.search(c[v])))):
+    for arm in ("note", "log"):
+        xs = [c for c in chosen if c["arm"] == arm]
+        print(f"  {label + ', ' + arm:34}" + "".join(f"{sum(test(c, v) for c in xs):>6} {pct(sum(test(c, v) for c in xs), len(xs)):>7}"
+                                                    for v in SHORT.values()))
+print("\n== Every merged answer under v5a or v5b ==")
+for c in sorted(chosen, key=lambda c: c["key"]):
+    if merged(c, "v5a") or merged(c, "v5b"):
+        show(c)
+        print(f"  merged: v4 {merged(c, 'v4')}, v5a {merged(c, 'v5a')}, v5b {merged(c, 'v5b')}; group in E35: {group_of(c['e35_class'])}")
+print("\n== Every first-person answer under v5a or v5b ==")
+for c in sorted(chosen, key=lambda c: c["key"]):
+    if any(c[v] and FIRST_PERSON.search(c[v]) for v in ("v5a", "v5b")):
         show(c)
