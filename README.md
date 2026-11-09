@@ -4,7 +4,7 @@
 
 Some agent-memory systems rewrite a memory when they recall it, so it fits the task at hand. This project tests what happens when the agent **keeps that rewrite unchecked**: one memory agent replays simulated conversations from the Memora benchmark, and only its *write policy* changes between conditions (discard the rewrite, replace the original, keep both, verify against the original, ...). Everything else (models, prompts, retrieval, settings) is held fixed.
 
-**Status (Nov 5, 2026):** Stage 0 (checking the measurement) is in progress. The model setup, model client and scoring function exist and are tested; no experiment has been run yet. Every decision, with who proposed it, its evidence and whether Sam has reviewed it, is in [`notes/decision-log.md`](notes/decision-log.md).
+**Status (Nov 8, 2026, midway):** Stage 0 is complete. The agent runs end to end (ingestion in two arms, recall with select-then-rewrite, the write policies discard / replace / keep, answering Memora's questions, the judge and FAMA), and every measurement has passed its pre-set check on the development personas: discard leaves memory byte-identical to ingestion alone (E38), the judge agrees with hand labels (E39: 96%, kappa 0.92, no flips), and the code grader agrees with hand labels on a held-out sample (E42: 97%, kappa 0.95). Stage 1 (keep vs. discard) on the 7 test personas is next. Every decision, with who proposed it, its evidence and whether it has been reviewed, is in [`notes/decision-log.md`](notes/decision-log.md).
 
 ## Contents
 
@@ -20,20 +20,22 @@ Some agent-memory systems rewrite a memory when they recall it, so it fits the t
 | `scripts/run_stage0_control.py` | Stage 0's control check: discard leaves no trace (ingest only vs recall + discard, compared after every session). |
 | `scripts/run_stage0_answers.py` | Answers Memora's questions from the end-of-history memory of the Stage 0 control run (D60), for the judge check and FAMA. |
 | `scripts/make_judge_sample.py` | Makes the frozen, stratified sample of 70 judge items for hand labelling (D21, D60). |
-| `scripts/run_stage0_judge_check.py` | Stage 0's judge check (D21, D61): the judge against Sam's labels, each item judged twice; `--set tune` to adjust the prompt, `--set check` once with it frozen. |
+| `scripts/run_stage0_judge_check.py` | Stage 0's judge check (D21, D61): the judge against the hand labels, each item judged twice; `--set tune` to adjust the prompt, `--set check` once with it frozen. |
 | `scripts/make_grader_sample.py` | Makes the frozen, stratified sample of code-grader items (a probe and five memories from the end-of-history store) for hand labelling (D21). |
-| `scripts/run_stage0_grader_check.py` | Stage 0's code-grader check (D21): the code's found / not found against Sam's labels. |
-| `scripts/make_grader_recheck.py` | Lists every code-grader verdict that D62's fixes change in the end-of-history stores, for Sam to label. |
-| `scripts/explore/` | Numbered data-exploration scripts (E01–E34); their saved outputs are in `notes/evidence/`. See its README. |
+| `scripts/run_stage0_grader_check.py` | Stage 0's code-grader check (D21): the code's found / not found against the hand labels. |
+| `scripts/make_grader_recheck.py` | Lists every code-grader verdict that D62's fixes change in the end-of-history stores, for hand labelling. |
+| `scripts/explore/` | Numbered evidence scripts (E01–E43, except those produced by the runners above); their saved outputs are in `notes/evidence/`. See its README. |
 | `src/memrecon/llm.py` | The only way experiment code calls a model. |
 | `src/memrecon/embed.py`, `src/memrecon/retrieval.py` | Embeddings (cached) and retrieval: which memories are relevant to a turn. |
 | `src/memrecon/memory.py` | The memory store: memories, their lineage and depth, snapshots and the event file. |
 | `src/memrecon/ingest.py` | Saving a finished session into memory: one-call (note, log, oracle arms) and two-step (extract, then decide per fact). |
-| `src/memrecon/prompts/` | Every prompt sent to a model, one file per version (never edited once used in a run). |
+| `src/memrecon/prompts/` | Every prompt sent to a model, one file per version (never edited once used in a run; older versions stay because the evidence that ran them cites them). **In use:** note ingestion `extract_note_v2` + `decide_note_v3` (D52), log ingestion `ingest_log_v1`, recall `select_v1` + `rewrite_v5b` (D58), answering `answer_v1` (D60), judge `judge_v1` (D61), answer key `probe_extract_v4` + `probe_split_v1` (D50). |
 | `src/memrecon/recall.py` | Recall at replay time (retrieve, select, rewrite) and the write policies (discard, replace, keep). |
 | `src/memrecon/stage0.py`, `src/memrecon/memora.py` | Stage 0's control check; reading Memora for runners. |
 | `src/memrecon/probes.py` | The drift measure's answer key: the probe extractor, the table of what is true when, and what gets graded. |
 | `src/memrecon/monitor.py` | Readers for the monitor, and the memory guard runs call before each unit of work. |
+| `src/memrecon/answer.py` | Answering Memora's questions from memory (top 50 memories, newest first). |
+| `src/memrecon/judge.py` | The judge for Memora's yes/no sub-questions, and Cohen's kappa. |
 | `src/memrecon/fama.py` | Memora's FAMA score. |
 | `tests/` | Tests (`uv run pytest`). |
 | `docs/data-dictionary.md` | What the project's terms mean (arm, log arm, audit log, depth, record, probe…) and what every table, file and column holds. |
@@ -72,15 +74,17 @@ The project's runs use a GMKtec EVO-X2 (128 GB unified memory, Ubuntu) with llam
    ```bash
    uvx --from huggingface_hub hf download unsloth/Qwen3.6-35B-A3B-GGUF Qwen3.6-35B-A3B-UD-Q4_K_M.gguf --revision a483e9e6cbd595906af30beda3187c2663a1118c
    uvx --from huggingface_hub hf download unsloth/gemma-4-26B-A4B-it-GGUF gemma-4-26B-A4B-it-UD-Q4_K_M.gguf --revision c099eb48e663fd284577b04978a94ffccb261841
+   uvx --from huggingface_hub hf download nomic-ai/nomic-embed-text-v1.5-GGUF nomic-embed-text-v1.5.Q8_0.gguf --local-dir ~/models
    ```
 
-   Check each file against the sha256 in the table below (`sha256sum <file>`). The embedding model and the small agent are only needed later; their files are listed in `config/models.env`.
+   Check each file against its sha256 (`sha256sum <file>`): the two chat models in the table below; the embedding model `3e24342164b3d94991ba9692fdc0dd08e3fd7362e0aacc396a9a5c54a544c3b7`. The small agent (stretch goal) is listed in `config/models.env` and not needed yet.
 3. **Start the servers** (each runs in its own tmux session and logs to `~/logs/<role>.log`):
 
    ```bash
    scripts/serve.sh agent
    scripts/serve.sh judge
-   scripts/serve.sh status        # wait until both say "healthy" (a minute or two)
+   scripts/serve.sh embed         # retrieval (nomic-embed-text-v1.5, port 8082)
+   scripts/serve.sh status        # wait until all three say "healthy" (a minute or two)
    uv run python scripts/check_models.py
    ```
 
@@ -110,7 +114,7 @@ Code never names a model; it asks for a **role**. The settings below apply to **
 
 | | Agent | Judge |
 |---|---|---|
-| Job | Ingests sessions, retrieves and rewrites memories, answers questions | Grades answers that code can't grade (different model family from the agent) |
+| Job | Ingests sessions, selects and rewrites recalled memories, answers Memora's questions | Builds the drift measure's answer key (probe extraction) and judges Memora's yes/no sub-questions (different model family from the agent; checked against hand labels, E39) |
 | Model | Qwen3.6-35B-A3B (Alibaba, Apr 2026; mixture of experts, ~3B active) | Gemma 4 26B-A4B-it (Google, Apr 2026; mixture of experts, ~3.8B active) |
 | Weights (local) | `Qwen3.6-35B-A3B-UD-Q4_K_M.gguf` (unsloth, 4-bit), sha256 `ac0e2c1189e055faa36eff361580e79c5bd6f8e76bffb4ce547f167d53e31a61` | `gemma-4-26B-A4B-it-UD-Q4_K_M.gguf` (unsloth, 4-bit), sha256 `f2c28b3dc4776931ac6f879e11f203dec637ea0f14267a86ec8f6165f63f293f` |
 | Hosted ID | `qwen/qwen3.6-35b-a3b` via DeepInfra | `google/gemma-4-26b-a4b-it` via DeepInfra |
@@ -137,6 +141,49 @@ Code never names a model; it asks for a **role**. The settings below apply to **
 
 **Audit log.** The raw calls, attempts and ledger above, the memory store's snapshot after every session, and an append-only **event file** recording every memory operation in order (note, log, recall, keep, replace, forget, and which memories were shown to the model) together make up the audit log. None of it is ever shown to the model, which sees only memory text (decision D28). (The "log" arm is different: there, the agent's memories are the user's own words.)
 
+## What's frozen
+
+Everything fixed before results were looked at, in one place. Each row's decision in `notes/decision-log.md` gives the reasons and evidence.
+
+| What | Value | Where | Decision |
+|---|---|---|---|
+| Persona split | Seed 329. Development (all tuning): `financial_analyst`, `management_consultant`, `sales_manager`. Test (reported results only): the other 7 | `notes/split.json` (`scripts/make_split.py` recreates or checks it) | D08 |
+| Data | Memora, weekly split, commit `a6493188` | `scripts/download_data.sh` | — |
+| Models | Agent Qwen3.6-35B-A3B and judge Gemma 4 26B-A4B-it (both `UD-Q4_K_M`), embeddings nomic-embed-text-v1.5 `Q8_0`; files checked by sha256; llama.cpp build 717 | `config/models.env`, [How the models are run](#how-the-models-are-run) | D15–D17 |
+| Model calls | Temperature 0, seed 0, thinking off. Checks that ask again use seed 1 (judge flip rate, E37, E43's fresh run) | `src/memrecon/llm.py` | D17, D18 |
+| Answer key | Extractor `probe_extract_v4`, then the split pass `probe_split_v1`; grading rules as amended | `src/memrecon/probes.py` | D50, D51, D62 |
+| Note ingestion | Two-step v3: `extract_note_v2`, then `decide_note_v3` | `src/memrecon/stage0.py` | D52 |
+| Retrieval at recall | Top 3 live memories, similarity ≥ 0.70 | `src/memrecon/recall.py` | D37 |
+| Recall prompts | `select_v1` (memories listed newest first), `rewrite_v5b` | `src/memrecon/recall.py` | D58, D59 |
+| Answering and judging | `answer_v1` (top 50 memories, newest first), `judge_v1` | `src/memrecon/answer.py`, `src/memrecon/judge.py` | D60, D61 |
+| Stage 0 configuration | Hash `a0018ce663` (the configuration E38 ran) | `src/memrecon/stage0.py` | D19, D26 |
+| Stage 0 pass criteria | Control: memory identical to ingestion alone. Graders: agreement ≥ 90%, Cohen's kappa ≥ 0.7; judge flips ≤ 5% | `notes/2026-11-05-stage0-pass-criteria.md` | D19, D21 |
+| Hand-label samples | Judge: seed 21, 70 items (20 tune, 50 check). Code grader: seed 40 (v2), seed 63 (v3, held out after D62) | `notes/labels/` and its README | D21 |
+
+## Reproducing Stage 0
+
+Run from the repository root with the agent, judge and embedding servers up (setup A or B). Each step writes to `results/` (not in git) and the steps marked *evidence* save their output to `notes/evidence/`. Long steps belong in `tmux`. Times are on the EVO-X2; a cached rerun is much faster.
+
+```bash
+# 1. The answer key for the drift measure (probe extraction on the judge model, then the split pass)
+uv run python scripts/explore/run.py E30            # extractor v4 on the development personas
+uv run python scripts/explore/run.py E31            # split pass
+# 2. The ingestion comparison that froze the note arm's ingestion (D52)
+uv run python scripts/explore/run.py E32            # E33, E34 likewise
+# 3. Stage 0 control: recall + discard leaves memory identical to ingestion alone (D19, D26)
+uv run python scripts/run_stage0_control.py         # ~30 min fresh, ~12 min on cached ingestion; report in results/stage0/control/<config>/report.md (E38)
+# 4. Answers to Memora's questions from the end-of-history memory, and the judge check (D21, D60, D61)
+uv run python scripts/run_stage0_answers.py
+uv run python scripts/run_stage0_judge_check.py --set check      # E39; uses the hand labels in notes/labels/
+# 5. The code-grader checks (D21, D62)
+uv run python scripts/run_stage0_grader_check.py                 # E40
+uv run python scripts/run_stage0_grader_check.py --sample 2026-11-08-grader-sample-v3.jsonl --labels 2026-11-08-grader-labels-v3-resolved.jsonl   # E42
+# 6. Stage 0's reported numbers: probe survival, ingestion loss, determinism (D20)
+uv run python scripts/explore/run.py E43            # MEMRECON_E43_FRESH=0 skips the slow fresh re-ingestion
+```
+
+The samples and hand labels used by steps 4 and 5 are committed in `notes/labels/` (with how each was made in its README), so the checks rerun exactly; drawing new samples (`scripts/make_judge_sample.py`, `scripts/make_grader_sample.py`) refuses to overwrite a frozen one. Because local models are not perfectly deterministic, fresh calls can differ from ours (E37); the call cache makes reruns on the same machine exact.
+
 ## Watching a run
 
 ```bash
@@ -148,10 +195,10 @@ It shows, separately: **the machine** (system memory, GPU memory, each model ser
 
 ## Rules this project follows
 
-- **No paid API calls** unless Sam explicitly approves them (decision D05); the client enforces this with `MEMRECON_ALLOW_PAID`, and `MEMRECON_BUDGET_USD` caps the spend.
+- **No paid API calls by default** (decision D05): the client refuses to call a paid provider unless `MEMRECON_ALLOW_PAID=1` is set in `.env`, and `MEMRECON_BUDGET_USD` caps the spend.
 - **Frozen persona split:** 3 development personas for building and tuning, 7 test personas for reporting (`notes/split.json`, seed 329). Nothing is tuned on test personas.
 - **Every data finding comes from a numbered script** in `scripts/explore/`, with its output saved in `notes/evidence/` and logged.
-- **Every decision is logged** in `notes/decision-log.md` with who proposed it and whether Sam has reviewed it.
+- **Every decision is logged** in `notes/decision-log.md` with who proposed it and whether it has been reviewed.
 
 ## Data
 
@@ -159,4 +206,4 @@ It shows, separately: **the machine** (system memory, GPU memory, each model ser
 
 ## AI use
 
-Claude (Anthropic) helped design the experiment, write the code and keep the decision log; the log records, for each decision, who proposed it and whether Sam has reviewed it.
+Claude (Anthropic), through Claude Code, wrote most of the code under Sam's direction, proposed parts of the design, analysed outputs and keeps the decision log; the log records, for each decision, who proposed it and whether Sam has reviewed it. Sam made the decisions, ran every experiment and made all hand labels. The full statement is in the midway report.
