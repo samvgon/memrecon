@@ -1,0 +1,23 @@
+# Stage 0 code-grader check (2026-11-08-grader-sample-v3.jsonl, 2026-11-08-grader-labels-v3-resolved.jsonl)
+39 items (2 dropped: H11, H26). Raw agreement with Sam: 38 of 39 (97.4%)   [pass: >= 90%]
+Cohen's kappa: 0.948   [pass: >= 0.7]
+
+**Code-grader check: PASS**
+
+Agreement by group
+  arm    log 18 of 18; note 20 of 21
+  group  date 8 of 9; long item 12 of 12; number 8 of 8; short name, title or item 10 of 10
+  kind   date 8 of 9; item 19 of 19; name 2 of 2; number 8 of 8; title 1 of 1
+  state  true 38 of 39
+  near   False 22 of 22; True 16 of 17
+  code   no 16 of 16; yes 22 of 23
+  (code = the code's verdict; disagreements where the code says no are misses, where it says yes false finds)
+
+== Disagreements ==
+--- H12 (note, date, date, state true): Sam no, code yes
+  detail: tonight
+  (2025-06-01) The user spent $5.65 on breakfast on 2025-06-01.
+  (2025-06-01) The user is trying to get more active and wants to hit 6,000 steps every day to improve their energy levels.
+  (2025-06-01) The user bought a coffee for $4.98.
+  (2025-06-01) The user absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful.
+  (2025-06-06) The user spent $8.29 on breakfast on 2025-06-06. <- code's match

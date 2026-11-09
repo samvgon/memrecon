@@ -181,7 +181,7 @@ State these openly in the reports. *Written by Claude, Oct 16 · Reviewed by Sam
 - Depth is one number per memory (D33); a partly updated note mixes facts of different effective depths. Drift is scored per fact, so this affects only what the depth axis summarizes.
 - Anyone rerunning with the hosted models (D22) will get close but not identical numbers: the hosted weights are not the 4-bit files used locally, and serving software and seed handling differ.
 - Local open-weight models may behave differently from frontier models; a second model size or one frontier check is a stretch goal.
-- The code grader ties a detail to the detail it belongs to (D51, D62) but not to its record: an expense's item ("morning coffee") or a project's generic detail can be found in another record's memory (E41, R08). E40 found no false finds in 67 items and E41 one in 9, so the effect is small but not zero, and it is the same for every write policy. *(Claude, Nov 8 · review: pending)*
+- The code grader ties a detail to the detail it belongs to (D51, D62) but not to its record: an expense's item ("morning coffee") or a project's generic detail can be found in another record's memory (E41, R08). E40 found no false finds in 67 items, E41 one in 9 (R08) and E42 one in 39 (H12: "tonight", of a dinner expense, resolved to its date and found in a breakfast memory of that day), so the effect is small but not zero, and it is the same for every write policy. *(Claude, Nov 8 · review: pending)*
 
 ## 8. Course references to cite
 
