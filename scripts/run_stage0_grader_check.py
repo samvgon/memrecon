@@ -1,6 +1,8 @@
 """Stage 0 code-grader check (D21): the code grader's found / not found against Sam's labels.
 
   uv run python scripts/run_stage0_grader_check.py | tee notes/evidence/E40.txt
+  uv run python scripts/run_stage0_grader_check.py --sample 2026-11-08-grader-sample-v3.jsonl \
+      --labels 2026-11-08-grader-labels-v3.jsonl | tee notes/evidence/E42.txt     (the held-out check after D62)
 
 Items: notes/labels/2026-11-08-grader-sample-v2.jsonl (scripts/make_grader_sample.py); labels: notes/labels/2026-11-08-grader-labels-resolved.jsonl
 (one line per item: `item`, `label` yes, no or dropped: does one of the memories shown state the detail; `source`). Pass: raw
@@ -12,8 +14,14 @@ from collections import Counter
 from memrecon.judge import cohen_kappa
 from memrecon.memora import ROOT
 
+import argparse  # noqa: E402
+
 L = ROOT / "notes" / "labels"
-sample_f, labels_f = L / "2026-11-08-grader-sample-v2.jsonl", L / "2026-11-08-grader-labels-resolved.jsonl"
+ap = argparse.ArgumentParser()
+ap.add_argument("--sample", default="2026-11-08-grader-sample-v2.jsonl")
+ap.add_argument("--labels", default="2026-11-08-grader-labels-resolved.jsonl")
+args = ap.parse_args()
+sample_f, labels_f = L / args.sample, L / args.labels
 sample = {json.loads(x)["item"]: json.loads(x) for x in sample_f.read_text().splitlines() if x.strip()}
 labels = {json.loads(x)["item"]: json.loads(x) for x in labels_f.read_text().splitlines() if x.strip()}
 rows = [{**sample[k], "label": labels[k]["label"], "note": labels[k].get("note", ""), "code": "yes" if sample[k]["code_found"] else "no"}
@@ -38,7 +46,7 @@ for r in rows:
         print(f"  detail: {r['detail']}" + (f"   [attached to: {r['attached_to']}]" if r["attached_to"] else ""))
         if r["note"]:
             print(f"  Sam's note: {r['note']}")
-        if labels[r["item"]]["source"] != "Sam's label":
+        if labels[r["item"]].get("source", "Sam's label") != "Sam's label":
             print(f"  label source: {labels[r['item']]['source']}")
         for m in r["memories"]:
             mark = " <- code's match" if m["id"] == r["code_memory"] else ""

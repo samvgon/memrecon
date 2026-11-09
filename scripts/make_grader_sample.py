@@ -17,9 +17,17 @@ memory), half of them ones the code found. Seed 40.
 Version 2 (Nov 8, before any labelling): version 1 (`2026-11-08-grader-sample.jsonl`, kept unused) put numbers
 and dates in one group and old values in none, and drew 2 numbers and 1 old value of 55 items.
 
+Version 3 (Nov 8, the held-out check of the grader after D62, E42): a fresh sample drawn the same way with
+another seed, 3 per cell and 4 old values per arm, leaving out every item already labelled (versions 1 and 2,
+and D62's recheck), so none of it was seen when the grader was fixed. From version 3 on, each item also carries
+the user's sentence it came from, taken from the answer key's row (`session`, `line`, `said`, `user_lines`).
+
 Needs E30's and E31's rows in results/probes/ and the control run's snapshots (run on the EVO-X2).
-Usage:  uv run python scripts/make_grader_sample.py [--config <control config id>]
-Writes notes/labels/<date>-grader-sample-v2.jsonl and refuses to overwrite one: the sample is frozen once made.
+Usage:  uv run python scripts/make_grader_sample.py [--config <control config id>]          (version 2)
+        uv run python scripts/make_grader_sample.py --version v3 --seed 63 --per-cell 3 --old-per-arm 4 --prefix H \
+            --exclude notes/labels/2026-11-08-grader-sample.jsonl notes/labels/2026-11-08-grader-sample-v2.jsonl \
+            notes/labels/2026-11-08-grader-recheck.jsonl
+Writes notes/labels/<date>-grader-sample-<version>.jsonl and refuses to overwrite one: the sample is frozen once made.
 """
 import argparse
 import datetime
@@ -36,19 +44,29 @@ from memrecon.probes import (LONG_WORDS, OVERLAP, Row, build_table, content_word
                              match_with_parent, norm, numbers_in, parent_entry, true_at)
 from memrecon.recall import REWRITE_PROMPT, SELECT_PROMPT  # noqa: E402
 
-SEED = 40
-PER_CELL = 4
-OLD_PER_ARM = 6
 SHOWN = 5
 CONTROL = ROOT / "results" / "stage0" / "control"
 PROBES = ROOT / "results" / "probes"
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--config", default=None)
+ap.add_argument("--version", default="v2")
+ap.add_argument("--seed", type=int, default=40)
+ap.add_argument("--per-cell", type=int, default=4)
+ap.add_argument("--old-per-arm", type=int, default=6)
+ap.add_argument("--prefix", default="G", help="letter for the item IDs")
+ap.add_argument("--exclude", nargs="*", default=[], help="sample files whose items are left out")
 args = ap.parse_args()
+SEED, PER_CELL, OLD_PER_ARM = args.seed, args.per_cell, args.old_per_arm
 labels_dir = ROOT / "notes" / "labels"
-if list(labels_dir.glob("*-grader-sample-v2.jsonl")):
-    sys.exit("A grader sample already exists in notes/labels/; it is frozen (D21). Not overwritten.")
+if list(labels_dir.glob(f"*-grader-sample-{args.version}.jsonl")):
+    sys.exit(f"A grader sample {args.version} already exists in notes/labels/; it is frozen (D21). Not overwritten.")
+seen = set()
+for f in args.exclude:
+    for x in (ROOT / f).read_text(encoding="utf-8").splitlines():
+        if x.strip():
+            d = json.loads(x)
+            seen.add((d["persona"], d["arm"], d["probe"]))
 
 
 def current_config():
@@ -86,6 +104,18 @@ def likeness(p, parent, text):
     return share + (1.0 if nums and nums & numbers_in(text) else 0.0), share
 
 
+def source(p):
+    """The user's sentence a detail came from, from the answer key's row (not a search), and the session's user lines."""
+    row = row_of.get(p.get("row_id"))
+    s = by_sid.get(p["from_session"])
+    if s is None:
+        return {}
+    conv = s["conversation"]
+    said = conv[row.line - 1]["message"] if row and 0 < row.line <= len(conv) else ""
+    users = [f"{n}. {t['message']}" for n, t in enumerate(conv, start=1) if t.get("speaker") == "user_agent"]
+    return {"session": p["from_session"], "line": row.line if row else None, "said": said, "user_lines": users}
+
+
 config = args.config or current_config()
 items = []
 for persona in dev_personas():
@@ -100,6 +130,8 @@ for persona in dev_personas():
             k = record_key(s)
             bad.add(k if k is not None else ("session", s["session_id"]))
     entries = build_table([r for r in rows if r.record not in bad])
+    row_of = {r.row_id: r for r in rows if r.row_id}
+    by_sid = {s["session_id"]: s for s in sessions}
     by_row = {e["row_id"]: e for e in entries if e.get("row_id")}
     last = sessions[-1]["session_id"]
     probes = [p for p in grading_view(true_at(entries, last)) if p["grade"] == "code"]
@@ -109,6 +141,9 @@ for persona in dev_personas():
         store = MemoryStore.load(snap)
         live = store.active()
         for p in probes:
+            probe_id = p.get("row_id") or f"{p['record']}|{p['field']}|{p['detail']}"
+            if (persona, arm, probe_id) in seen:
+                continue
             parent = parent_entry(p, by_row)
             hits = [m for m in live if match_with_parent(p, m.text, parent, OVERLAP)]
             ranked = sorted(live, key=lambda m: -likeness(p, parent, m.text)[0])
@@ -126,9 +161,9 @@ for persona in dev_personas():
                           "said_on": p.get("from_date", ""), "group": group(p), "code_found": bool(hits),
                           "code_memory": hits[0].id if hits else "", "near": near, "best_share": round(best_share, 3),
                           "memories": [{"id": m.id, "date": m.date, "text": m.text} for m in shown],
-                          "probe": p.get("row_id") or f"{p['record']}|{p['field']}|{p['detail']}", "snapshot": f"{config}/{persona}/{arm}/{snap.name}"})
+                          "probe": probe_id, "snapshot": f"{config}/{persona}/{arm}/{snap.name}", **source(p)})
 
-print(f"Control run {config}: {len(items)} probe-in-store items (code-graded probes at the end, both arms)")
+print(f"Control run {config}: {len(items)} probe-in-store items (code-graded probes at the end, both arms; {len(seen)} left out as already labelled)")
 cells = defaultdict(list)
 for it in items:
     if it["state"] == "true":
@@ -164,9 +199,9 @@ for arm in ("note", "log"):
     chosen += pick
 rng.shuffle(chosen)
 for i, it in enumerate(chosen, start=1):
-    it["item"] = f"G{i:02d}"
+    it["item"] = f"{args.prefix}{i:02d}"
     rng.shuffle(it["memories"])
-out = labels_dir / f"{datetime.date.today().isoformat()}-grader-sample-v2.jsonl"
+out = labels_dir / f"{datetime.date.today().isoformat()}-grader-sample-{args.version}.jsonl"
 out.write_text("".join(json.dumps(it) + "\n" for it in chosen), encoding="utf-8")
 print(f"\n{len(chosen)} items -> {out.relative_to(ROOT)}")
 for key in ("arm", "code_found", "group", "kind", "state", "near"):

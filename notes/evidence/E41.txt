@@ -1,0 +1,28 @@
+# Evidence E41
+script:       scripts/make_grader_recheck.py --before 5273800 (output as printed on the EVO-X2, Nov 8, run at commit 49262e5 + recheck file 1143681)
+labels:       notes/labels/2026-11-08-grader-recheck-labels.jsonl (Sam, Nov 8)
+------------------------------------------------------------
+Control run a0018ce663; grader before D62: 5273800
+  note: 601 probes in end-of-history stores; found before 501, now 508
+  log: 601 probes in end-of-history stores; found before 584, now 586
+Verdicts changed: 9 (not found -> found 9, found -> not found 0)
+  log   name or title (possessive 's)          2
+  note  attached detail (short parent)         4
+  note  name or title (possessive 's)          1
+  note  short item (content words, any order)  2
+
+Sam's labels on the 9 changed verdicts (does the memory the code now matches state the detail?):
+  R01: yes | note | attached detail (short parent)         | weekend   [belongs to: plan my weekend activities]
+  R02: yes | note | attached detail (short parent)         | soon   [belongs to: update my professional certifications]
+  R03: yes | note | name or title (possessive 's)          | Victor Fleming
+  R04: yes | log  | name or title (possessive 's)          | Tess Gerritsen   [belongs to: Tess Gerritsen's books]
+  R05: yes | note | attached detail (short parent)         | today   [belongs to: call my parents]
+  R06: yes | note | short item (content words, any order)  | quick $5.56 breakfast
+  R07: yes | log  | name or title (possessive 's)          | Victor Fleming
+  R08: no  | note | short item (content words, any order)  | morning coffee
+  R09: yes | note | attached detail (short parent)         | this week   [belongs to: plan my vacation budget]
+
+Correct: 8 of 9. By fix: possessive 's 3 of 3; short parent 4 of 4; short item 1 of 2 (R06 right; R08 wrong:
+"morning coffee", an item of the $4.38 coffee expense, matched a memory of a different coffee, $9.50, because a detail
+attached to its record is not tied to the record's identifying value; before D62 the exact phrase was required and the
+memory's wording, "a coffee on the morning of", happened not to match).
