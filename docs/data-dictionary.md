@@ -97,6 +97,9 @@ Add to this file whenever a new term, table or column appears.
 | **sub-question** | One of Memora's yes/no `evaluation_questions` about an answer: `memory_presence` ("should mention", expected yes) or `forgetting_absence` ("should not mention", expected no). |
 | **judge item** (D21) | One sub-question about one answer, labelled by Sam with her own yes/no answer about the answer as written; `tune` items are for writing the judge prompt, `check` items for the pass/fail check. |
 | **overlap** (judge items) | How much of a sub-question's own words (template words such as "Does the response mention" left out) appear in the answer: none (under a third), some, most (at least 80%). A stratum for the judge sample, not a grade. |
+| **judge** (Memora sub-questions) | The judge model's yes/no answer to one sub-question about one answer, seeing only the answer (`judge_v1.md`, D61). A sub-question is passed when it equals Memora's expected answer. |
+| **flip rate** | Share of items whose judge answer changes when judged again with another request seed (so the call is made afresh, not read from the cache). D21: at most 5%. |
+| **resolved label** | Sam's label for a judge item after her "Can't tell" labels were settled by her two rules or her answers (D61); each records its source. |
 | **drift** | How far a memory's content has moved from the latest legitimate state of what the user said. Measured by probes, never counted. |
 | **probe** | One checkable detail of the answer key (a number, date, name, title, list item…) with its expected state at a point in time. |
 | **answer key** | The probe table built from the user's words by the extractor (section 6). |
@@ -415,3 +418,7 @@ first), `scores` (their similarity to the question), `shown_text`, `shown_dates`
 item: `item` (J01–J70, the order shown), `set` (`tune` or `check`), `persona`, `arm`, `category`, `question_id`, `question`,
 `date`, `answer`, `sub_id`, `sub_question`, `type`, `expected` (Memora's expected answer; not shown when labelling),
 `overlap`. Sam's labels go in a separate file beside it.
+
+**Judge check results** (`scripts/run_stage0_judge_check.py`, D61): `results/stage0/judge/<prompt>/<tune|check>.jsonl`, one
+line per item: `item`, `label` (Sam's resolved label), `label_source`, `judge` (first answer), `judge_again` (with request
+seed 1), `reason`, `reason_again`, `error`, `type`, `arm`, `category`, `expected`, `sub_question`.
