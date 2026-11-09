@@ -204,6 +204,8 @@ It shows, separately: **the machine** (system memory, GPU memory, each model ser
 
 [Memora](https://github.com/geniesinc/Memora) (Uddin et al., 2026), weekly split: 10 simulated personas, about 1,550 sessions with a per-session add/update/delete log, and 150 evaluation questions with 735 yes/no sub-questions. Pinned to commit `a6493188`. We implement Memora's FAMA score ourselves (`src/memrecon/fama.py`, tested against Memora's own code) and grade with our own judge, so our FAMA numbers are comparable with Memora's published table in formula only.
 
+Planned: a second dataset, to test whether the results transfer beyond Memora (a LongMemEval subset or LoCoMo; not chosen yet, see section 5 of the decision log).
+
 ## AI use
 
 Claude (Anthropic), through Claude Code, wrote most of the code under Sam's direction, proposed parts of the design, analysed outputs and keeps the decision log; the log records, for each decision, who proposed it and whether Sam has reviewed it. Sam made the decisions, ran every experiment and made all hand labels. The full statement is in the midway report.
