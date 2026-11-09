@@ -1,0 +1,31 @@
+# Stage 0 judge check, check set (50 items)
+judge: gemma-4-26b-a4b-it-ud-q4_k_m; prompt: judge_v1; memrecon: dc27c93; run at 2026-11-08 19:02:38
+
+50 items judged twice in 144 s; failed answers: 0 (first), 0 (again)
+Raw agreement with Sam: 48 of 50 (96.0%; a failed answer counts as a disagreement)   [pass: >= 90%]
+Cohen's kappa: 0.920   [pass: >= 0.7]
+Flip rate (first against again): 0 of 50 (0.0%)   [pass: <= 5%]
+
+**Judge check: PASS**
+
+Agreement by group (first answer)
+  type      forgetting_absence 25 of 25; memory_presence 23 of 25
+  arm       log 25 of 26; note 23 of 24
+  category  reasoning 10 of 11; recommending 14 of 14; remembering 24 of 25
+  label     no 25 of 25; yes 23 of 25
+  labels from Sam's rules or answers: 13 of 14 agree
+  (for reference: Sam's label equals Memora's expected answer on 42 of 50; the judge's on 40)
+
+== Disagreements with Sam ==
+--- J19 (memory_presence, log, remembering): Sam yes (Sam's label), judge no (again: no)
+  Q: Does the response mention the task: Update financial forecasting model?
+  Judge's reason: The response lists several tasks, but none of them are 'Update financial forecasting model'.
+  Sam's note: Yes assuming that's this? Prepare for the strategy meeting next week to refine financial modeling for the Mexico pilot 
+  Response: Based on the memories from this week, the remaining tasks on your to-do list are: 1. Plan your vacation budget (mentioned on 2025-06-06). 2. Plan your weekend activities (mentioned on 2025-06-02). 3. Review audit findings for work (mentioned on 2025-06-05 and 2025-06-01). 4. Update the budget spreadsheet for work (mentioned on 2025-06-05). 5. Prepare for the strategy meeting next week to refine financial modeling for the Mexico pilot (mentioned on 2025-06-05). 6. Discuss funding strategies and capital allocation with the finance committee regarding the Mexico pilot expansion (mentioned on 2025-06-05). 7. Update the project proposal titled 'AI-Driven Credit Risk Scoring Model Enhancement' (me…
+--- J67 (memory_presence, note, reasoning): Sam yes (Sam's rule, Nov 8: verdict sub-questions with figures in brackets are decided by the final verdict only), judge no (again: no)
+  Q: Does the response indicate that spending is OVER BUDGET (actual: $67.75 vs budget: $50.00)?
+  Judge's reason: The response indicates that the user is over budget (stating the total is $60.03, which exceeds the $50 goal), but the actual figure provided in the response ($60.03) does not match the figure provided in the question ($67.75). According to the rules, the figures in brackets in the question are for explanation, and the response's own figures determine the verdict. However, the question asks if the response indicates spending is over budget with specific figures provided in brackets. Since the response's verdict is 'NOT meeting your coffee budget goal' (over budget), it matches the verdict requested, but the question asks if it indicates the specific scenario of $67.75 vs $50.00. Following the rule 'the same value in any written form... but nothing in it missing or different', the response does not state the value $67.75.
+  Sam's note: yes over budget, no 67.75, has 60.03. Also, initially, it said not over budget, but immediately corrected. Probably because it's not allowed to reason first. 
+  Response: Yes, you are meeting your coffee budget goal. You have set a personal goal to keep your coffee spending under $50 per week. Based on the memories provided, your coffee spending for the week of June 1-7, 2025, is as follows: - June 1: $5.49 - June 2: $7.01 - June 3: $9.34 + $9.01 = $18.35 - June 4: $3.91 + $4.32 = $8.23 - June 5: $4.84 - June 6: $6.78 - June 7: $9.33 Total coffee spending for the week: $5.49 + $7.01 + $18.35 + $8.23 + $4.84 + $6.78 + $9.33 = $60.03. Wait, let me re-calculate carefully. June 1: $5.49 June 2: $7.01 June 3: $9.34 (memory 27) and $9.01 (memory 29). Total June 3: $18.35. June 4: $3.91 (memory 14) and $4.32 (memory 17). Total June 4: $8.23. June 5: $4.84 June 6: $6…
+
+== Flips ==
