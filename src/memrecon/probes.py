@@ -674,8 +674,16 @@ def content_words(text: str) -> set[str]:
     return {w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w for w in words if w not in _STOP}
 
 
+_POSSESSIVE = re.compile(r"['’]s\b")
+
+
+def _norm_text(text: str) -> str:
+    """norm(), with a possessive 's dropped first (D62): "Victor Fleming's films" holds "Victor Fleming"."""
+    return norm(_POSSESSIVE.sub("", text))
+
+
 def _contains(memory_norm: str, form: str) -> bool:
-    f = norm(form)
+    f = _norm_text(form)
     return bool(f) and re.search(r"(?<![a-z0-9])" + re.escape(f) + r"(?![a-z0-9])", memory_norm) is not None
 
 
@@ -699,7 +707,7 @@ def code_match(entry: dict, memory_text: str, overlap: float = OVERLAP) -> bool:
     duration's number and unit; names, titles and items: a short one (under LONG_WORDS words) by any of
     its aliases as whole words, a long one by the share of its content words the memory holds."""
     detail, kind = entry["detail"], entry["kind"]
-    mem = norm(memory_text)
+    mem = _norm_text(memory_text)
     if kind == "number":
         value, unit = entry.get("number"), entry.get("unit")
         if value is None:
@@ -719,7 +727,12 @@ def code_match(entry: dict, memory_text: str, overlap: float = OVERLAP) -> bool:
         value, unit = split_duration(detail)
         return value is not None and value in numbers_in(memory_text) and re.search(rf"\b{unit}s?\b", mem) is not None
     if len(detail.split()) < LONG_WORDS:
-        return any(_contains(mem, f) for f in aliases(detail))
+        if any(_contains(mem, f) for f in aliases(detail)):
+            return True
+        # D62: a short item (not a name or title) also counts with all its content words, in any order
+        # ("quick $5.56 breakfast" in "a quick breakfast for $5.56")
+        want = content_words(detail)
+        return kind == "item" and bool(want) and want <= content_words(memory_text)
     want = content_words(detail)
     return bool(want) and len(want & content_words(memory_text)) / len(want) >= overlap
 
@@ -742,10 +755,24 @@ def match_with_parent(entry: dict, memory_text: str, parent: dict | None, overla
     another proposal."""
     if not code_match(entry, memory_text, overlap):
         return False
-    return parent is None or code_match(parent, memory_text, PARENT_OVERLAP)
+    return parent is None or parent_found(parent, memory_text)
+
+
+def parent_found(parent: dict, memory_text: str) -> bool:
+    """Whether a memory holds the detail a detail is attached to (D51, D62): a name or title, a number or a
+    date as code_match finds it; a task or item by its content words, all of them when it is short (under
+    LONG_WORDS words, in any order: "update my professional certifications" in "update their professional
+    certifications"), half of them when long."""
+    if parent["kind"] in ("name", "title", "number", "date"):
+        return code_match(parent, memory_text, PARENT_OVERLAP)
+    want = content_words(parent["detail"])
+    if not want:
+        return False
+    have = want & content_words(memory_text)
+    return have == want if len(parent["detail"].split()) < LONG_WORDS else len(have) / len(want) >= PARENT_OVERLAP
 
 
 def qualifier_kept(entry: dict, memory_text: str) -> bool | None:
     """For a probe with a graded qualifier: whether the same memory still holds it; None if it has none."""
     q = entry.get("qualifier") or ""
-    return _contains(norm(memory_text), q) if q else None
+    return _contains(_norm_text(memory_text), q) if q else None

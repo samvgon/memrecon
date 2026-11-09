@@ -509,3 +509,18 @@ def test_an_attached_detail_is_found_only_with_its_parent():
     assert match_with_parent(deadline, "On 2025-06-01 the user needs to review the project budget later today.", parent)
     assert parent_entry({**deadline, "attached_to": "p:R:content/x"}, by_row) is None
     assert parent_entry({**deadline, "origin": "split"}, by_row) is None
+
+
+def test_d62_possessive_short_items_and_short_parents():
+    from memrecon.probes import code_match, match_with_parent, parent_found
+    assert code_match({"detail": "Victor Fleming", "kind": "name"}, "The user used to like Victor Fleming's films.")
+    assert not code_match({"detail": "Victor Fleming", "kind": "name"}, "The user likes Victor Flemingway.")
+    # a short item: all content words, in any order; a name stays exact
+    assert code_match({"detail": "quick $5.56 breakfast", "kind": "item"}, "The user had a quick breakfast for $5.56.")
+    assert not code_match({"detail": "quick $5.56 breakfast", "kind": "item"}, "The user had a breakfast for $5.56.")
+    assert not code_match({"detail": "Anya Sharma", "kind": "name"}, "Sharma, Anya")
+    # a short parent: all its content words, any order; a long one: half
+    soon, task = {"detail": "soon", "kind": "date"}, {"detail": "update my professional certifications", "kind": "task"}
+    assert match_with_parent(soon, "The user needs to update their professional certifications soon.", task)
+    assert not match_with_parent(soon, "The user needs to update their certifications soon.", task)
+    assert not parent_found({"detail": "Silent Spring", "kind": "title"}, "It was a lovely spring.")

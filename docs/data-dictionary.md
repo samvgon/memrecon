@@ -340,12 +340,16 @@ grading, so rows extracted before a parser fix are graded with the current parse
   "3rd of June"), or a duration's number and unit ("within seven days" = "within 7 days").
 - *Name, title, item*: under `LONG_WORDS` (5) words, any alias (`aliases`: without a leading article or final
   stop, without a title such as "Dr.", a bracket dropped, or an abbreviation in brackets standing for what
-  precedes it) as whole words; 5 words or more, the share of its content words (`content_words`: stop words
-  dropped, plural "s" dropped, hyphens split) the memory holds, at least `OVERLAP` (0.8).
+  precedes it) as whole words, a possessive 's dropped first (D62); a short *item* (not a name or title) also
+  with all its content words in any order (D62); 5 words or more, the share of its content words
+  (`content_words`: stop words dropped, plural "s" dropped, hyphens split) the memory holds, at least
+  `OVERLAP` (0.8).
 - *Qualifier* (`qualifier_kept`): a graded qualifier must be in the same memory as its detail.
 - *With its parent* (`match_with_parent`, `parent_entry`, D51): a detail attached to another detail (a
   deadline, a timeframe, an amount, a risk level; not one attached to the record itself, and not a split
-  part) counts only in a memory that also holds that detail, found at `PARENT_OVERLAP` (0.5).
+  part) counts only in a memory that also holds that detail (`parent_found`, D62): a name, title, number or
+  date as above; otherwise by its content words, all of them in any order when it is under 5 words, at least
+  `PARENT_OVERLAP` (0.5) of them when longer.
 
 **A preference no longer liked** (`is_record_item`, D51): when a preference record's own item (the thing it
 is named after) is marked `no longer` or `removed`, every other open entry of that record told before
@@ -431,4 +435,8 @@ labelling), `near` (a near miss: found only through an alias, date form or parti
 memory shares most of its words or a number), `best_share`, `memories` (the five shown: `id`, `date`, `text`), `probe`,
 `snapshot`. Sam's labels (`<date>-grader-labels.jsonl`: `item`, `label` yes or no, `note`) say whether one of the memories
 shown states the detail.
+
+**Grader recheck** (`scripts/make_grader_recheck.py`, D62): `notes/labels/<date>-grader-recheck.jsonl`, one line per probe in an
+end-of-history store whose code verdict D62 changed: as the grader sample, plus `before` and `now` (the verdict before and after
+D62), `why` (which fix, roughly), `session`, `line` and `said` (the user's sentence, from the answer key's row), `user_lines`.
 
