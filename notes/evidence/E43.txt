@@ -1,0 +1,70 @@
+# Evidence E43
+script:       scripts/explore/E43_stage0_reported.py
+run at:       2026-11-08T22:16:37-08:00
+memrecon:     66a51fb (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Stage 0 control run a0018ce663 (E38); answer key E30 + E31 (D50, D51); grader after D62
+
+Answer key: 1181 entries over 3 development personas; code-graded probes that should be in memory: 595
+
+1. PROBE SURVIVAL (code-graded probes, state true)
+  note  found when told  574 of 595  96.5%;  found at the end  504 of 595  84.7%;  of those found when told, kept to the end 503 of 574  87.6%;  old values found at the end 60 of 147; live memories at the end 310
+        number when told  99.1% of 106;  at the end  93.4% of 106
+        date   when told  94.0% of 117;  at the end  87.2% of 117
+        name   when told  98.3% of  59;  at the end  78.0% of  59
+        title  when told 100.0% of  20;  at the end  85.0% of  20
+        item   when told  95.9% of 293;  at the end  81.9% of 293
+  log   found when told  580 of 595  97.5%;  found at the end  580 of 595  97.5%;  of those found when told, kept to the end 580 of 580 100.0%;  old values found at the end 123 of 147; live memories at the end 518
+        number when told 100.0% of 106;  at the end 100.0% of 106
+        date   when told 100.0% of 117;  at the end 100.0% of 117
+        name   when told  98.3% of  59;  at the end  98.3% of  59
+        title  when told 100.0% of  20;  at the end 100.0% of  20
+        item   when told  95.2% of 293;  at the end  95.2% of 293
+
+2. INGESTION LOSS: the note arm against the log arm (the user's own words), same probes, paired
+  found when told   note  96.5%, log  97.5% of 595;  only log 16, only note 10, sign test p = 0.327
+        number note  99.1%, log 100.0% of 106;  only log 1, only note 0
+        date   note  94.0%, log 100.0% of 117;  only log 7, only note 0
+        name   note  98.3%, log  98.3% of  59;  only log 1, only note 1
+        title  note 100.0%, log 100.0% of  20;  only log 0, only note 0
+        item   note  95.9%, log  95.2% of 293;  only log 7, only note 9
+  found at the end  note  84.7%, log  97.5% of 595;  only log 85, only note 9, sign test p = 1.2e-16
+        number note  93.4%, log 100.0% of 106;  only log 7, only note 0
+        date   note  87.2%, log 100.0% of 117;  only log 15, only note 0
+        name   note  78.0%, log  98.3% of  59;  only log 13, only note 1
+        title  note  85.0%, log 100.0% of  20;  only log 3, only note 0
+        item   note  81.9%, log  95.2% of 293;  only log 47, only note 8
+  Examples, found at the end in the log arm but not the note arm (85; up to 12):
+    - financial_analyst [name] J.J. Abrams
+    - financial_analyst [item] action, mystery, and character development
+    - financial_analyst [name] Super 8
+    - financial_analyst [name] Star Trek
+    - financial_analyst [name] Head of Innovation
+    - financial_analyst [date] review the attached preliminary financial report and be prepared to discuss these findings at our strategy mee
+    - financial_analyst [item] tropical weather
+    - financial_analyst [item] warmth
+    - financial_analyst [item] constant sunshine
+    - financial_analyst [number] $4.38
+    - financial_analyst [title] The Tipping Point
+    - financial_analyst [item] music from the 1990s
+
+   Probes available to Stage 1 (should be in memory at the end and found there, so a rewrite can change them):
+    note: 504
+    log: 580
+    in both arms: 495  (CLAUDE.md: about 500 probed facts detect roughly a 6-point paired difference)
+
+(1) and (2) in 3 s
+
+3. DETERMINISM: one persona re-ingested with every call made afresh (request seed 1), against the cached run
+  financial_analyst note: 156 sessions in 547 s; calls {'fresh': 434}
+    memory identical to the cached run after 6 of 156 sessions; first difference after session 7
+    found when told: cached  96.3%, fresh  96.3%;  differing probes 0 of 188
+    found at the end: cached  84.0%, fresh  85.1%;  differing probes 2 of 188 (only cached 0, only fresh 2);  live memories at the end 95
+  financial_analyst log: 156 sessions in 192 s; calls {'fresh': 156}
+    memory identical to the cached run after 156 of 156 sessions; first difference after session None
+    found when told: cached  97.9%, fresh  97.9%;  differing probes 0 of 188
+    found at the end: cached  97.9%, fresh  97.9%;  differing probes 0 of 188 (only cached 0, only fresh 0);  live memories at the end 161
+
+Total 743 s
