@@ -423,9 +423,9 @@ item: `item` (J01–J70, the order shown), `set` (`tune` or `check`), `persona`,
 line per item: `item`, `label` (Sam's resolved label), `label_source`, `judge` (first answer), `judge_again` (with request
 seed 1), `reason`, `reason_again`, `error`, `type`, `arm`, `category`, `expected`, `sub_question`.
 
-**Grader sample** (`scripts/make_grader_sample.py`, D21): `notes/labels/<date>-grader-sample.jsonl`, frozen, one line per
-item: `item` (G01–G60), `persona`, `arm`, `kind`, `state` (true: should be in memory; false: an old value), `field`,
-`detail`, `attached_to` (the detail it belongs to, if any), `said_on`, `group` (number or date; short name, title or item;
+**Grader sample** (`scripts/make_grader_sample.py`, D21): `notes/labels/<date>-grader-sample-v2.jsonl` (version 1 not used), frozen, one line per
+item: `item` (G01, G02, ...), `persona`, `arm`, `kind`, `state` (true: should be in memory; false: an old value), `field`,
+`detail`, `attached_to` (the detail it belongs to, if any), `said_on`, `group` (number; date; short name, title or item;
 long item), `code_found` and `code_memory` (the code grader's verdict and the memory it matched; not shown when
 labelling), `near` (a near miss: found only through an alias, date form or partial overlap, or not found though a
 memory shares most of its words or a number), `best_share`, `memories` (the five shown: `id`, `date`, `text`), `probe`,

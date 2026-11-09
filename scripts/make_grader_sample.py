@@ -8,15 +8,18 @@ and labels whether one of them states it. The five are the memory the code match
 most like the detail by shared words and numbers, in random order; she is not told the code's verdict or
 which memory it matched.
 
-Stratified (CLAUDE.md): by arm (note, log), by the code's verdict (found, not found) and by kind (numbers and
-dates; short names, titles and items, matched exactly; long items, matched by 80% word overlap), 5 items per
-cell where it has them, half of them near misses (found only through an alias, a date form or partial
-overlap; or not found though a memory shares most of its words or one of its numbers), the rest at random;
-states "true" (should be in memory) and "false" (should not, an old value) both appear. Seed 40.
+Stratified (CLAUDE.md): details that should be in memory (state "true") by arm (note, log), by the code's
+verdict (found, not found) and by kind (numbers; dates; short names, titles and items, matched exactly; long
+items, matched by 80% word overlap), 4 items per cell where it has them, half of them near misses (found only
+through an alias, a date form or partial overlap; or not found though a memory shares most of its words or one
+of its numbers), the rest at random; plus, for each arm, 6 old values (state "false": should no longer be in
+memory), half of them ones the code found. Seed 40.
+Version 2 (Nov 8, before any labelling): version 1 (`2026-11-08-grader-sample.jsonl`, kept unused) put numbers
+and dates in one group and old values in none, and drew 2 numbers and 1 old value of 55 items.
 
 Needs E30's and E31's rows in results/probes/ and the control run's snapshots (run on the EVO-X2).
 Usage:  uv run python scripts/make_grader_sample.py [--config <control config id>]
-Writes notes/labels/<date>-grader-sample.jsonl and refuses to overwrite one: the sample is frozen once made.
+Writes notes/labels/<date>-grader-sample-v2.jsonl and refuses to overwrite one: the sample is frozen once made.
 """
 import argparse
 import datetime
@@ -34,7 +37,8 @@ from memrecon.probes import (LONG_WORDS, OVERLAP, Row, build_table, content_word
 from memrecon.recall import REWRITE_PROMPT, SELECT_PROMPT  # noqa: E402
 
 SEED = 40
-PER_CELL = 5
+PER_CELL = 4
+OLD_PER_ARM = 6
 SHOWN = 5
 CONTROL = ROOT / "results" / "stage0" / "control"
 PROBES = ROOT / "results" / "probes"
@@ -43,7 +47,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--config", default=None)
 args = ap.parse_args()
 labels_dir = ROOT / "notes" / "labels"
-if list(labels_dir.glob("*-grader-sample.jsonl")):
+if list(labels_dir.glob("*-grader-sample-v2.jsonl")):
     sys.exit("A grader sample already exists in notes/labels/; it is frozen (D21). Not overwritten.")
 
 
@@ -71,7 +75,7 @@ def load_rows(name, persona):
 
 def group(p):
     if p["kind"] in ("number", "date"):
-        return "number or date"
+        return p["kind"]
     return "long item" if len(p["detail"].split()) >= LONG_WORDS else "short name, title or item"
 
 
@@ -127,9 +131,16 @@ for persona in dev_personas():
 print(f"Control run {config}: {len(items)} probe-in-store items (code-graded probes at the end, both arms)")
 cells = defaultdict(list)
 for it in items:
-    cells[(it["arm"], it["code_found"], it["group"])].append(it)
+    if it["state"] == "true":
+        cells[(it["arm"], it["code_found"], it["group"])].append(it)
+old = defaultdict(list)
+for it in items:
+    if it["state"] == "false":
+        old[(it["arm"], it["code_found"])].append(it)
 for k in sorted(cells):
     print(f"  {k[0]:5} {'found' if k[1] else 'not found':10} {k[2]:26} {len(cells[k]):4} (near {sum(x['near'] for x in cells[k])})")
+for k in sorted(old):
+    print(f"  {k[0]:5} {'found' if k[1] else 'not found':10} {'old value (any kind)':26} {len(old[k]):4}")
 
 rng = random.Random(SEED)
 chosen = []
@@ -142,11 +153,20 @@ for k in sorted(cells):
     rng.shuffle(rest)
     pick += rest[: PER_CELL - len(pick)]
     chosen += pick
+for arm in ("note", "log"):
+    found_pool = sorted(old[(arm, True)], key=lambda x: (x["persona"], x["probe"]))
+    miss_pool = sorted(old[(arm, False)], key=lambda x: (x["persona"], x["probe"]))
+    rng.shuffle(found_pool)
+    rng.shuffle(miss_pool)
+    pick = found_pool[: OLD_PER_ARM // 2]
+    pick += miss_pool[: OLD_PER_ARM - len(pick)]
+    pick += found_pool[OLD_PER_ARM // 2: OLD_PER_ARM // 2 + OLD_PER_ARM - len(pick)]
+    chosen += pick
 rng.shuffle(chosen)
 for i, it in enumerate(chosen, start=1):
     it["item"] = f"G{i:02d}"
     rng.shuffle(it["memories"])
-out = labels_dir / f"{datetime.date.today().isoformat()}-grader-sample.jsonl"
+out = labels_dir / f"{datetime.date.today().isoformat()}-grader-sample-v2.jsonl"
 out.write_text("".join(json.dumps(it) + "\n" for it in chosen), encoding="utf-8")
 print(f"\n{len(chosen)} items -> {out.relative_to(ROOT)}")
 for key in ("arm", "code_found", "group", "kind", "state", "near"):

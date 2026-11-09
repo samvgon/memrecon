@@ -2,7 +2,7 @@
 
   uv run python scripts/run_stage0_grader_check.py | tee notes/evidence/E40.txt
 
-Items: notes/labels/*-grader-sample.jsonl (scripts/make_grader_sample.py); labels: notes/labels/*-grader-labels.jsonl
+Items: notes/labels/2026-11-08-grader-sample-v2.jsonl (scripts/make_grader_sample.py); labels: notes/labels/2026-11-08-grader-labels.jsonl
 (one line per item: `item`, `label` yes or no: does one of the memories shown state the detail). Pass: raw
 agreement >= 90% and Cohen's kappa >= 0.7 (the code is deterministic, so there is no flip rate). No model calls.
 """
@@ -13,7 +13,7 @@ from memrecon.judge import cohen_kappa
 from memrecon.memora import ROOT
 
 L = ROOT / "notes" / "labels"
-(sample_f,), (labels_f,) = sorted(L.glob("*-grader-sample.jsonl")), sorted(L.glob("*-grader-labels.jsonl"))
+sample_f, labels_f = L / "2026-11-08-grader-sample-v2.jsonl", L / "2026-11-08-grader-labels.jsonl"
 sample = {json.loads(x)["item"]: json.loads(x) for x in sample_f.read_text().splitlines() if x.strip()}
 labels = {json.loads(x)["item"]: json.loads(x) for x in labels_f.read_text().splitlines() if x.strip()}
 rows = [{**sample[k], "label": labels[k]["label"], "note": labels[k].get("note", ""), "code": "yes" if sample[k]["code_found"] else "no"}
