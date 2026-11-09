@@ -21,6 +21,8 @@ Some agent-memory systems rewrite a memory when they recall it, so it fits the t
 | `scripts/run_stage0_answers.py` | Answers Memora's questions from the end-of-history memory of the Stage 0 control run (D60), for the judge check and FAMA. |
 | `scripts/make_judge_sample.py` | Makes the frozen, stratified sample of 70 judge items for hand labelling (D21, D60). |
 | `scripts/run_stage0_judge_check.py` | Stage 0's judge check (D21, D61): the judge against Sam's labels, each item judged twice; `--set tune` to adjust the prompt, `--set check` once with it frozen. |
+| `scripts/make_grader_sample.py` | Makes the frozen, stratified sample of code-grader items (a probe and five memories from the end-of-history store) for hand labelling (D21). |
+| `scripts/run_stage0_grader_check.py` | Stage 0's code-grader check (D21): the code's found / not found against Sam's labels. |
 | `scripts/explore/` | Numbered data-exploration scripts (E01–E34); their saved outputs are in `notes/evidence/`. See its README. |
 | `src/memrecon/llm.py` | The only way experiment code calls a model. |
 | `src/memrecon/embed.py`, `src/memrecon/retrieval.py` | Embeddings (cached) and retrieval: which memories are relevant to a turn. |
