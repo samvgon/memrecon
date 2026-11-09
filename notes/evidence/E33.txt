@@ -1,38 +1,38 @@
 # Evidence E33
 script:       scripts/explore/E33_ingestion_losses.py
-run at:       2026-11-08T01:08:36-08:00
-memrecon:     0f719ef (scripts clean)
+run at:       2026-11-08T21:52:26-08:00
+memrecon:     37dcf2e (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
-development personas: financial_analyst, management_consultant, sales_manager; calls in the replay {'cached': 3687}; wall time 8 s
+development personas: financial_analyst, management_consultant, sales_manager; calls in the replay {'cached': 3687}; wall time 9 s
 
 1. DETAILS FOUND WHEN TOLD BUT LOST BY THE END: what happened in the session they were last lost
-  v1: 43 lost
-        39  superseded, in a session about another record
+  v1: 46 lost
+        40  superseded, in a session about another record
+         3  forgotten, in a session about its own record
          3  forgotten, in a session about another record
-         1  forgotten, in a session about its own record
-      by the losing session's operation: add 30, update 10, delete 3
-      by kind: item 20, number 10, name 6, date 6, title 1
-      by record type: preferences 19, expenses and steps 14, documents 4, goals 3, to-dos and calendar 3; folded (superseded in another record's session) by record type: preferences 16, expenses and steps 14, documents 4, goals 3, to-dos and calendar 2
-  v5: 50 lost
-        49  superseded, in a session about another record
+      by the losing session's operation: add 30, update 11, delete 5
+      by kind: item 22, number 10, date 7, name 6, title 1
+      by record type: preferences 20, expenses and steps 14, to-dos and calendar 5, documents 4, goals 3; folded (superseded in another record's session) by record type: preferences 17, expenses and steps 14, documents 4, goals 3, to-dos and calendar 2
+  v5: 51 lost
+        50  superseded, in a session about another record
          1  superseded, in a session about its own record
-      by the losing session's operation: add 37, update 12, delete 1
-      by kind: item 30, number 9, name 5, date 5, title 1
-      by record type: expenses and steps 16, preferences 15, documents 15, goals 2, to-dos and calendar 2; folded (superseded in another record's session) by record type: expenses and steps 16, preferences 15, documents 15, goals 2, to-dos and calendar 1
-  2s2: 85 lost
-        82  superseded, in a session about another record
+      by the losing session's operation: add 37, update 13, delete 1
+      by kind: item 30, number 9, name 6, date 5, title 1
+      by record type: preferences 16, expenses and steps 16, documents 15, goals 2, to-dos and calendar 2; folded (superseded in another record's session) by record type: preferences 16, expenses and steps 16, documents 15, goals 2, to-dos and calendar 1
+  2s2: 86 lost
+        83  superseded, in a session about another record
          3  superseded, in a session about its own record
-      by the losing session's operation: add 68, update 13, delete 4
-      by kind: item 48, name 15, date 12, number 7, title 3
-      by record type: documents 62, preferences 16, to-dos and calendar 4, expenses and steps 3; folded (superseded in another record's session) by record type: documents 62, preferences 15, expenses and steps 3, to-dos and calendar 2
-  2s3: 70 lost
-        63  superseded, in a session about another record
+      by the losing session's operation: add 68, update 14, delete 4
+      by kind: item 50, name 14, date 12, number 7, title 3
+      by record type: documents 62, preferences 17, to-dos and calendar 4, expenses and steps 3; folded (superseded in another record's session) by record type: documents 62, preferences 16, expenses and steps 3, to-dos and calendar 2
+  2s3: 71 lost
+        64  superseded, in a session about another record
          7  superseded, in a session about its own record
-      by the losing session's operation: add 47, update 18, delete 5
-      by kind: item 40, name 12, date 9, number 6, title 3
-      by record type: documents 42, preferences 22, to-dos and calendar 4, expenses and steps 2; folded (superseded in another record's session) by record type: documents 38, preferences 21, expenses and steps 2, to-dos and calendar 2
+      by the losing session's operation: add 46, update 20, delete 5
+      by kind: item 41, name 12, date 9, number 6, title 3
+      by record type: documents 42, preferences 24, to-dos and calendar 4, expenses and steps 1; folded (superseded in another record's session) by record type: documents 38, preferences 23, to-dos and calendar 2, expenses and steps 1
 
 2. EXAMPLES OF LOSSES (up to 4 per arm and cause: the detail; the memory that held it; what replaced it)
   v1:
@@ -49,6 +49,13 @@ development personas: financial_analyst, management_consultant, sales_manager; c
       - financial_analyst session 66 [name] Star Trek
           held by: The user likes J.J. Abrams' work, specifically appreciating how he blends action, mystery, and character development, especially in movies like *Supe…
           now:     The user used to really like J.J. Abrams' work, but lately, they have been much more into Rian Johnson's work, appreciating his fresh approach to sto…
+    [forgotten, its own record]
+      - financial_analyst session 52 [item] best friend's birthday
+          held by: The user has a best friend whose birthday is on August 21st.
+      - financial_analyst session 52 [date] August 21st
+          held by: The user has a best friend whose birthday is on August 21st.
+      - sales_manager session 106 [date] for the year
+          held by: The user has completed planning their vacation time for the year.
     [forgotten, another record]
       - financial_analyst session 146 [name] the French Riviera
           held by: The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
@@ -56,9 +63,6 @@ development personas: financial_analyst, management_consultant, sales_manager; c
           held by: The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
       - financial_analyst session 146 [item] coastline
           held by: The user has changed their travel preference from the Swiss Alps to the French Riviera, drawn by the sunshine and coastline.
-    [forgotten, its own record]
-      - sales_manager session 106 [date] for the year
-          held by: The user has completed planning their vacation time for the year.
   v5:
     [superseded, another record]
       - financial_analyst session 72 [name] J.J. Abrams
@@ -130,33 +134,33 @@ development personas: financial_analyst, management_consultant, sales_manager; c
           now:     The user has completed the task "Prepare proposal documents" and asked for it to be removed from their to-do list.
 
 3. NEVER FOUND (not found right after the session it was told in, nor at the end): how near the session's memories came
-  v1: 46; by record type documents 13, preferences 13, expenses and steps 11, to-dos and calendar 9; best overlap 0 19, overlap >= 0.8 (short detail, words differ) 14, best overlap 0.5-0.8 9, no memory from its session 2, best overlap < 0.5 2; a memory from its session has a calendar date 3, a memory from its session has other numbers 1
+  v1: 34; by record type documents 12, expenses and steps 10, preferences 8, to-dos and calendar 4; best overlap 0 17, best overlap 0.5-0.8 9, overlap >= 0.8 (short detail, words differ) 4, no memory from its session 2, best overlap < 0.5 2; a memory from its session has a calendar date 2, a memory from its session has other numbers 1
       - financial_analyst [number] $9.89 | memory: The user spent $9.89 on a coffee on 2025-06-05.
       - financial_analyst [date] this morning | memory: The user spent $9.89 on a coffee on 2025-06-05.
-      - financial_analyst [date] today | memory: The user needs to remember to call their parents on 2025-06-07.
       - sales_manager [date] today | memory: The user needs to prepare proposal documents for work on 2025-06-02.
-  v5: 57; by record type preferences 21, documents 15, expenses and steps 14, to-dos and calendar 7; no memory from its session 14, overlap >= 0.8 (short detail, words differ) 14, best overlap 0 14, best overlap 0.5-0.8 13, best overlap < 0.5 2; a memory from its session has a calendar date 3, a memory from its session has other numbers 1
+  v5: 47; by record type preferences 15, documents 14, expenses and steps 13, to-dos and calendar 5; no memory from its session 14, best overlap 0 14, best overlap 0.5-0.8 13, overlap >= 0.8 (short detail, words differ) 4, best overlap < 0.5 2; a memory from its session has a calendar date 2, a memory from its session has other numbers 1
       - financial_analyst [number] $9.89 | memory: The user spent $9.89 on a coffee on 2025-06-05.
       - financial_analyst [date] this morning | memory: The user spent $9.89 on a coffee on 2025-06-05.
-      - financial_analyst [date] today | memory: The user needs to remember to call their parents today (2025-06-07).
       - sales_manager [date] today | memory: The user needs to prepare proposal documents for work on 2025-06-02.
-  2s2: 27; by record type preferences 12, documents 6, to-dos and calendar 5, expenses and steps 4; overlap >= 0.8 (short detail, words differ) 14, best overlap 0 8, best overlap 0.5-0.8 5; 
-  2s3: 28; by record type preferences 14, documents 5, to-dos and calendar 5, expenses and steps 4; overlap >= 0.8 (short detail, words differ) 14, best overlap 0 9, best overlap 0.5-0.8 5; 
+  2s2: 19; by record type preferences 9, documents 6, expenses and steps 3, to-dos and calendar 1; best overlap 0 8, overlap >= 0.8 (short detail, words differ) 6, best overlap 0.5-0.8 5; 
+  2s3: 20; by record type preferences 11, documents 5, expenses and steps 3, to-dos and calendar 1; best overlap 0 9, overlap >= 0.8 (short detail, words differ) 6, best overlap 0.5-0.8 5; 
 
 4. OLD VALUES FOUND AT THE END (held once, updated or removed by the end): the memory that has it
-  v1: 39; says it changed 26, written at or after the change, without saying so 12, written before the change, never superseded 1; by record type preferences 32, documents 5, to-dos and calendar 1, expenses and steps 1
+  v1: 42; says it changed 28, written at or after the change, without saying so 12, written before the change, never superseded 2; by record type preferences 35, documents 5, to-dos and calendar 1, expenses and steps 1
       - [written before the change, never superseded] sales_manager $9.34 | The user spent $9.34 on coffee on 2025-06-03.
+      - [written before the change, never superseded] sales_manager thriller | The user has been really into Tess Gerritsen's books lately, finding her medical thrillers captivating.
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it absolutely incredible.
       - [written at or after the change, without saying so] financial_analyst temperate climates | The user has changed their preference from temperate climates to cooler, more humid environments, and dislikes Mediterranean climates because they ar…
-  v5: 35; says it changed 24, written at or after the change, without saying so 11; by record type preferences 29, to-dos and calendar 4, documents 1, expenses and steps 1
+  v5: 42; says it changed 28, written at or after the change, without saying so 13, written before the change, never superseded 1; by record type preferences 33, to-dos and calendar 7, documents 1, expenses and steps 1
+      - [written before the change, never superseded] sales_manager thriller | The user has been really into Tess Gerritsen's books lately, finding her medical thrillers captivating.
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it absolutely incredible. They expressed a desire to go back someday.
       - [written at or after the change, without saying so] financial_analyst medium risk | The user is working on a new project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The project aims to significantly enhance lon…
-  2s2: 40; says it changed 28, written at or after the change, without saying so 9, written before the change, never superseded 3; by record type preferences 30, documents 7, to-dos and calendar 2, expenses and steps 1
+  2s2: 50; says it changed 32, written at or after the change, without saying so 12, written before the change, never superseded 6; by record type preferences 39, documents 7, to-dos and calendar 3, expenses and steps 1
       - [written before the change, never superseded] management_consultant Duke Ellington | The user has a soft spot for the music artist Duke Ellington.
-      - [written before the change, never superseded] management_consultant learning about new innovations and how they shape our future | The user loves learning about new innovations and how they shape the future.
+      - [written before the change, never superseded] management_consultant sophisticated arrangements | The user loves the sophisticated arrangements and the sheer joy in Duke Ellington's big band sound.
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it to be absolutely incredible.
       - [written at or after the change, without saying so] financial_analyst medium risk | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
-  2s3: 53; says it changed 41, written before the change, never superseded 8, written at or after the change, without saying so 4; by record type preferences 33, documents 17, to-dos and calendar 2, expenses and steps 1
+  2s3: 60; says it changed 46, written before the change, never superseded 8, written at or after the change, without saying so 6; by record type preferences 38, documents 17, to-dos and calendar 4, expenses and steps 1
       - [written before the change, never superseded] financial_analyst $1,700,000 | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
       - [written before the change, never superseded] financial_analyst 5-7% | The user is working on a project proposal titled "AI-Driven Credit Risk Scoring Model Enhancement." The proposal aims to enhance long-term credit ris…
       - [written at or after the change, without saying so] financial_analyst North Island Lodge in Seychelles | The user visited North Island Lodge in Seychelles and found it to be absolutely incredible.
