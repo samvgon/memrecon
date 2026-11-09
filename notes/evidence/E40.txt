@@ -1,0 +1,59 @@
+# Stage 0 code-grader check (2026-11-08-grader-sample-v2.jsonl, 2026-11-08-grader-labels-resolved.jsonl)
+67 items (1 dropped: G41). Raw agreement with Sam: 61 of 67 (91.0%)   [pass: >= 90%]
+Cohen's kappa: 0.799   [pass: >= 0.7]
+
+**Code-grader check: PASS**
+
+Agreement by group
+  arm    log 30 of 30; note 31 of 37
+  group  date 19 of 21; long item 14 of 16; number 14 of 14; short name, title or item 14 of 16
+  kind   date 19 of 21; item 21 of 24; name 3 of 4; number 14 of 14; title 4 of 4
+  state  false 12 of 12; true 49 of 55
+  near   False 34 of 34; True 27 of 33
+  code   no 19 of 25; yes 42 of 42
+  (code = the code's verdict; disagreements where the code says no are misses, where it says yes false finds)
+
+== Disagreements ==
+--- G01 (note, date, date, state true): Sam yes, code no
+  detail: soon   [attached to: update my professional certifications]
+  (2025-06-07) The user needs to update their professional certifications soon.
+  (2025-06-05) The user is drafting an email to update key stakeholders on the pilot innovation-focused fintech enterprise and outline the next steps.
+  (2025-06-06) The key points of the email titled 'To provide an update on the pilot innovation-focused fintech enterprise and outline next steps for key stakeholders' include a strategic alignment review confirming continued potential for significant market disruption and revenue growth. The user has removed the 
+  (2025-06-01) The user bought a coffee for $4.98.
+  (2025-06-01) The user absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful.
+--- G11 (note, item, long item, state true): Sam yes, code no
+  detail: The pacing felt really off   [attached to: The Bourne Identity]
+  (2025-06-03) The user used to really like Ryan Reynolds, but is no longer a fan of Gal Gadot because her recent roles have not resonated with them.
+  (2025-06-03) The user has become really fascinated with East Asian cultures, specifically Japan and South Korea, and their travel preferences have shifted there; they used to really like the idea of traveling to South America but are not keen on it anymore.
+  (2025-06-01) The user really likes the movie 'Face/Off'.
+  (2025-06-02) The user disliked the book "The Bourne Identity" because the pacing felt off and they could not connect with the main character's amnesia storyline.
+  (2025-06-04) The user used to really like Guns N' Roses, but their taste has changed over the years.
+--- G21 (note, name, short name, title or item, state true): Sam yes, code no
+  detail: Victor Fleming
+  (2025-06-01) The user is trying to get more active and wants to hit 6,000 steps every day to improve their energy levels.
+  (2025-06-01) The user spent $5.65 on breakfast on 2025-06-01.
+  (2025-06-04) The user used to really like Victor Fleming's films, specifically noting that he knew how to tell a story.
+  (2025-06-01) The user bought a coffee for $4.98.
+  (2025-06-01) The user absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful.
+--- G24 (note, item, short name, title or item, state true): Sam yes, code no
+  detail: quick $5.56 breakfast
+  (2025-06-03) The user spent $7.69 on breakfast on 2025-06-03.
+  (2025-06-04) The user spent $15.96 on breakfast on 2025-06-04.
+  (2025-06-01) The user has set a new goal to keep their breakfast spending under $65 per week to save money.
+  (2025-06-01) The user spent $5.49 on coffee.
+  (2025-06-02) The user had a quick breakfast for $5.56.
+--- G47 (note, item, long item, state true): Sam yes, code no
+  detail: in pharmaceuticals, trust is our most valuable asset. Building deep, long-term customer relationships isn't just good business; it's essential for advancing patient care, and our commitment to understanding client needs and delivering tailored solutions truly sets us apart.
+  (2025-06-02) The key deliverables for the user's project will include signed Memoranda of Understanding (MOUs) or partnership agreements, detailed partnership proposals tailored to specific healthcare provider needs, and integration plans for new partners with our existing sales and support infrastructure.
+  (2025-06-04) The user is adding a new social media post to their content memory for LinkedIn, which is a Thought Leadership Post. The main message is about being delighted to see their mobile-first strategy continue to redefine travel experiences across Europe, focusing on seamless user journeys and robust enter
+  (2025-06-03) The main message of the user's social media post is that in pharmaceuticals, trust is the most valuable asset, building deep, long-term customer relationships is essential for advancing patient care, and the commitment to understanding client needs and delivering tailored solutions sets them apart.
+  (2025-06-01) The user organized meeting notes for a meeting titled "Strategic Account Review: Global Compliance Solutions for Key Manufacturing Client." The agenda items included identifying potential risks and mitigation strategies for upcoming contract renewals. Key decisions made were to initiate discussions 
+  (2025-06-01) The user has set a new fitness goal to start walking 11,000 steps every day to boost their activity level.
+--- G48 (note, date, date, state true): Sam yes, code no
+  detail: review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week   [attached to: review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week]
+  Sam's note: appears to be this though that assumes the region in question is Mexico, "The user wants recipients to review an attached preliminary financial overview and be prepared to discuss points during a strategy meeting next week to refine financial modeling for the Mexico pilot."
+  (2025-06-05) The user wants recipients to review an attached preliminary financial overview and be prepared to discuss points during a strategy meeting next week to refine financial modeling for the Mexico pilot.
+  (2025-06-01) The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'.
+  (2025-06-01) The user is working on meeting notes titled "Strategic AI Integration Financial Review - North American Market Expansion." The agenda for this meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulator
+  (2025-06-01) The user needs to update the attendees list in the meeting notes titled 'Strategic AI Integration Financial Review - North American Market Expansion'.
+  (2025-06-01) The user needs to update their meeting notes titled 'Strategic AI Integration Financial Review - North American Market Expansion'.
