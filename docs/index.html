@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memrecon Midway Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a six-scene stepper for recording a 3-minute talk; one idea per scene, arrow keys advance. */
+:root{
+  --bg:#f5f5f2; --panel:#ffffff; --ink:#121211; --ink-2:#54534e; --ink-3:#8a8983; --line:#dcdbd4;
+  --s1:#2a78d6; --s2:#eb6834; --chip:#e9f1fb; --good:#0ca30c; --bad:#d03b3b; --hollow:#c9c8c1;
+  --f-display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141413; --panel:#1c1c1b; --ink:#f0efec; --ink-2:#c3c2b7; --ink-3:#8e8d86; --line:#33322e;
+  --s1:#3987e5; --s2:#d95926; --chip:#1d2a3a; --hollow:#4a4944; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141413; --panel:#1c1c1b; --ink:#f0efec; --ink-2:#c3c2b7; --ink-3:#8e8d86; --line:#33322e;
+  --s1:#3987e5; --s2:#d95926; --chip:#1d2a3a; --hollow:#4a4944; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+.wrap{max-width:1080px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em}
+.brand span{color:var(--ink-3);font-weight:500;margin-left:8px}
+.dots{display:flex;gap:8px}
+.dots button{width:30px;height:6px;border-radius:3px;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots button[aria-current="true"]{background:var(--s1)}
+.nav{display:flex;gap:8px;align-items:center;color:var(--ink-3);font-size:13px}
+.btn{font:500 14px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--ink-3)}
+.btn[aria-pressed="true"]{background:var(--s1);border-color:var(--s1);color:#fff}
+.btn:focus-visible,.dots button:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+main{flex:1;padding-block:22px 32px}
+.kicker{font:600 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--s1);margin:0 0 8px}
+h1,h2{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0 0 10px;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4.2vw,44px);line-height:1.1}
+h2{font-size:clamp(24px,3.4vw,36px);line-height:1.12}
+.lede{color:var(--ink-2);max-width:66ch;margin:0 0 20px;font-size:17px}
+.note{color:var(--ink-3);font-size:13px;margin-top:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.label{font:500 12px var(--f-body);color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.mono{font-family:var(--f-mono);font-size:15px;line-height:1.55}
+.bad{color:var(--bad);font-weight:600}
+.good{color:var(--good);font-weight:600}
+.hl{background:var(--chip);border-radius:4px;padding:0 3px}
+.tag{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--f-body);padding:3px 9px;border-radius:999px;border:1px solid currentColor}
+.reveal{transition:opacity .5s ease, transform .5s ease}
+.reveal.off{opacity:.12;transform:translateY(6px)}
+.arrow{font-family:var(--f-mono);color:var(--ink-3);text-align:center;margin:10px 0}
+svg text{fill:var(--ink)}
+.axis text{fill:var(--ink-2);font:12px var(--f-body)}
+.axis path,.axis line{stroke:var(--line)}
+.tip{position:fixed;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.12);opacity:0;transition:opacity .12s;z-index:20;max-width:260px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin:8px 0 0}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.stat{font-family:var(--f-display);font-weight:700;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.road{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.road{grid-template-columns:minmax(0,1fr)}}
+.road .card{border-top:4px solid var(--line);border-radius:0 0 12px 12px}
+.road .done{border-top-color:var(--good)}
+.road .next{border-top-color:var(--s1)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+details{margin-top:12px;font-size:13px;color:var(--ink-2)}
+details table{border-collapse:collapse;margin-top:6px}
+details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0;text-align:left;font-variant-numeric:tabular-nums}
+.policy-out .card{display:flex;flex-direction:column;gap:8px}
+.mem{font-family:var(--f-mono);font-size:13px;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)}
+.mem small{display:block;color:var(--ink-3);font-family:var(--f-body);font-size:11px;margin-bottom:2px}
+.toggle{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;font-size:14px;color:var(--ink-2)}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">Keep, Discard, or Verify<span>CS329Z midway · Sam Goncalves</span></div>
+  <nav class="dots" id="dots" aria-label="Scenes"></nav>
+  <div class="nav"><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button><span>arrow keys</span></div>
+</header>
+<main>
+
+<!-- 1 -->
+<section class="scene" id="question" data-name="The question">
+  <p class="kicker">The question</p>
+  <h1>Should an agent save the memories it rewrites?</h1>
+  <p class="lede">When an agent recalls a memory, it rewrites it to fit the conversation. If it stores that rewrite, the memory can drift from what the user actually said. A real case from our development data:</p>
+  <div class="grid2">
+    <div class="card"><div class="label">Stored memory · Jun 2</div><div class="mono">"The user spent <span class="hl">$5.29</span> on coffee."</div></div>
+    <div class="card"><div class="label">User, later that day</div><div class="mono">"…I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses."</div></div>
+  </div>
+  <div class="arrow">↓ the agent rewrites the recalled memory ↓</div>
+  <div class="grid2">
+    <div class="card reveal off" data-step="1"><div class="label">Old rewrite prompt (v4)</div><div class="mono">"The user spent <span class="bad">$6.96</span> on a coffee and is trying to be more mindful of their expenses."</div><p class="note" style="margin:8px 0 0"><span class="tag" style="color:var(--bad)">✗ drift</span>&nbsp; a different purchase replaced the remembered one</p></div>
+    <div class="card reveal off" data-step="2"><div class="label">Frozen prompt (v5b)</div><div class="mono">"The user spent <span class="good">$5.29</span> on coffee in an earlier conversation on 2025-06-02."</div><p class="note" style="margin:8px 0 0"><span class="tag" style="color:var(--good)">✓ kept</span>&nbsp; original detail kept, date added</p></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="scene" id="system" data-name="The system" hidden>
+  <p class="kicker">The system</p>
+  <h2>Only the write policy changes</h2>
+  <p class="lede">On every user turn the agent retrieves, selects and rewrites memories. The write policy decides what happens to the rewrite. Everything else is identical across conditions.</p>
+  <div class="card" style="padding:10px 12px;overflow-x:auto"><svg id="pipe" viewBox="0 0 960 150" width="100%" role="img" aria-label="Pipeline: memory store, retrieve, select, rewrite, write policy"></svg></div>
+  <div class="toggle" style="margin-top:12px;margin-bottom:10px">Rewrite from:
+    <button class="btn" data-rw="v4" aria-pressed="true">old prompt (v4)</button>
+    <button class="btn" data-rw="v5b" aria-pressed="false">frozen prompt (v5b)</button>
+  </div>
+  <div class="grid3 policy-out" id="policies"></div>
+  <p class="note">Probe = the detail the user stated (here $5.29). We grade each condition by whether its probes are still in a live memory.</p>
+</section>
+
+<!-- 3 -->
+<section class="scene" id="checks" data-name="Validation" hidden>
+  <p class="kicker">Stage 0 · validation</p>
+  <h2>The measurements hold up</h2>
+  <p class="lede">Before comparing any policies, we fixed pass criteria and checked each part of the measurement against them. Every check passed.</p>
+  <div class="grid4" id="waffles"></div>
+  <div class="legend"><span><i style="background:var(--s1)"></i>agrees / identical</span><span><i style="background:var(--bad)"></i>disagrees</span></div>
+</section>
+
+<!-- 4 -->
+<section class="scene" id="prompt" data-name="Prompt fix" hidden>
+  <p class="kicker">What we found · rewriting</p>
+  <h2>Showing the memory's date cut drift swaps from 64 to 6</h2>
+  <p class="lede">We replayed the 64 rewrites where the old prompt swapped in a different event, under each new prompt version. Version 5b dates the memory and warns that similar events may differ; we froze it.</p>
+  <div class="card"><svg id="bars" viewBox="0 0 720 250" width="100%" role="img" aria-label="Different-event swaps by prompt version"></svg>
+    <details><summary>Numbers</summary><table><tr><th>Prompt</th><th>Swaps (of 64)</th></tr><tr><td>v4</td><td>64</td></tr><tr><td>v5a</td><td>7</td></tr><tr><td>v5b (frozen)</td><td>6</td></tr><tr><td>v5c</td><td>10</td></tr></table></details>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="scene" id="retention" data-name="Retention" hidden>
+  <p class="kicker">What we found · ingestion</p>
+  <h2>Facts are captured, then lost later in the note arm</h2>
+  <p class="lede">595 probes on the development personas. Both arms capture almost everything when it is told; by the end of the week the note arm has lost facts by folding them into other memories.</p>
+  <div class="toggle">Show: <button class="btn" data-when="told" aria-pressed="false">when told</button><button class="btn" data-when="end" aria-pressed="true">end of week</button></div>
+  <div class="grid2" id="ret"></div>
+  <div class="legend"><span><i style="background:var(--s1)"></i>note arm: found</span><span><i style="background:var(--s2)"></i>log arm: found</span><span><i style="background:transparent;border:1.5px solid var(--hollow)"></i>not found</span></div>
+</section>
+
+<!-- 6 -->
+<section class="scene" id="next" data-name="Next" hidden>
+  <p class="kicker">Where this goes</p>
+  <h2>Next: compare the policies on held-out personas</h2>
+  <p class="lede">The 504 probes the note arm keeps are the test bed for Stage 1, about the 500 our power estimate assumed.</p>
+  <div class="road">
+    <div class="card done"><div class="label">Stage 0 · done</div><b>Build and validate</b><p class="note" style="margin:6px 0 0">Agent, harness, answer key, graders; all checks pass.</p></div>
+    <div class="card next"><div class="label">Stage 1 · next</div><b>Discard vs replace vs keep</b><p class="note" style="margin:6px 0 0">7 held-out personas, paired per probe, by rewrite depth.</p></div>
+    <div class="card"><div class="label">Stage 2</div><b>Verify before storing</b><p class="note" style="margin:6px 0 0">Check the rewrite against the original memory.</p></div>
+    <div class="card"><div class="label">Stage 3</div><b>When to verify</b><p class="note" style="margin:6px 0 0">Can rewrite depth or distance signal when to check?</p></div>
+  </div>
+  <div class="grid3" style="margin-top:22px">
+    <div class="card"><div class="stat">260</div><div class="note" style="margin-top:6px">passing tests</div></div>
+    <div class="card"><div class="stat">43</div><div class="note" style="margin-top:6px">numbered evidence files, each with its script</div></div>
+    <div class="card"><div class="stat">62</div><div class="note" style="margin-top:6px">logged design decisions</div></div>
+  </div>
+</section>
+
+</main>
+</div>
+<div class="tip" id="tip" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+(function(){
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const T = ms => reduce ? 0 : ms;
+const scenes = [...document.querySelectorAll('.scene')];
+const dots = document.getElementById('dots');
+const tip = document.getElementById('tip');
+let cur = 0, timers = [];
+
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = 1;
+  const x = Math.min(e.clientX + 14, innerWidth - 270), y = e.clientY + 14; tip.style.left = x+'px'; tip.style.top = y+'px'; }
+function hideTip(){ tip.style.opacity = 0; }
+
+scenes.forEach((s,i)=>{ const b=document.createElement('button'); b.setAttribute('aria-label', s.dataset.name); b.onclick=()=>go(i); dots.appendChild(b); });
+
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+function go(i){
+  i = Math.max(0, Math.min(scenes.length-1, i));
+  clearTimers(); cur = i;
+  scenes.forEach((s,j)=> s.hidden = j!==i);
+  [...dots.children].forEach((b,j)=> b.setAttribute('aria-current', j===i ? 'true':'false'));
+  try{ history.replaceState(null,'','#'+scenes[i].id); }catch(e){}
+  enter(scenes[i].id);
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+addEventListener('keydown', e=>{ if(e.target.closest('input,textarea')) return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); go(cur+1); }
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); go(cur-1); } });
+
+/* Scene 1: staged reveal */
+function enterQuestion(){
+  const steps=[...document.querySelectorAll('#question .reveal')];
+  steps.forEach(s=>s.classList.add('off'));
+  steps.forEach((s,k)=> timers.push(setTimeout(()=>s.classList.remove('off'), T(900+k*1300))));
+}
+
+/* Scene 2: pipeline with a travelling memory chip, then the three policies */
+const REWRITE = {
+  v4: {text:'The user spent $6.96 on a coffee and is trying to be more mindful…', drift:true},
+  v5b:{text:'The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.', drift:false}
+};
+const ORIGINAL = 'The user spent $5.29 on coffee.';
+let rw = 'v4';
+function drawPipe(){
+  const svg = d3.select('#pipe'); svg.selectAll('*').remove();
+  const nodes=[['Memory store',20],['Retrieve',205],['Select',375],['Rewrite',545],['Write policy',735]];
+  const g = svg.selectAll('g.n').data(nodes).join('g').attr('class','n');
+  g.append('rect').attr('x',d=>d[1]).attr('y',30).attr('width',d=>d[0]==='Write policy'?205:150).attr('height',52).attr('rx',10)
+    .style('fill',d=>d[0]==='Write policy'?'var(--chip)':'var(--bg)').style('stroke',d=>d[0]==='Write policy'?'var(--s1)':'var(--line)').attr('stroke-width',d=>d[0]==='Write policy'?1.5:1);
+  g.append('text').attr('x',d=>d[1]+(d[0]==='Write policy'?102:75)).attr('y',61).attr('text-anchor','middle')
+    .style('font','600 15px var(--f-display)').text(d=>d[0]);
+  const xs=[170,355,525,695];
+  xs.forEach(x=> svg.append('line').attr('x1',x+4).attr('x2',x+30).attr('y1',56).attr('y2',56).style('stroke','var(--ink-3)').attr('stroke-width',1.5).attr('marker-end','url(#ah)'));
+  svg.append('defs').append('marker').attr('id','ah').attr('viewBox','0 0 10 10').attr('refX',8).attr('refY',5).attr('markerWidth',7).attr('markerHeight',7).attr('orient','auto')
+    .append('path').attr('d','M1 1L8 5L1 9').style('fill','none').style('stroke','var(--ink-3)').attr('stroke-width',1.6);
+  svg.append('text').attr('x',838).attr('y',104).attr('text-anchor','middle').style('fill','var(--ink-2)').style('font','12px var(--f-body)').text('discard · replace · keep');
+  const chip = svg.append('g').attr('transform','translate(95,124)');
+  chip.append('rect').attr('x',-82).attr('y',-15).attr('width',164).attr('height',30).attr('rx',15).style('fill','var(--s1)');
+  const ct = chip.append('text').attr('text-anchor','middle').attr('y',5).style('fill','#fff').style('font','500 12px var(--f-mono)').style('fill','#fff').text('$5.29 on coffee');
+  const stops=[95,280,450,620,838];
+  let t = chip.transition().delay(T(500));
+  stops.slice(1).forEach((x,k)=>{ t = t.transition().duration(T(700)).attr('transform',`translate(${x},124)`);
+    if(k===2){ t = t.on('end', ()=>{ ct.text(REWRITE[rw].drift ? 'rewrite: $6.96 …' : 'rewrite: $5.29 · Jun 2');
+      chip.select('rect').style('fill', REWRITE[rw].drift ? 'var(--bad)' : 'var(--good)'); }); } });
+  t.on('end', ()=> renderPolicies(true));
+}
+function memBox(text, meta, cls){ return `<div class="mem"><small>${meta}</small><span class="${cls||''}">"${text}"</span></div>`; }
+function renderPolicies(animate){
+  const r = REWRITE[rw];
+  const found = '<span class="tag" style="color:var(--good)">✓ probe $5.29 found</span>';
+  const lost  = '<span class="tag" style="color:var(--bad)">✗ probe $5.29 lost</span>';
+  const cols = [
+    {name:'Discard', what:'store nothing; memory unchanged', mems:[memBox(ORIGINAL,'live · depth 1')], ok:true},
+    {name:'Replace', what:'rewrite overwrites the memory', mems:[memBox(r.text,'live · depth 2', r.drift?'bad':'')], ok:!r.drift},
+    {name:'Keep', what:'rewrite stored beside the original', mems:[memBox(ORIGINAL,'live · depth 1'), memBox(r.text,'live · depth 2 · child', r.drift?'bad':'')], ok:true}
+  ];
+  const el = document.getElementById('policies');
+  el.innerHTML = cols.map(c=>`<div class="card reveal ${animate?'off':''}"><div class="label">${c.name}</div><div class="note" style="margin:0">${c.what}</div>${c.mems.join('')}<div>${c.ok?found:lost}</div></div>`).join('');
+  if(animate){ [...el.children].forEach((c,k)=> timers.push(setTimeout(()=>c.classList.remove('off'), T(150+k*350)))); }
+}
+document.querySelectorAll('[data-rw]').forEach(b=> b.onclick=()=>{ rw=b.dataset.rw;
+  document.querySelectorAll('[data-rw]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+  clearTimers(); document.getElementById('policies').innerHTML=''; drawPipe(); });
+
+/* Waffles */
+function waffle(container, opt){
+  const {n, cols, cell=9, gap=2, color=i=>'var(--s1)', hollow=()=>false, tipHtml} = opt;
+  const rows = Math.ceil(n/cols), w = cols*(cell+gap)-gap, h = rows*(cell+gap)-gap;
+  const svg = d3.select(container).append('svg').attr('viewBox',`0 0 ${w} ${h}`).attr('width','100%').style('max-width', (w*1.6)+'px').style('display','block');
+  const sel = svg.selectAll('rect').data(d3.range(n)).join('rect')
+    .attr('x',i=>(i%cols)*(cell+gap)).attr('y',i=>Math.floor(i/cols)*(cell+gap)).attr('width',cell).attr('height',cell).attr('rx',Math.min(2.5,cell/3))
+    .style('fill',i=>hollow(i)?'transparent':color(i)).style('stroke',i=>hollow(i)?'var(--hollow)':'none').attr('stroke-width',1.2);
+  if(tipHtml){ svg.on('mousemove', e=>showTip(e, tipHtml())).on('mouseleave', hideTip); }
+  return sel;
+}
+function enterChecks(){
+  const box = document.getElementById('waffles'); box.innerHTML='';
+  const items = [
+    {t:'Discard leaves no trace', r:'952 of 952 sessions identical', n:952, bad:0, cols:34, cell:6, gap:1.5, crit:'memory identical to ingestion alone'},
+    {t:'Judge vs hand labels', r:'48 of 50 · κ 0.92 · 0 flips', n:50, bad:2, cols:10, cell:14, gap:3, crit:'≥ 90%, κ ≥ 0.7, ≤ 5% flips'},
+    {t:'Code grader, first check', r:'61 of 67 · κ 0.80', n:67, bad:6, cols:12, cell:12, gap:3, crit:'≥ 90%, κ ≥ 0.7'},
+    {t:'Code grader, held-out after fixes', r:'38 of 39 · κ 0.95', n:39, bad:1, cols:8, cell:14, gap:3, crit:'≥ 90%, κ ≥ 0.7'}
+  ];
+  items.forEach((it,k)=>{
+    const c = document.createElement('div'); c.className='card'; box.appendChild(c);
+    c.innerHTML = `<div class="label">${it.t}</div><div style="font:600 15px var(--f-display);margin-bottom:10px">${it.r}</div><div class="w"></div><div style="margin-top:10px"><span class="tag" style="color:var(--good)">✓ pass</span></div><div class="note" style="margin-top:6px">criterion: ${it.crit}</div>`;
+    const sel = waffle(c.querySelector('.w'), {n:it.n, cols:it.cols, cell:it.cell, gap:it.gap,
+      color:i=> i>=it.n-it.bad ? 'var(--bad)' : 'var(--s1)', tipHtml:()=>`<b>${it.t}</b><br>${it.r}`});
+    sel.attr('opacity',0).transition().delay(i=>T(k*250 + i*(900/it.n))).duration(T(200)).attr('opacity',1);
+  });
+}
+
+/* Bars */
+function enterBars(){
+  const data=[{k:'v4',v:64},{k:'v5a',v:7},{k:'v5b',v:6,frozen:true},{k:'v5c',v:10}];
+  const svg=d3.select('#bars'); svg.selectAll('*').remove();
+  const m={t:40,r:20,b:36,l:44}, W=720-m.l-m.r, H=250-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const x=d3.scaleBand().domain(data.map(d=>d.k)).range([0,W]).padding(0.45);
+  const y=d3.scaleLinear().domain([0,70]).range([H,0]);
+  g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(4).tickSize(-W)).call(a=>a.select('.domain').remove()).call(a=>a.selectAll('line').style('stroke','var(--line)'));
+  g.append('g').attr('class','axis').attr('transform',`translate(0,${H})`).call(d3.axisBottom(x).tickSize(0).tickPadding(10)).call(a=>a.select('.domain').style('stroke','var(--ink-3)'));
+  const bw=Math.min(52,x.bandwidth());
+  const bars=g.selectAll('path.b').data(data).join('path').attr('class','b')
+    .style('fill',d=>d.frozen?'var(--s1)':'var(--hollow)');
+  const shape=(d,v)=>{ const x0=x(d.k)+(x.bandwidth()-bw)/2, y0=y(v), h=H-y0, r=Math.min(4,h);
+    return `M${x0},${H}V${y0+r}Q${x0},${y0} ${x0+r},${y0}H${x0+bw-r}Q${x0+bw},${y0} ${x0+bw},${y0+r}V${H}Z`; };
+  bars.attr('d',d=>shape(d,0)).transition().delay((d,i)=>T(300+i*250)).duration(T(700)).attrTween('d',d=>{const iv=d3.interpolate(0,d.v); return t=>shape(d,iv(t));});
+  const lab=g.selectAll('text.v').data(data).join('text').attr('class','v').attr('text-anchor','middle')
+    .attr('x',d=>x(d.k)+x.bandwidth()/2).attr('y',d=>y(d.v)-8).style('font','600 14px var(--f-body)').style('font-variant-numeric','tabular-nums')
+    .text(d=>d.frozen? d.v+'  · frozen' : d.v).attr('opacity',0);
+  lab.transition().delay((d,i)=>T(900+i*250)).duration(T(300)).attr('opacity',1);
+  g.selectAll('rect.hit').data(data).join('rect').attr('class','hit').attr('x',d=>x(d.k)).attr('width',x.bandwidth()).attr('y',0).attr('height',H).style('fill','transparent')
+    .on('mousemove',(e,d)=>showTip(e,`<b>Prompt ${d.k}${d.frozen?' (frozen)':''}</b><br>${d.v} of 64 swaps`)).on('mouseleave',hideTip);
+  g.append('text').attr('x',-m.l+2).attr('y',-24).style('fill','var(--ink-2)').style('font','12px var(--f-body)').text('different-event swaps (of 64)');
+}
+
+/* Retention waffles */
+const RET = { note:{told:574,end:504,color:'var(--s1)',name:'Note arm (agent writes notes)'}, log:{told:580,end:580,color:'var(--s2)',name:'Log arm (user\'s own words)'} };
+let when='end', retSel={};
+function drawRet(){
+  const box=document.getElementById('ret'); box.innerHTML='';
+  Object.entries(RET).forEach(([k,a])=>{
+    const c=document.createElement('div'); c.className='card'; box.appendChild(c);
+    c.innerHTML=`<div class="label">${a.name}</div><div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px"><span class="stat" id="pct-${k}">–</span><span class="note" id="cnt-${k}" style="margin:0"></span></div><div class="w"></div>`;
+    retSel[k]=waffle(c.querySelector('.w'), {n:595, cols:35, cell:9, gap:2.2, color:()=>a.color, hollow:i=>i>=a.told,
+      tipHtml:()=>`<b>${a.name}</b><br>when told: ${a.told} of 595<br>end of week: ${a.end} of 595`});
+  });
+  setWhen('told', true);
+  timers.push(setTimeout(()=>setWhen('end'), T(1600)));
+}
+function setWhen(w, instant){
+  when=w; document.querySelectorAll('[data-when]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.when===w?'true':'false'));
+  Object.entries(RET).forEach(([k,a])=>{
+    const n = a[w];
+    retSel[k].transition().duration(instant?0:T(900)).delay(i=> instant?0:T(Math.max(0,(i-a.end))*6))
+      .style('fill',i=> i<n ? a.color : 'transparent').style('stroke',i=> i<n ? 'none' : 'var(--hollow)');
+    document.getElementById('pct-'+k).textContent = (100*n/595).toFixed(1)+'%';
+    document.getElementById('cnt-'+k).textContent = `${n} of 595 probes found ${w==='told'?'when told':'at the end of the week'}`;
+  });
+}
+document.querySelectorAll('[data-when]').forEach(b=> b.onclick=()=>{ clearTimers(); setWhen(b.dataset.when); });
+
+function enter(id){
+  if(id==='question') enterQuestion();
+  if(typeof d3==='undefined'){ return; }
+  if(id==='system'){ document.getElementById('policies').innerHTML=''; drawPipe(); }
+  if(id==='checks') enterChecks();
+  if(id==='prompt') enterBars();
+  if(id==='retention') drawRet();
+}
+const start = scenes.findIndex(s=>'#'+s.id===location.hash);
+go(start>=0?start:0);
+})();
+</script>
+</body>
+</html>
