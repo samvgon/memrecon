@@ -25,6 +25,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;border-bottom:1px solid var(--line)}
 .brand{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em}
 .brand span{color:var(--ink-3);font-weight:500;margin-left:8px}
+.brand span{display:none}
+.dots button{width:12px}
 .dots{display:flex;gap:5px}
 .dots button{width:14px;height:6px;border-radius:3px;border:0;background:var(--line);cursor:pointer;padding:0}
 .dots button[aria-current="true"]{background:var(--s1)}
@@ -259,6 +261,34 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 .phsub{font:italic 600 10.5px var(--f-body);fill:var(--ink-3)}
 .fphase.on .phsub{fill:var(--s1)}
 .recsrc{font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+.tscript{border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:4px 0;margin-bottom:8px;max-height:none}
+.tl{display:grid;grid-template-columns:20px 16px minmax(0,1fr);gap:6px;align-items:baseline;font-size:11.5px;line-height:1.35;padding:2px 8px;transition:background-color .2s,opacity .3s,color .2s;color:var(--ink-2)}
+.tl .tn{font:10px var(--f-mono);color:var(--ink-3);text-align:right}
+.tl .tw{font:700 9.5px var(--f-body);color:var(--ink-3)}
+.tl .tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tl.scan{background:var(--chip)}
+.tl.dim{opacity:.38}
+.tl.hit{background:color-mix(in srgb,var(--s1) 18%,transparent);opacity:1;color:var(--ink);box-shadow:inset 3px 0 0 var(--s1)}
+.tl.hit .tt{white-space:normal}
+.xcard{border:1.5px solid var(--s1);border-radius:8px;background:var(--chip);padding:8px 10px;transition:opacity .45s,transform .45s}
+.xcard.log{border-color:var(--ink-3);background:var(--panel)}
+.xcard.enter{opacity:0;transform:translateY(-10px)}
+.xcard .who{font:600 11px var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.xcard .xt{font-family:var(--f-mono);font-size:12.5px;line-height:1.45;color:var(--ink);margin:3px 0}
+.xcard .xm{font-size:11.5px;color:var(--ink-3)}
+.xafter{font-size:13px!important;margin-top:8px!important}
+.fpanel code{font-family:var(--f-mono);font-size:11.5px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 3px;overflow-wrap:anywhere}
+@media (prefers-reduced-motion: reduce){.tl,.xcard{transition:none}}
+.armline{font-weight:700;font-size:13px;padding:6px 10px;border-radius:6px;margin:0 0 8px;transition:opacity .4s,transform .4s}
+.armline.note{background:color-mix(in srgb,var(--s2) 14%,transparent);color:var(--s2);border-left:3px solid var(--s2)}
+.armline.log{background:var(--panel);color:var(--ink-2);border-left:3px solid var(--ink-3)}
+.armline.enter{opacity:0;transform:translateY(-4px)}
+mark.xmark{background:color-mix(in srgb,var(--s1) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.xarrow{font-size:12px;color:var(--ink-3);margin:6px 0 2px;text-align:center}
+.armview .xcard{margin-bottom:4px}
+.rec .rs.shown{color:var(--s1)}
+mark.xmark{animation:markin .5s ease}
+@keyframes markin{from{background:transparent}}
 @media (prefers-reduced-motion: reduce){.pdetail{transition:none}.fbody{transition:none}}
 @media (prefers-reduced-motion: reduce){.reveal{transition:none}}
 </style></head><body>
@@ -267,7 +297,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <header>
   <div class="brand">Keep, Discard, or Verify<span>CS329Z midway · Sam Goncalves</span></div>
   <nav class="dots" id="dots" aria-label="Scenes"></nav>
-  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
+  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="replay" aria-label="Replay this page’s animation" title="Replay this page’s animation">↻</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
 </header>
 <main>
 
@@ -276,7 +306,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <section class="scene" id="contents" data-name="Contents">
   <p class="kicker">CS329Z midway · Sam Goncalves</p>
   <h1>Keep, Discard, or Verify: write policies for recall-time memory rewrites</h1>
-  <p class="lede">When an LLM agent recalls a memory, it rewrites it for the conversation. Should it store that rewrite? This walkthrough shows the system, how we validated the measurements, and what we have found so far. Pick a section, or press → to start.</p>
+  <p class="lede">When an LLM agent recalls a memory, it can rewrite it to be more useful for the conversation. Should it store that rewrite? This walkthrough shows the system, how we validated the measurements, and what we have found so far. Pick a section, or press → to start.</p>
   <div class="toc" id="toc-grid"></div>
 </section>
 
@@ -284,7 +314,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <section class="scene" id="question" data-name="The question" hidden>
   <p class="kicker">The question</p>
   <h2>Should an agent save the memories it rewrites?</h2>
-  <p class="lede">When an agent recalls a memory, it rewrites it to fit the conversation. If it stores that rewrite, the memory can drift from what the user actually said. A real case from our development data:</p>
+  <p class="lede">When an agent recalls a memory, it can rewrite it to fit the conversation. If it stores that rewrite, the memory can drift from what the user actually said. A real case from our development data:</p>
   <div class="grid2">
     <div class="card"><div class="label">Stored memory · Jun 2</div><div class="mono">"The user spent <span class="hl">$5.29</span> on coffee."</div></div>
     <div class="card"><div class="label">User, later that day</div><div class="mono">"…I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses."</div></div>
@@ -303,7 +333,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
   <p class="lede">A real turn from our development data, followed through every step of the system. Use the step buttons or the arrow keys; click any box to jump to it.</p>
   <div class="flowwrap">
     <div class="card" style="padding:10px 12px;overflow-x:auto"><svg id="fl-turn" class="flowsvg" style="min-width:640px" role="img" aria-label="Flow of one user turn through recall, ingestion and answering"></svg></div>
-    <div class="card fpanel" id="fp-turn"><div class="fctl"><button class="btn" data-f="prev">← step</button><button class="btn" data-f="next">step →</button><span class="count"></span></div><div class="fbody"></div></div>
+    <div class="card fpanel" id="fp-turn"><div class="fctl"><button class="btn" data-f="prev">← step</button><button class="btn" data-f="next">step →</button><button class="btn" data-f="replay" aria-label="Replay this step">↻ replay</button><span class="count"></span></div><div class="fbody"></div></div>
   </div>
 </section>
 
@@ -341,7 +371,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <section class="scene" id="key" data-name="Answer key" hidden>
   <p class="kicker">Stage 0 · building the answer key</p>
   <h2>The answer key went from 76% to 98% correct rows</h2>
-  <p class="lede">The judge model extracts each detail the user stated. I hand-checked every row it produced for the same 37 sessions. Each square is one row; hover to read it.</p>
+  <p class="lede">The judge model extracts each detail the user stated. We hand-checked every row it produced for the same 37 sessions. Each square is one row; hover to read it.</p>
   <div class="grid2" id="hc"></div>
   <div class="legend"><span><i style="background:var(--s1)"></i>correct row</span><span><i style="background:var(--s1);box-shadow:0 0 0 2px var(--ink) inset"></i>correct, from the split pass</span><span><i style="background:var(--bad)"></i>wrong row</span><span><i style="background:transparent;border:1.5px dashed var(--bad)"></i>detail it missed</span></div>
 </section>
@@ -349,8 +379,8 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <!-- 3 -->
 <section class="scene" id="checks" data-name="Validation" hidden>
   <p class="kicker">Stage 0 · validation</p>
-  <h2>The measurements hold up</h2>
-  <p class="lede">Before comparing any policies, we fixed pass criteria and checked each part of the measurement against them. Every check passed.</p>
+  <h2>Each measurement met its pass criterion</h2>
+  <p class="lede">Before comparing any policies, we set a pass criterion for each part of the measurement and checked it. All of them passed.</p>
   <div class="grid4" id="waffles"></div>
   <div class="legend"><span><i style="background:var(--s1)"></i>agrees / identical</span><span><i style="background:var(--bad)"></i>disagrees</span></div>
 </section>
@@ -360,7 +390,7 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <section class="scene" id="grader" data-name="Grader versions" hidden>
   <p class="kicker">Stage 0 · fixing the grader</p>
   <h2>We fixed the grader's misses, then re-tested it on fresh items</h2>
-  <p class="lede">Each dot is a probe I hand-labelled: is this detail stated in one of the memories? Its cell shows my label against the code grader's verdict. Hover a dot to see the probe.</p>
+  <p class="lede">Each dot is a probe we labelled by hand: is this detail stated in one of the memories? Its cell shows our label against the code grader's verdict. Hover a dot to see the probe.</p>
   <div class="toggle"><button class="btn" data-gv="first" aria-pressed="true">1 · first check</button><button class="btn" data-gv="fixed" aria-pressed="false">2 · after fixes</button><button class="btn" data-gv="held" aria-pressed="false">3 · held-out items</button></div>
   <div class="mx-wrap">
     <div class="card" style="padding:10px"><svg id="mx" viewBox="0 0 560 420" width="100%" role="img" aria-label="Agreement matrix: hand label against grader verdict"></svg></div>
@@ -383,9 +413,9 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
 <section class="scene" id="judge" data-name="Judge consistency" hidden>
   <p class="kicker">Stage 0 · checking the judge</p>
   <h2>The judge agreed on 48 of 50 and never changed its mind</h2>
-  <p class="lede">50 held-out sub-questions: my label, the judge's first verdict, and its verdict when asked again with a fresh call. Red lines mark a disagreement. Hover a dot to read the question.</p>
+  <p class="lede">50 held-out sub-questions: our label, the judge's first verdict, and its verdict when asked again with a fresh call. Red lines mark a disagreement. Hover a dot to read the question.</p>
   <div class="card"><svg id="jl" viewBox="0 0 760 300" width="100%" role="img" aria-label="Hand label, judge first verdict and judge second verdict for 50 items"></svg>
-    <div class="legend"><span><i style="background:var(--s1)"></i>yes</span><span><i style="background:var(--hollow)"></i>no</span><span><i style="background:var(--bad)"></i>judge disagrees with my label</span></div></div>
+    <div class="legend"><span><i style="background:var(--s1)"></i>yes</span><span><i style="background:var(--hollow)"></i>no</span><span><i style="background:var(--bad)"></i>judge disagrees with our label</span></div></div>
 </section>
 
 <!-- threshold -->
@@ -432,26 +462,24 @@ sup.fn{font:700 9.5px var(--f-mono);color:var(--s1);margin-left:1px;cursor:help}
   <p class="lede">Three measurements come out of every run: how faithfully memory keeps what the user said, how well the agent answers, and what it cost. Step through each.</p>
   <div class="flowwrap">
     <div class="card" style="padding:10px 12px;overflow-x:auto"><svg id="fl-eval" class="flowsvg" style="min-width:640px" role="img" aria-label="Evaluation flow: memory fidelity, answer accuracy and cost"></svg></div>
-    <div class="card fpanel" id="fp-eval"><div class="fctl"><button class="btn" data-f="prev">← step</button><button class="btn" data-f="next">step →</button><span class="count"></span></div><div class="fbody"></div></div>
+    <div class="card fpanel" id="fp-eval"><div class="fctl"><button class="btn" data-f="prev">← step</button><button class="btn" data-f="next">step →</button><button class="btn" data-f="replay" aria-label="Replay this step">↻ replay</button><span class="count"></span></div><div class="fbody"></div></div>
   </div>
 </section>
 
 <section class="scene" id="retention" data-name="Retention" hidden>
   <p class="kicker">What we found · ingestion</p>
-  <h2>Facts are captured, then lost later in the note arm</h2>
-  <p class="lede">595 probes on the development personas. Both arms capture almost everything when it is told; by the end of the week the note arm has lost facts by folding them into other memories.</p>
-  <div class="toggle">Show: <button class="btn" data-when="told" aria-pressed="false">when told</button><button class="btn" data-when="end" aria-pressed="true">end of week</button></div>
-  <div class="grid2" id="ret"></div>
-  <div class="legend"><span><i style="background:var(--s1)"></i>note arm: found</span><span><i style="background:var(--s2)"></i>log arm: found</span><span><i style="background:transparent;border:1.5px solid var(--hollow)"></i>not found</span></div>
-</section>
-
-
-<!-- kinds -->
-<section class="scene" id="kinds" data-name="By kind" hidden>
-  <p class="kicker">What we found · by kind</p>
-  <h2>Names lose the most by the end of the week</h2>
-  <p class="lede">Note arm, per kind of probe: found when told (hollow) and at the end of the week (filled). The orange mark is the log arm at the end of the week.</p>
-  <div class="card"><svg id="kd" viewBox="0 0 760 300" width="100%" role="img" aria-label="Probe survival by kind"></svg></div>
+  <h2 id="rv-h">Facts are captured, then lost later in the note arm</h2>
+  <p class="lede" id="rv-lede-all">595 probes on the development personas. Both arms capture almost everything when it is told; by the end of the week the note arm has lost facts by folding them into other memories.</p>
+  <p class="lede" id="rv-lede-kind" hidden>Note arm, per kind of probe: found when told (hollow) and at the end of the week (filled). The orange mark is the log arm at the end of the week.</p>
+  <div class="toggle">View: <button class="btn" data-rv="all" aria-pressed="true">all probes</button><button class="btn" data-rv="kind" aria-pressed="false">by kind</button></div>
+  <div id="rv-all">
+    <div class="toggle">Show: <button class="btn" data-when="told" aria-pressed="false">when told</button><button class="btn" data-when="end" aria-pressed="true">end of week</button></div>
+    <div class="grid2" id="ret"></div>
+    <div class="legend"><span><i style="background:var(--s1)"></i>note arm: found</span><span><i style="background:var(--s2)"></i>log arm: found</span><span><i style="background:transparent;border:1.5px solid var(--hollow)"></i>not found</span></div>
+  </div>
+  <div id="rv-kind" hidden>
+    <div class="card"><svg id="kd" viewBox="0 0 760 300" width="100%" role="img" aria-label="Probe survival by kind"></svg></div>
+  </div>
 </section>
 
 <!-- 6 -->
@@ -514,6 +542,7 @@ function go(i){
   enter(scenes[i].id);
 }
 document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('replay').onclick=()=>go(cur);
 document.getElementById('tocbtn').onclick=()=>go(0);
 (function buildToc(){ const grid=document.getElementById('toc-grid');
   scenes.forEach((sc,i)=>{ if(i===0) return; const k=sc.querySelector('.kicker'), h=sc.querySelector('h1,h2');
@@ -710,7 +739,7 @@ function drawGrader(){
     const C=[{c:0,r:0,agree:true},{c:1,r:0,agree:false},{c:0,r:1,agree:false},{c:1,r:1,agree:true}];
     cells.selectAll('rect').data(C).join('rect').attr('x',d=>110+d.c*222).attr('y',d=>42+d.r*182).attr('width',214).attr('height',174).attr('rx',10)
       .style('fill',d=>d.agree?'var(--chip)':'var(--badtint)');
-    const lab=[['my label: yes',217,26],['my label: no',439,26]];
+    const lab=[['our label: yes',217,26],['our label: no',439,26]];
     cells.selectAll('text.c').data(lab).join('text').attr('class','c').attr('x',d=>d[1]).attr('y',d=>d[2]).attr('text-anchor','middle').style('font','600 13px var(--f-body)').style('fill','var(--ink-2)').text(d=>d[0]);
     [['found',129],['not found',311]].forEach(([t,y])=>{ const tx=cells.append('text').attr('x',100).attr('y',y-8).attr('text-anchor','end').style('font','600 13px var(--f-body)').style('fill','var(--ink-2)');
       tx.append('tspan').attr('x',100).text('grader:'); tx.append('tspan').attr('x',100).attr('dy','1.3em').text(t); });
@@ -728,7 +757,7 @@ function drawGrader(){
   const sel=g.selectAll('circle').data(rows,d=>d.id);
   sel.exit().transition().duration(T(400)).attr('r',0).style('opacity',0).remove();
   const ent=sel.enter().append('circle').attr('r',0).attr('cx',d=>pos[d.id].x).attr('cy',d=>pos[d.id].y).style('opacity',1)
-    .on('mousemove',(e,d)=>{ const vv=GV[gv]; showTip(e, `<b>${d.id}</b> · ${d.kind} · ${d.arm} arm<br>detail: “${d.detail}”${d.att?`<br>belongs to: “${d.att}”`:''}<br>my label: <b>${d.label}</b> · grader: <b>${d[vv.key]?'found':'not found'}</b>${memLine(d, vv)}${d.note?`<br><span style="color:var(--ink-3)">note:</span> ${d.note}`:''}`); })
+    .on('mousemove',(e,d)=>{ const vv=GV[gv]; showTip(e, `<b>${d.id}</b> · ${d.kind} · ${d.arm} arm<br>detail: “${d.detail}”${d.att?`<br>belongs to: “${d.att}”`:''}<br>our label: <b>${d.label}</b> · grader: <b>${d[vv.key]?'found':'not found'}</b>${memLine(d, vv)}${d.note?`<br><span style="color:var(--ink-3)">note:</span> ${d.note}`:''}`); })
     .on('mouseleave',hideTip);
   ent.merge(sel).transition().delay((d,i)=>T(changed.has(d.id)?250:i*6)).duration(d=>T(changed.has(d.id)?1200:600)).attr('r',6)
     .attr('cx',d=>pos[d.id].x).attr('cy',d=>pos[d.id].y)
@@ -763,7 +792,7 @@ function enterKey(){
       .style('stroke',d=> d.t==='missed' ? 'var(--bad)' : d.sp ? 'var(--ink)' : 'none').style('stroke-width',d=>d.t==='missed'?1.4:2)
       .style('stroke-dasharray',d=>d.t==='missed'?'3 2':null)
       .attr('opacity',0).on('mousemove',(e,d)=> showTip(e, d.t==='missed' ? `<b>Missed detail</b><br>${d.n}` :
-         `<b>${d.k}</b>${d.sp?' · from the split pass':''} · ${d.ok?'<span style="color:var(--good)">correct</span>':'<span style="color:var(--bad)">wrong</span>'}<br>“${d.d}”${d.f?`<br><span style="color:var(--ink-3)">field:</span> ${d.f}`:''}${d.n?`<br><span style="color:var(--ink-3)">my note:</span> ${d.n}`:''}`))
+         `<b>${d.k}</b>${d.sp?' · from the split pass':''} · ${d.ok?'<span style="color:var(--good)">correct</span>':'<span style="color:var(--bad)">wrong</span>'}<br>“${d.d}”${d.f?`<br><span style="color:var(--ink-3)">field:</span> ${d.f}`:''}${d.n?`<br><span style="color:var(--ink-3)">hand-check note:</span> ${d.n}`:''}`))
       .on('mouseleave',hideTip)
       .transition().delay((d,i)=>T(k*500+i*5)).duration(T(200)).attr('opacity',1);
   });
@@ -847,7 +876,7 @@ const JD = [{"id":"J01","label":"yes","j1":"yes","j2":"yes","type":"memory_prese
 function drawJudge(){
   const svg=d3.select('#jl'); svg.selectAll('*').remove();
   const items=[...JD].sort((a,b)=> (a.label===b.label ? a.id.localeCompare(b.id) : a.label==='yes'?-1:1));
-  const cols=[{k:'label',t:'my label',x:150},{k:'j1',t:'judge, first',x:380},{k:'j2',t:'judge, asked again',x:610}];
+  const cols=[{k:'label',t:'our label',x:150},{k:'j1',t:'judge, first',x:380},{k:'j2',t:'judge, asked again',x:610}];
     cols.forEach(c=> svg.append('text').attr('x',c.x).attr('y',18).attr('text-anchor','middle').style('font','600 13px var(--f-body)').style('fill','var(--ink-2)').text(c.t));
   // bands: within each column, position by verdict group so yes/no separate
   const yv=(d,k)=>{ const yes=items.filter(o=>o[k]==='yes'), no=items.filter(o=>o[k]==='no'); const arr=d[k]==='yes'?yes:no; const i=arr.indexOf(d); const base=d[k]==='yes'?40:40+yes.length*4.4+18; return base+i*4.4; };
@@ -863,7 +892,7 @@ function drawJudge(){
     svg.append('g').selectAll('circle').data(items).join('circle').attr('cx',c.x).attr('cy',d=>yv(d,c.k)).attr('r',0)
       .style('fill',d=> d[c.k]==='yes'?'var(--s1)':'var(--hollow)')
       .style('stroke',d=> (ci>0 && d[c.k]!==d.label)?'var(--bad)':'none').style('stroke-width',2)
-      .on('mousemove',(e,d)=>showTip(e,`<b>${d.id}</b> · ${d.cat} · ${d.arm} arm<br>${d.q}<br>my label: <b>${d.label}</b> · judge: <b>${d.j1}</b> · again: <b>${d.j2}</b>`)).on('mouseleave',hideTip)
+      .on('mousemove',(e,d)=>showTip(e,`<b>${d.id}</b> · ${d.cat} · ${d.arm} arm<br>${d.q}<br>our label: <b>${d.label}</b> · judge: <b>${d.j1}</b> · again: <b>${d.j2}</b>`)).on('mouseleave',hideTip)
       .transition().delay((d,i)=>T(ci*700+i*8)).duration(T(250)).attr('r',2.6);
   });
   const yes=items.filter(o=>o.label==='yes').length;
@@ -906,6 +935,14 @@ function drawSelect(){
   sp.append('text').attr('x',440).attr('y',66).attr('text-anchor','end').style('font','600 13px var(--f-body)').style('fill','var(--ink)').text('last: 72');
 }
 
+/* retention: all probes, or by kind (one page, two views) */
+const RV={ all:{h:'Facts are captured, then lost later in the note arm',l:'595 probes on the development personas. Both arms capture almost everything when it is told; by the end of the week the note arm has lost facts by folding them into other memories.'},
+  kind:{h:'Names lose the most by the end of the week',l:'Note arm, per kind of probe: found when told (hollow) and at the end of the week (filled). The orange mark is the log arm at the end of the week.'} };
+function setRV(v){ document.getElementById('rv-all').hidden=v!=='all'; document.getElementById('rv-kind').hidden=v!=='kind';
+  document.getElementById('rv-h').textContent=RV[v].h; document.getElementById('rv-lede-all').hidden=v!=='all'; document.getElementById('rv-lede-kind').hidden=v!=='kind';
+  document.querySelectorAll('[data-rv]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.rv===v?'true':'false'));
+  if(typeof d3==='undefined') return; if(v==='all') drawRet(); else drawKinds(); }
+document.querySelectorAll('[data-rv]').forEach(b=> b.onclick=()=>setRV(b.dataset.rv));
 function enter(id){
   if(typeof stopFlows==='function') stopFlows();
   if(id==='question') enterQuestion();
@@ -917,10 +954,9 @@ function enter(id){
   if(id==='judge') drawJudge();
   if(id==='selectorder') drawSelect();
   if(id==='threshold'){ thrAt=0.70; drawThr(); }
-  if(id==='kinds') drawKinds();
   if(id==='grader'){ gv='first'; d3.select('#mx').selectAll('*').remove(); drawGrader(); }
   if(id==='prompt') enterBars();
-  if(id==='retention') drawRet();
+  if(id==='retention') setRV('all');
 }
 /* ---------- Step-through flow diagrams ---------- */
 let flowTimers=[];
@@ -964,7 +1000,7 @@ function makeFlow(cfg){
     svg.append('g').attr('class','dots-layer');
   }
   function show(i){
-    idx=Math.max(0,Math.min(cfg.steps.length-1,i)); stopFlows(); clearTimeout(recT); clearTimeout(selT); clearTimeout(polT);
+    idx=Math.max(0,Math.min(cfg.steps.length-1,i)); stopFlows(); clearTimeout(recT); clearTimeout(selT); clearTimeout(polT); xT.forEach(clearTimeout); xT=[];
     const st=cfg.steps[idx];
     const doneN=new Set(), doneE=new Set();
     cfg.steps.slice(0,idx).forEach(s=>{ s.nodes.forEach(x=>doneN.add(x)); (s.edges||[]).forEach(x=>doneE.add(x)); });
@@ -982,10 +1018,12 @@ function makeFlow(cfg){
     const body=panel.querySelector('.fbody'); body.classList.add('fade');
     setTimeout(()=>{ body.innerHTML=`<div class="stepno">Step ${idx+1} of ${cfg.steps.length}${phNow?` · <span class="phtag${phNow.vary?' vary':''}">${phNow.step||phNow.label}</span>`:''}</div><h3>${st.title}</h3>${st.html}`; body.classList.remove('fade'); if(st.after) st.after(body); }, reduce?0:160);
     panel.querySelector('.count').textContent=`${idx+1} / ${cfg.steps.length}`;
+    const rb=panel.querySelector('[data-f="replay"]'); rb.hidden=!st.replay; rb.textContent=st.replay==='reset'?'↺ reset':'↻ replay'; rb.setAttribute('aria-label', st.replay==='reset'?'Reset this step':'Replay this step');
   }
   draw();
   panel.querySelector('[data-f="prev"]').onclick=()=>show(idx-1);
   panel.querySelector('[data-f="next"]').onclick=()=>show(idx+1);
+  panel.querySelector('[data-f="replay"]').onclick=()=>show(idx);
   return { reset(){ draw(); show(0); }, next(){ if(idx<cfg.steps.length-1){ show(idx+1); return true; } return false; }, prev(){ if(idx>0){ show(idx-1); return true; } return false; } };
 }
 const q=(who,t)=>`<div class="qt"><span class="who">${who}</span>${t}</div>`;
@@ -995,7 +1033,7 @@ const fn=k=>`<sup class="fn" title="${MODELS[k]}">${k==='embed'?'e':k==='agent'?
 const fnote=(...ks)=>`<div class="fnote">${ks.map(k=>`<div><sup>${k==='embed'?'e':k==='agent'?'a':'j'}</sup> ${MODELS[k]}</div>`).join('')}</div>`;
 /* step 2: every live memory's similarity to this turn (notes/evidence/turn-scores-financial_analyst-note-s36-t14.json, from the run's embedding cache) */
 const TS=[["m00051", 0.7802, "The user spent $5.29 on coffee."], ["m00003", 0.7582, "The user spent $9.50 on a coffee on the morning of 2025-06-01."], ["m00045", 0.6916, "The user spent $10.82 on breakfast."], ["m00032", 0.6904, "The user spent $73.78 on groceries."], ["m00027", 0.661, "The user is trying to keep their lunch spending under $60 per week as a new goal to help save money and eat healthier."], ["m00016", 0.6343, "The user spent $11.83 on lunch on 2025-06-01."], ["m00047", 0.6215, "The user spent $47.15 on dinner on 2025-06-02."], ["m00020", 0.5786, "The user's project has a proposed budget of $1,150,000."], ["m00035", 0.5749, "The user is motivated to start walking 13,000 steps per day to boost their fitness and energy levels."], ["m00017", 0.5547, "The user needs to buy groceries."], ["m00007", 0.5448, "The user is working on meeting notes titled \"Strategic AI Integration Financial Review - North American Market Expansion.\" The agenda for this meeting included a cost-benefit analysis of proposed AI-powered supply chain optimization tools, a risk assessment of financial implications for AI regulatory compliance, a review of current AI-driven drug discovery project budgets and spend, and a discussion on funding allocation for pilot AI initiatives in patient engagement. Key decisions made included the approval of the reallocation of capital expenditure to accelerate procurement of advanced AI computing infrastructure for R&D within the next three months. Action items include Legal & Compliance providing an updated projection of AI regulatory compliance costs for the North American region by the end of next month, and the CFO Office initiating discussions with preferred vendors for AI infrastructure procurement within the next 2 weeks."], ["m00042", 0.5385, "The user wants to include identified areas for further cost optimization in infrastructure and data processing, and recommendations for scaling the pilot to additional regions with potential budgetary impacts in the email."], ["m00031", 0.5368, "The user finds breaking larger goals into smaller steps to be a really effective strategy."], ["m00050", 0.5309, "The user's main objectives are to reduce average delivery times by 15% across the regional network within 12 months, to enhance regional warehouse utilization by 20% through optimized layout and material handling processes, and to achieve a 10% reduction in fuel and maintenance costs through route optimization and fleet modernization over 18 months."], ["m00009", 0.5292, "The user hit their step goal on 2025-06-01 by walking 10,000 steps."], ["m00011", 0.5225, "The agenda items for the meeting included an Evaluation of Proposed Capital Expenditures for Upcoming Development Projects, Forecasting and Risk Assessment for the Next Operating Period, and a Discussion on Current Market Conditions and Impact on Real Estate Investments."], ["m00046", 0.5188, "The user still needs to plan their weekend activities."], ["m00043", 0.5173, "The user wants the recipients to review the attached preliminary financial report and be prepared to discuss the findings at a strategy meeting next week."], ["m00036", 0.5135, "The user is focused on organizing some files, catching up on emails, and planning out the rest of the week."], ["m00052", 0.5101, "The user needs to reconcile account balances soon."], ["m00012", 0.5095, "The user mandated a detailed cost-benefit analysis for all new development proposals exceeding a specified investment threshold."], ["m00048", 0.5067, "The user took 3,000 steps on 2025-06-02."], ["m00014", 0.5061, "The user has an action item to conduct a comprehensive sensitivity analysis for Project Horizon's projected returns, due in 10 days and assigned to the Senior Financial Analyst."], ["m00021", 0.4996, "The user's project has a timeline of 18 months, with key milestones scheduled at 6, 12, and 18-month intervals."], ["m00008", 0.496, "The user enjoys listening to Count Basie, specifically loving the swing and energy in his big band sound, which they find infectious and mood-lifting."], ["m00006", 0.4934, "The user needs to update the attendees list in the meeting notes titled 'Strategic AI Integration Financial Review - North American Market Expansion'."], ["m00001", 0.4912, "The user visited North Island Lodge in Seychelles and found it to be absolutely incredible."], ["m00005", 0.4884, "The user needs to update their meeting notes titled 'Strategic AI Integration Financial Review - North American Market Expansion'."], ["m00040", 0.4871, "The user is organizing content for an email to provide a preliminary financial analysis of the regional AI pilot program's performance and outline key considerations for the next phase."], ["m00039", 0.4853, "The user dislikes the idea of visiting the Swiss Alps and prefers warmer destinations."], ["m00028", 0.4822, "The user needs to review some audit findings later today."], ["m00038", 0.4809, "The user needs to exercise at the gym later."], ["m00029", 0.4776, "The user enjoys learning new things, such as interesting facts about animal group names."], ["m00037", 0.4701, "The user believes that having a system is more important than the specific method for organization."], ["m00025", 0.4678, "The key deliverables for the user's project will be updated operational procedures and training modules for logistics personnel, and a comprehensive cost-benefit analysis report for proposed infrastructure investments."], ["m00019", 0.467, "The user's project aims to enhance operational efficiency and cost-effectiveness across the regional logistics network through strategic infrastructure upgrades and process re-engineering."], ["m00026", 0.4644, "The user's risk analysis indicates a potential for initial operational disruption during system integration and process changes, and fluctuations in capital expenditure costs due to market volatility for equipment and technology."], ["m00034", 0.4606, "The user loves how J.J. Abrams blends action, mystery, and character development, especially in movies like *Super 8* and *Star Trek*."], ["m00015", 0.456, "The user has an action item to prepare a revised forecast incorporating the approved capital reallocation, due by the end of next week and assigned to the Financial Analyst Team."], ["m00002", 0.4529, "The user would love to go back to North Island Lodge in Seychelles someday."], ["m00044", 0.4493, "The user needs to call their parents later today."], ["m00033", 0.4474, "The user really likes J.J. Abrams' work."], ["m00010", 0.4452, "The user organized meeting notes for a meeting titled 'Financial Performance Review & Strategic Capital Allocation'."], ["m00013", 0.4407, "The user approved the reallocation of capital from Project Evergreen (Region 4) to Project Horizon (Region 2) due to higher projected ROI."], ["m00022", 0.435, "Anya Sharma, the user's Senior Financial Analyst, will be leading the user's project."], ["m00049", 0.4223, "The user is updating the project proposal titled 'Regional Logistics Network Optimization Initiative'."], ["m00041", 0.4081, "The recipients for the user's email are the Regional Leadership Team and the Head of Innovation."], ["m00023", 0.4074, "The key stakeholders for the user's project are Executive Leadership and the IT Infrastructure Team."]];
-const SHORT={m00051:'[1] $5.29 coffee',m00003:'[2] $9.50 coffee',m00045:'$10.82 breakfast',m00032:'$73.78 groceries',m00027:'lunch budget goal'};
+const SHORT={m00051:'$5.29 coffee',m00003:'$9.50 coffee',m00045:'$10.82 breakfast',m00032:'$73.78 groceries',m00027:'lunch budget goal'};
 function afterRetrieve(body){
   const W=340, svg=d3.select(body).select('.minithr'), x=d3.scaleLinear([0.40,0.80],[14,W-14]), y=104, R=4.2;
   const pts=TS.map(([id,sc,text],i)=>({id,sc,text,rank:i,x:x(sc),y}));
@@ -1020,10 +1058,57 @@ function afterRetrieve(body){
     dots.attr('class',d=>'mt-d'+(got.includes(d)?' in':cut.includes(d)?' cut':''));
     svg.selectAll('.mt-lab').attr('class',function(){ const id=this.dataset.id; return 'mt-lab'+(got.some(p=>p.id===id)?' in':cut.some(p=>p.id===id)?' cut':''); });
     const nm=p=>SHORT[p.id]||`“${p.text.length>38?p.text.slice(0,38)+'…':p.text}”`;
-    const turn = got.length ? got.map(nm).join(', ') + (cut.length?`<br><span style="color:var(--s2)">${cut.length} more pass${cut.length===1?'es':''} the threshold but ${cut.length===1?'is':'are'} cut by the limit of 3</span>`:'') : 'nothing: recall is skipped for this turn';
-    out.innerHTML=`<tr><th colspan="2">This turn</th></tr><tr><td>recalls</td><td>${turn}</td></tr><tr><th colspan="2">Rates across all development data</th></tr><tr><td>fact turns that retrieve their fact</td><td class="num">${A.found[k].toFixed(1)}%</td></tr><tr><td>small-talk turns that retrieve anything</td><td class="num">${A.talk[k].toFixed(1)}%</td></tr><tr><td colspan="2" style="color:var(--ink-3);font-size:12px">Derived from the threshold experiment, over every turn of the 3 development personas, with memory as the agent’s notes.</td></tr>`; }
+    const turn = got.length ? got.map(nm).join(', ') : 'nothing: recall is skipped for this turn';
+    const passing = `${pass.length} of 48` + (cut.length?` <span style="color:var(--s2)">(${cut.length} cut by the limit of 3)</span>`:'');
+    out.innerHTML=`<tr><th colspan="2">This turn</th></tr><tr><td>pass the threshold</td><td>${passing}</td></tr><tr><td>recalls (max 3)</td><td>${turn}</td></tr><tr><th colspan="2">Rates across all development data</th></tr><tr><td>fact turns that retrieve their fact</td><td class="num">${A.found[k].toFixed(1)}%</td></tr><tr><td>small-talk turns that retrieve anything</td><td class="num">${A.talk[k].toFixed(1)}%</td></tr><tr><td colspan="2" style="color:var(--ink-3);font-size:12px">Derived from the threshold experiment, over every turn of the 3 development personas, with memory as the agent’s notes.</td></tr>`; }
   r.oninput=()=>upd(+r.value,true); upd(5,false);
 }
+/* step 7: session 36 as the extract call saw it (call cache), and what each arm keeps from it */
+const TRS=[[1, "User", "Hello there! I was hoping you could help me with something."], [2, "Assistant", "Hello! I'd be happy to help. What can I assist you with today?"], [3, "User", "I was wondering if you could explain what \"quantum computing\" is in simple terms."], [4, "Assistant", "Quantum computing uses quantum-mechanical phenomena like superposition and entanglement to perform computations. Unlike classical computers that use bits, quantum computers use qubits which can exist in multiple states simultaneously."], [5, "User", "That's interesting! Could you explain what \"superposition\" and \"entanglement\" mean in this context?"], [6, "Assistant", "Superposition allows a qubit to be in multiple states at once, like a coin spinning in the air showing both heads and tails. Entanglement is when two or more qubits become linked, so the state of one instantly influences the others, regardless of distance."], [7, "User", "Those are fascinating concepts. Do you have any real-world analogies or examples that could help illustrate them further?"], [8, "Assistant", "For superposition, imagine a light switch that is both on and off simultaneously until you observe it. For entanglement, think of two linked coins that always land on the same side, even if flipped far apart."], [9, "User", "So, these quantum properties are only observed when not being measured?"], [10, "Assistant", "That's right; the act of measurement forces a superpositioned qubit into a definite state. Entanglement, however, persists even after measurement on one of the linked qubits."], [11, "Assistant", "This is known as the \"measurement problem\" in quantum mechanics, where observation collapses the quantum state."], [12, "User", "That's a very clear explanation. So, how does this \"measurement problem\" affect the practical applications of quantum computing?"], [13, "Assistant", "The measurement problem means quantum computers need error correction to maintain superposition and entanglement during calculations. It's a significant engineering challenge to preserve these delicate quantum states."], [14, "User", "It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I'm trying to be more mindful of my expenses."], [15, "Assistant", "I understand; tracking your spending can definitely help with that. It's a great way to stay aware of your financial habits."], [16, "User", "Thanks for explaining all of this to me."], [17, "Assistant", "You're most welcome! I'm glad I could help clarify these concepts for you."]];
+const term=(w,t)=>`<span class="term" tabindex="0" data-term="${t}">${w}</span>`;
+let ARM='note';
+const L14='It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I\'m trying to be more mindful of my expenses.';
+const XARM={ note:{who:'Extracted fact · note arm',text:'The user spent $6.96 on a coffee.',mark:'I just spent $6.96 on a coffee',
+    meta:'the model cited line 14; highlighted there: the words this fact restates',
+    line:'Write policies run on this arm only.',
+    after:'The agent’s answer: <code>{"facts": [{"fact": "The user spent $6.96 on a coffee.", "lines": [14]}]}</code>. One fact from 17 lines: the rest is small talk or the assistant. It goes on to compare and decide, and is stored at depth 1.'},
+  log:{who:'Kept words · log arm',text:'I just spent $6.96 on a coffee, so I\'m trying to be more mindful of my expenses.',mark:'I just spent $6.96 on a coffee, so I\'m trying to be more mindful of my expenses.',
+    meta:'highlighted in line 14: exactly the words stored',
+    line:'No write policy runs on this arm: it is the reference for what ingestion loses.',
+    after:'The log arm’s ingestion picks what to keep with the same criteria, but copies the user’s own words character for character (the lead-in “It certainly sounds like a challenge.” is left out). It is stored as is, at depth 0, with no compare or decide step. It is append-only: nothing is replaced, forgotten or rewritten.'} };
+const armButtons=()=>`<div class="fctl" style="margin-bottom:6px"><button class="btn sm" data-arm="note">Note arm: agent’s notes</button><button class="btn sm" data-arm="log">Log arm: user’s words</button></div><div class="armline"></div>`;
+function wireArms(body, render){
+  const set=arm=>{ ARM=arm; body.querySelectorAll('[data-arm]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.arm===arm?'true':'false'));
+    const al=body.querySelector('.armline'); al.className='armline '+arm+' enter'; al.textContent=XARM[arm].line;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>al.classList.remove('enter'))); render(arm); };
+  body.querySelectorAll('[data-arm]').forEach(b=> b.onclick=()=>set(b.dataset.arm)); set(ARM); }
+const factCard=arm=>{ const a=XARM[arm]; return `<div class="xcard ${arm}"><div class="who">${a.who}</div><div class="xt">${a.text}</div></div>`; };
+let xT=[];
+function afterExtract(body){
+  const ts=body.querySelector('.tscript'), xo=body.querySelector('.xout');
+  ts.innerHTML=TRS.map(([n,w,t])=>`<div class="tl ${w==='User'?'u':'a'}" data-n="${n}" title="${t.replace(/"/g,'&quot;')}"><span class="tn">${n}</span><span class="tw">${w==='User'?'U':'A'}</span><span class="tt">${t}</span></div>`).join('');
+  const rows=[...ts.children], r14=rows.find(r=>r.dataset.n==='14');
+  function run(arm){ xT.forEach(clearTimeout); xT=[];
+    rows.forEach(r=>r.className=r.className.replace(/ (scan|hit|dim)/g,'')); xo.innerHTML='';
+    const a=XARM[arm], mi=L14.indexOf(a.mark);
+    r14.querySelector('.tt').textContent=L14;
+    const step=T(110);
+    rows.forEach((r,i)=> xT.push(setTimeout(()=>{ rows.forEach(x=>x.classList.remove('scan')); r.classList.add(r.classList.contains('a')?'dim':'scan');
+      if(r===r14){ r.classList.add('hit'); xT.push(setTimeout(()=>{ r14.querySelector('.tt').innerHTML=L14.slice(0,mi)+`<mark class="xmark">${a.mark}</mark>`+L14.slice(mi+a.mark.length); }, T(250))); } else if(r.classList.contains('u')) xT.push(setTimeout(()=>{ r.classList.remove('scan'); r.classList.add('dim'); }, step)); }, i*step)));
+    xT.push(setTimeout(()=>{ rows.forEach(x=>x.classList.remove('scan'));
+      xo.innerHTML=`<div class="xcard ${arm} enter"><div class="who">${a.who}</div><div class="xt">${a.text}</div><div class="xm">${a.meta}</div></div><p class="xafter">${a.after}</p>`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ const c=xo.querySelector('.xcard'); if(c) c.classList.remove('enter'); })); }, rows.length*step+T(250))); }
+  wireArms(body, run);
+}
+const CANDS='[1] (2025-06-02) The user spent $5.29 on coffee.<br>[2] (2025-06-01) The user spent $9.50 on a coffee on the morning of 2025-06-01.<br>[3] (2025-06-02) The user spent $10.82 on breakfast.<br>[4] (2025-06-01) The user spent $73.78 on groceries.<br>[5] (2025-06-01) The user spent $11.83 on lunch on 2025-06-01.';
+function afterCompare(body){ const v=body.querySelector('.armview');
+  wireArms(body, arm=>{ v.innerHTML = arm==='note'
+    ? `${factCard('note')}<div class="xarrow">↓ shown with its 5 closest stored memories</div>${q('The decide prompt shows (excerpt)','New fact: The user spent $6.96 on a coffee.<br><br>Other facts from this conversation:<br>(none)<br><br>Stored memories most similar to it:<br>'+CANDS)}<p>Five different purchases, three of them coffee. Writing the new purchase over [1] or [2] here would be ${term('folding','Folding')}: one record replaced by another of the same kind, the main way the note arm loses details.</p>`
+    : `${factCard('log')}<p>The log arm skips this step. There is nothing to compare against, because kept words are always added as a new memory: nothing is replaced or forgotten, so this arm can’t fold one record into another.</p>`; }); }
+function afterDecide(body){ const v=body.querySelector('.armview');
+  wireArms(body, arm=>{ v.innerHTML = arm==='note'
+    ? `${factCard('note')}<p>The agent chose <b>add</b>: none of the five is the same purchase.</p>${q('The agent’s answer (excerpt)','{"action": "add", "replaces": []}')}${q('New memory m00053 · depth 1 · from session 36, turn 14','(2025-06-02) The user spent $6.96 on a coffee.')}<p>Three coffee memories are now live, each its own event, which is correct. Had the user changed a fact instead, <b>replace</b> would write a new note and retire the old one; retired memories are kept for scoring but never retrieved again.</p>`
+    : `${factCard('log')}<p>No decision to make: the kept words are added as they are.</p>${q('New memory m00049 · depth 0 · from session 36, turn 14','(2025-06-02) I just spent $6.96 on a coffee, so I\'m trying to be more mindful of my expenses.')}<p>The log arm ends up with every coffee the user mentioned, in their own words. That’s why it serves as the reference: what it keeps and the note arm doesn’t, ingestion lost.</p>`; }); }
 /* records as stored, with changed values highlighted; used by steps 4 and 6 */
 const M1={id:'m00051',text:'The user spent $5.29 on coffee.',date:'2025-06-02',depth:'1',since_user:'1',written_from:'user',sources:'session 33, turn 11',created:'after session 33 (ingestion)',parents:'none',versions:'1',times_recalled:'1',times_selected:'0',status:'live'};
 const M2={id:'m00003',text:'The user spent $9.50 on a coffee on the morning of 2025-06-01.',date:'2025-06-01',depth:'1',since_user:'1',written_from:'user',sources:'session 4, turn 19',created:'after session 4 (ingestion)',parents:'none',versions:'1',times_recalled:'4',times_selected:'3',status:'live'};
@@ -1031,18 +1116,18 @@ const VIS=new Set(['text','date']);
 function recBox(m, fields, prev, o={}){
   const rows=fields.map(f=>{ const was=prev&&prev[f]!==undefined&&prev[f]!==m[f]?prev[f]:null;
     return `<div class="${VIS.has(f)?'vis':'hid'}${was!==null?' chg':''}${o.newf&&o.newf.includes(f)?' newf':''}"><dt>${f}</dt><dd>${was!==null?(String(was).length>14?`<s>${was}</s><br>`:`<s>${was}</s> → `):''}${m[f]}</dd></div>`; }).join('');
-  return `<div class="rec ${o.cls||''}"><div class="rlabel"><span class="rs">${o.title||'stored memory'}</span>${o.tag?`<span class="rtag ${o.tagc||''}">${o.tag}</span>`:''}</div>${o.line?`<div class="rline">${o.line}</div>`:''}<dl>${rows}</dl>${o.foot||''}</div>`; }
+  return `<div class="rec ${o.cls||''}"><div class="rlabel"><span class="rs${(o.title||'').startsWith('shown as')?' shown':''}">${o.title||'stored memory'}</span>${o.tag?`<span class="rtag ${o.tagc||''}">${o.tag}</span>`:''}</div>${o.line?`<div class="rline">${o.line}</div>`:''}<dl>${rows}</dl>${o.foot||''}</div>`; }
 const SELF=['id','text','date','depth','versions','times_recalled','times_selected','status'];
-const SELFX={ both:{p:[1,2],note:'The agent answered “all, in listed order”, so both go on to be rewritten: 2 rewrite calls.'},
+const SELFX={ both:{p:[1,2],note:'The agent answered <code>{"memories": [1, 2]}</code>: both go on to be rewritten, so 2 rewrite calls.'},
   '1':{p:[1],note:'<b>What-if.</b> Only [1] would be rewritten (1 call); [2] stays exactly as stored, whatever the write policy.'},
   '2':{p:[2],note:'<b>What-if.</b> Only [2] would be rewritten (1 call); [1] stays exactly as stored.'},
-  none:{p:[],note:'<b>What-if.</b> No rewrites, so no write policy runs and memory is unchanged this turn. times_recalled has already gone up: retrieval found them.'} };
+  none:{p:[],note:'<b>What-if.</b> No rewrites, so no write policy runs and memory is unchanged this turn. times_recalled has still gone up since the retrieval step, because retrieval found them.'} };
 let selT=null;
 function afterSelect(body){
   const box=body.querySelector('.selc'), note=body.querySelector('.sel-note');
   const draw=(k)=>{ const f=k?SELFX[k]:null;
     box.innerHTML=[[1,M1],[2,M2]].map(([n,m])=>{ const sel=f&&f.p.includes(n); const after=sel?Object.assign({},m,{times_selected:String(+m.times_selected+1)}):m;
-      return recBox(after,SELF,m,{cls:f?(sel?'pick':'nopick'):'',title:`shown as [${n}]`,tag:f?(sel?'selected · will be rewritten':'not selected · left as it is'):'',tagc:sel?'yes':'no'}); }).join('');
+      return recBox(after,SELF,m,{cls:f?(sel?'pick':'nopick'):'',title:`shown as [${n}]`,tag:f?(sel?'selected · to be rewritten':'not selected · unchanged'):'',tagc:sel?'yes':'no'}); }).join('');
     note.innerHTML=f?f.note:'';
     body.querySelectorAll('button[data-pick]').forEach(b=> b.setAttribute('aria-pressed', b.dataset.pick===k?'true':'false')); };
   body.querySelectorAll('button[data-pick]').forEach(b=> b.onclick=()=>{ clearTimeout(selT); box.dataset.view='store'; draw(b.dataset.pick); });
@@ -1051,7 +1136,7 @@ function afterSelect(body){
 }
 /* step 6: what each write policy does to these two records (after both were selected) */
 const RW={ v4:{1:'The user spent $6.96 on a coffee and is trying to be more mindful of their expenses.',2:'The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee on 2025-06-02, following a previous coffee purchase of $9.50 on 2025-06-01.'},
-  v5b:{1:'The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.',2:null} };
+  v5b:{1:'The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.',2:"The user is trying to be more mindful of their expenses, having spent $9.50 on a coffee on 2025-06-01 and $6.96 on a coffee on 2025-06-02."} };
 const POLF=['id','text','date','depth','since_user','written_from','sources','created','parents','versions','times_recalled','times_selected','status'];
 const NEWF=POLF.filter(f=>!SELF.includes(f));
 let polT=null;
@@ -1124,14 +1209,14 @@ const TURN = {svg:'fl-turn', panel:'fp-turn', w:880, h:450,
   ],
   steps:[
     {nodes:['turn'],edges:[],title:'A user turn arrives',html:`<p>We replay the persona’s conversations in date order. This is <b>financial_analyst</b>, session 36, on 2 June 2025:</p>${q('User · turn 14','“It certainly sounds like a challenge. I just spent $6.96 on a coffee, so I’m trying to be more mindful of my expenses.”')}<p>The agent doesn’t write the replies; Memora’s conversation is replayed. The agent only manages its memory.</p>`},
-    {nodes:['ret','store'],edges:['e1','e6'],title:'Retrieve similar memories',html:`<p>The message is embedded${fn('embed')} and compared with all 48 live memories: each dot is one, by similarity (hover to read it). Up to 3 are recalled, most similar first, if they reach the threshold. Drag it to see what changes.</p><svg class="minithr" viewBox="0 0 340 184" role="img" aria-label="Similarity of this turn's memories against the threshold"></svg><div class="thrctl"><label for="mt-r">Threshold <b class="mt-v">0.70</b></label><input id="mt-r" type="range" min="0" max="7" step="1" value="5"></div><table class="mini mt-out"></table>${fnote('embed')}`, after: afterRetrieve},
+    {nodes:['ret','store'],edges:['e1','e6'],replay:'reset',title:'Retrieve similar memories',html:`<p>The message is embedded${fn('embed')} and compared with all 48 live memories: each dot is one, by similarity (hover to read it). Up to 3 are recalled, most similar first, if they reach the threshold. Drag it to see what changes.</p><svg class="minithr" viewBox="0 0 340 184" role="img" aria-label="Similarity of this turn's memories against the threshold"></svg><div class="thrctl"><label for="mt-r">Threshold <b class="mt-v">0.70</b></label><input id="mt-r" type="range" min="0" max="7" step="1" value="5"></div><table class="mini mt-out"></table>${fnote('embed')}`, after: afterRetrieve},
     {nodes:['pres'],edges:['e2'],title:'Present them, newest first',html:`<p>The two memories that cleared 0.70 go into the prompt as numbered lines, newest first. The store keeps more about each one, but the model sees only the text and its date; the rest stays hidden.</p><div class="recs" data-view="model"><div class="recout"><span class="who">The prompt gets exactly this</span>[1] (2025-06-02) The user spent $5.29 on coffee.<br>[2] (2025-06-01) The user spent $9.50 on a coffee on the morning of 2025-06-01.</div><div class="recsrc">where those lines come from: the stored records, masked</div>${recBox(M1,SELF,null,{title:'shown as [1]'})}${recBox(M2,SELF,null,{title:'shown as [2]'})}</div><p style="margin-top:10px">Hidden from the model: memory IDs, depth, versions, how often each was recalled or selected, and which write policy is running. The numbers [1] and [2] last only for this turn.</p>`},
-    {nodes:['sel'],edges:['e3'],title:'Select the useful ones',html:`<p>The same two numbered lines go to one agent call${fn('agent')} that asks which memories help with the user’s latest message. Any subset is a valid answer, including none. Here are the hidden fields for the first time, and how they update.</p><div class="fctl" style="margin-bottom:8px"><button class="btn" data-pick="both" aria-pressed="true">What happened</button><button class="btn" data-pick="1" aria-pressed="false">If only [1]</button><button class="btn" data-pick="2" aria-pressed="false">If only [2]</button><button class="btn" data-pick="none" aria-pressed="false">If none</button></div><div class="recs selc" data-view="model"></div><p class="sel-note"></p>${fnote('agent')}`, after: afterSelect},
-    {nodes:['rew'],edges:['e4'],title:'Rewrite each one on its own',html:`<p>One call per selected memory. The frozen prompt puts the memory’s date on its own line and warns about look-alike events:</p>${q('Frozen prompt (v5b), excerpt','Memory, from an earlier conversation on 2025-06-02 (the same day as this one):<br>The user spent $5.29 on coffee.<br><br>The memory and the user’s latest message may describe different events of the same kind, such as two different purchases.')}<table class="mini"><tr><th>prompt</th><th>rewrite of memory [1]</th></tr><tr><td>old (v4)</td><td style="color:var(--bad)">“The user spent $6.96 on a coffee and is trying to be more mindful of their expenses.”</td></tr><tr><td>frozen (v5b)</td><td style="color:var(--good)">“The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.”</td></tr></table><p>With the old prompt, memory [2] also absorbed the new purchase: “…having recently spent $6.96 on a coffee on 2025-06-02, following a previous coffee purchase of $9.50…”.</p>`},
+    {nodes:['sel'],edges:['e3'],replay:'replay',title:'Select the useful ones',html:`<p>The same two numbered lines go to one agent call${fn('agent')} that asks which memories help with the user’s latest message. It chooses only among what retrieval passed on (at most 3); any subset is a valid answer, including none. Here are the hidden fields for the first time, and how they update.</p><div class="fctl" style="margin-bottom:8px"><button class="btn" data-pick="both" aria-pressed="true">What happened</button><button class="btn" data-pick="1" aria-pressed="false">If only [1]</button><button class="btn" data-pick="2" aria-pressed="false">If only [2]</button><button class="btn" data-pick="none" aria-pressed="false">If none</button></div><div class="recs selc" data-view="model"></div><p class="sel-note"></p>${fnote('agent')}`, after: afterSelect},
+    {nodes:['rew'],edges:['e4'],title:'Rewrite each one on its own',html:`<p>One agent call per selected memory, with the conversation so far. The frozen prompt puts the memory’s date on its own line and warns about look-alike events:</p>${q('Frozen prompt (v5b), excerpt','Memory, from an earlier conversation on 2025-06-02 (the same day as this one):<br>The user spent $5.29 on coffee.<br><br>The memory and the user’s latest message may describe different events of the same kind, such as two different purchases.')}<table class="mini"><tr><th></th><th>old prompt (v4)</th><th>frozen prompt (v5b)</th></tr><tr><td>[1] $5.29</td><td style="color:var(--bad)">“The user spent $6.96 on a coffee and is trying to be more mindful of their expenses.”</td><td style="color:var(--good)">“The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.”</td></tr><tr><td>[2] $9.50</td><td style="color:var(--s2)">“The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee on 2025-06-02, following a previous coffee purchase of $9.50 on 2025-06-01.”</td><td style="color:var(--s2)">“The user is trying to be more mindful of their expenses, having spent $9.50 on a coffee on 2025-06-01 and $6.96 on a coffee on 2025-06-02.”</td></tr></table><p>The old prompt swapped [1]’s purchase for the new one. For [2], both prompts keep $9.50 but also bring in the new $6.96 coffee: a merge, which isn’t a loss but does mix two events into one memory.</p>`},
     {nodes:['pol','store'],edges:['e5','e7'],title:'The write policy decides what is stored',html:`<p class="varies-note">This is the only step that differs between conditions; everything before and after it is identical.</p><p>Both memories were selected and rewritten. Pick a write policy to see what it does to the store.</p><div class="fctl" style="margin-bottom:4px"><button class="btn pol" data-pol="discard" aria-pressed="false">Discard</button><button class="btn pol" data-pol="replace" aria-pressed="false">Replace</button><button class="btn pol" data-pol="keep" aria-pressed="false">Keep</button></div><div class="fctl" style="margin-bottom:8px;font-size:12.5px;color:var(--ink-3)">Rewrites from: <button class="btn sm" data-pr="v4" aria-pressed="true">this run (old prompt v4)</button><button class="btn sm" data-pr="v5b" aria-pressed="false">frozen prompt (v5b)</button></div><p class="newf-key"><span class="newf-sw"></span>fields the earlier steps didn’t show</p><div class="polc"></div><table class="mini pol-sum"></table><p style="font-size:12.5px;color:var(--ink-3)">This run used discard, so replace and keep show what each would do with the same rewrites, on this one turn. In a real replace or keep run, earlier turns would already have changed things: m00003 had been selected 3 times before. A rewrite identical to its memory doesn’t count as one.</p>`, after: afterPolicy},
-    {nodes:['sess','ext'],edges:['e8'],title:'When the session ends, extract the facts',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms. The note arm writes notes (shown here); the log arm copies the user’s own words.</p><p>Ingestion runs once per session, after its last turn. First the whole session is read and each fact the user told is written down, without seeing memory, so what’s already stored can’t steer it.</p><p>The agent never sees Memora’s flags of which turns carry facts. (The extracted facts themselves aren’t kept in this run’s logs; the next two steps are.)</p>`},
-    {nodes:['cmp','store'],edges:['e9','e10'],title:'Compare each fact with its 5 closest memories',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms. The note arm writes notes (shown here); the log arm copies the user’s own words.</p><p>For the $6.96 coffee, the event log records the 5 memories the agent was shown, in the same numbered format as recall:</p>${q('Closest memories, as shown',`[1] (2025-06-02) The user spent $5.29 on coffee.<br>[2] (2025-06-01) The user spent $9.50 on a coffee on the morning of 2025-06-01.<br>[3] (2025-06-02) The user spent $10.82 on breakfast.<br>[4] (2025-06-01) The user spent $73.78 on groceries.<br>[5] (2025-06-01) The user spent $11.83 on lunch on 2025-06-01.`)}<p>Five different purchases, three of them coffee. Writing the new purchase over [1] or [2] here would be <b>folding</b>: one record replaced by another of the same kind, the main way the note arm loses details.</p>`},
-    {nodes:['dec','store'],edges:['e11','e12'],title:'Decide: add, replace, forget, or nothing',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms. The note arm writes notes (shown here); the log arm copies the user’s own words.</p><p>The agent chose <b>add</b>: none of the five is the same purchase.</p>${q('New memory m00053 · depth 1 · from session 36, turn 14','(2025-06-02) The user spent $6.96 on a coffee.')}<p>Three coffee memories are now live, each its own event, which is correct. Had the user changed a fact instead, <b>replace</b> would write a new note and retire the old one; retired memories are kept for scoring but never retrieved again.</p>`},
+    {nodes:['sess','ext'],edges:['e8'],replay:'replay',title:'When the session ends, pull out what to keep',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p><p>After the session’s last turn, the agent model${fn('agent')} reads the whole conversation once, without seeing memory, so what’s already stored can’t steer it. It never sees Memora’s flags of which turns carry facts.</p>${armButtons()}<div class="tscript"></div><div class="xout"></div>${fnote('agent')}`, after: afterExtract},
+    {nodes:['cmp','store'],edges:['e9','e10'],title:'Compare each fact with its 5 closest memories',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p>${armButtons()}<div class="armview"></div>`, after: afterCompare},
+    {nodes:['dec','store'],edges:['e11','e12'],title:'Decide: add, replace, forget, or nothing',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p>${armButtons()}<div class="armview"></div>`, after: afterDecide},
     {nodes:['qn','r50','ans','evl'],edges:['e13','e14','e15','e16'],title:'At the end of the week, answer from memory',html:`<p>Each of Memora’s questions for the persona is asked on its own date. The agent gets the 50 most relevant live memories, newest first with dates, and answers in free text.</p><p>Those answers, and snapshots of the memory store after every session, are what the evaluation grades.</p>`}
   ]};
 
@@ -1171,22 +1256,22 @@ const EVAL = {svg:'fl-eval', panel:'fp-eval', w:870, h:470,
     {nodes:['met'],edges:['a4'],title:'Turn verdicts into fidelity measures',html:`<table class="mini"><tr><th></th><th>note arm</th><th>log arm</th></tr><tr><td>found when told</td><td class="num">96.5%</td><td class="num">97.5%</td></tr><tr><td>found at the end of the week</td><td class="num">84.7%</td><td class="num">97.5%</td></tr><tr><td>old values still in memory</td><td class="num">60 / 147</td><td class="num">123 / 147</td></tr></table><p>Development personas, discard only (595 probes).</p>`},
     {nodes:['cmp'],edges:['a5'],title:'Compare each write policy with discard',html:`<p>Same probes, same conversations, so each probe is a pair: did replace (or keep) lose a detail that discard kept? </p><p>We restrict to the probes ingestion alone keeps (504 on the development personas), so any loss comes from the write policy, and break the results down by rewrite depth.</p>`},
     {nodes:['qa'],edges:[],title:'The agent’s answer',html:`<p>The agent${fn('agent')} answers each question from its memories.</p>${q('Question · management_consultant','“Can you recommend a movie by directors I prefer?”')}${q('Answer (excerpt)','“Based on your memories, your favorite director is now George Stevens, after rewatching ‘Shane’ and ‘Giant’.…”')}${fnote('agent')}`},
-    {nodes:['sq','jdg','yn'],edges:['b1','b2','b3'],title:'The judge answers Memora’s sub-questions',html:`<table class="mini"><tr><th>sub-question</th><th>expected</th><th>judge</th></tr><tr><td>Does the response reflect or align with the user’s preference for George Stevens?</td><td>yes</td><td style="color:var(--good)">yes ✓</td></tr><tr><td>(another answer) Does the response reflect or mention the user’s preference for Victor Fleming? <span style="color:var(--ink-3)">a former preference</span></td><td>no</td><td style="color:var(--good)">no ✓</td></tr></table><p>The judge${fn('judge')} sees only the answer and the sub-question. It agreed with my hand labels on 48 of 50, and changed none when asked again.</p>${fnote('judge')}`},
+    {nodes:['sq','jdg','yn'],edges:['b1','b2','b3'],title:'The judge answers Memora’s sub-questions',html:`<table class="mini"><tr><th>sub-question</th><th>expected</th><th>judge</th></tr><tr><td>Does the response reflect or align with the user’s preference for George Stevens?</td><td>yes</td><td style="color:var(--good)">yes ✓</td></tr><tr><td>(another answer) Does the response reflect or mention the user’s preference for Victor Fleming? <span style="color:var(--ink-3)">a former preference</span></td><td>no</td><td style="color:var(--good)">no ✓</td></tr></table><p>The judge${fn('judge')} sees only the answer and the sub-question. It agreed with our hand labels on 48 of 50, and changed none when asked again.</p>${fnote('judge')}`},
     {nodes:['mf','fama'],edges:['b4','b5'],title:'Combine into FAMA',html:`<p><b>MPA</b>: the share of “should mention” sub-questions passed. <b>FAA</b>: the share of “should not mention” ones passed, i.e. outdated facts avoided.</p>${q('Memora’s forgetting-aware score','FAMA = max(0, MPA − λ · (1 − FAA))<br>λ = forget items / all items')}<p>It rewards remembering what is current and penalises bringing up what was updated or deleted.</p>`},
     {nodes:['led','tok','cost'],edges:['c1','c2'],title:'Count the cost',html:`<p>Every call that reaches a model is logged with its tokens. Tokens per recall give each policy’s cost.</p><p>So a policy that needs extra calls, like verifying each rewrite, can be weighed against what it saves.</p>`}
   ]};
 
 /* Getting ready: everything done before comparing write policies */
 const PREP=[
- {t:'Fix the persona split',r:'3 development · 7 held out',p:'Split once with a fixed seed (329), before any experiment. Every choice below used only the 3 development personas.'},
- {t:'Pin the models and settings',r:'Qwen agent · Gemma judge',p:'Agent Qwen3.6-35B-A3B, judge Gemma 4 26B-A4B (different families), nomic-embed for retrieval; 4-bit files checked by sha256; temperature 0, thinking off; every call cached and logged.'},
- {t:'Build the answer key',r:'98% of rows correct',p:'The judge model extracts every detail from Memora’s flagged turns; a split pass separates joined details; updates and deletes give each probe its true state over time. I hand-checked 183 rows (179 correct), then froze it.',go:'key'},
+ {t:'Fix the persona split',r:'3 development · 7 held out',p:'Split once with a fixed seed (329), before any experiment. Every choice below used only the 3 development personas (financial_analyst, management_consultant and sales_manager).'},
+ {t:'Pin the models and settings',r:'Agent: Qwen · Judge: Gemma',p:'The agent is Qwen3.6-35B-A3B. The judge is Gemma 4 26B-A4B, from a different model family than the agent. Retrieval uses nomic-embed-text. All three run locally. The agent and judge use 4-bit files whose checksums we recorded, and run at temperature 0 with thinking off. Every model call is saved with its answer, so rerunning an experiment reproduces it exactly.'},
+ {t:'Build the answer key',r:'98% of rows correct',p:'The judge model pulls every detail out of the turns Memora flags as worth remembering, and a second pass splits details joined by “and”. Memora also records when the user changes or deletes something, so we know each detail’s correct value on every day of the week. We hand-checked 183 rows, found 179 correct, and then froze the key.',go:'key'},
  {t:'Choose how ingestion works',r:'two-step',p:'Two-step (extract, then compare and decide) captured more facts when told than one call (96.5% vs 93.9%), with no significant difference at the end of the week (84.7% vs 86.6%, p = 0.31).'},
  {t:'Choose the retrieval threshold',r:'0.70',p:'At 0.70 a fact is retrieved on 64–74% of the turns about it, and small talk triggers recall on only 1–4% of turns.',go:'threshold'},
  {t:'Fix the rewrite prompt',r:'swaps 64 → 6',p:'Early prompts overwrote memories with similar new events. Showing the memory’s date and warning about look-alike events cut different-event swaps from 64 to 6; version 5b was frozen.',go:'prompt'},
  {t:'Test the listing order',r:'no position bias',p:'Random orders change which memories are chosen, but being listed first doesn’t make a memory more likely to be picked (p = 0.21). Newest first stays.',go:'selectorder'},
  {t:'Validate the code grader',r:'38 of 39 held out',p:'61 of 67 at first, all six disagreements misses; three matching rules fixed; then 38 of 39 on fresh items (κ 0.95).',go:'grader'},
- {t:'Validate the judge',r:'48 of 50 · 0 flips',p:'Against my hand labels on held-out sub-questions: 96% agreement, κ 0.92, and no verdict changed when asked again.',go:'judge'},
+ {t:'Validate the judge',r:'48 of 50 · 0 flips',p:'Against our hand labels on held-out sub-questions: 96% agreement, κ 0.92, and no verdict changed when asked again.',go:'judge'},
  {t:'Run the control check',r:'952 of 952 identical',p:'Recall with discard leaves memory exactly as ingestion alone leaves it, in every session of every development persona, in both arms.',go:'checks'},
  {t:'Measure the starting point',r:'504 probes ready',p:'Both arms capture facts when told; by the end the note arm keeps 84.7%, the log arm 97.5%. 504 probes survive in the note arm, the test bed for comparing policies.',go:'retention'}
 ];
@@ -1244,7 +1329,7 @@ const GLOSS = [
  {g:'Measuring', t:'FAMA', a:['FAMA'], d:'Memora’s forgetting-aware memory accuracy: the share of required facts an answer mentions, minus a penalty for mentioning facts that were updated or deleted.'},
  {g:'Measuring', t:'Cohen’s κ', a:['κ','kappa'], d:'Agreement corrected for chance: 1 is perfect, 0 is no better than chance. Our pass mark is 0.7.'},
  {g:'Measuring', t:'Flip rate', a:['flips','flip'], d:'The share of judge verdicts that change when the same item is judged again with a fresh call. Our pass mark is at most 5%.'},
- {g:'Measuring', t:'Hand labels', a:['hand-labelled','hand labels','hand-checked'], d:'My own yes/no labels on stratified samples: the reference the graders and the answer key are checked against.'},
+ {g:'Measuring', t:'Hand labels', a:['hand-labelled','hand labels','hand-checked'], d:'Our own yes/no labels on stratified samples: the reference the graders and the answer key are checked against.'},
  {g:'Measuring', t:'Held-out items', a:['held-out items','fresh items'], d:'Items drawn and labelled after the grader fixes, never used to make them, so they test the grader fairly.'},
  {g:'Measuring', t:'Control check', a:['control run'], d:'Running recall with discard and checking that memory ends up identical to ingestion alone, so any later difference comes from the write policy.'},
  {g:'Plan', t:'Stage 0–3', a:['Stage 0','Stage 1','Stage 2','Stage 3'], d:'Stage 0 builds and validates the system and measures; Stage 1 compares discard, replace and keep; Stage 2 tests verifying before storing; Stage 3 tests whether depth or distance can tell when to verify.'}
