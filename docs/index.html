@@ -289,6 +289,18 @@ mark.xmark{background:color-mix(in srgb,var(--s1) 22%,transparent);color:inherit
 .rec .rs.shown{color:var(--s1)}
 mark.xmark{animation:markin .5s ease}
 @keyframes markin{from{background:transparent}}
+.flowwrap{transition:grid-template-columns .4s ease}
+@media (min-width:1061px){.flowwrap.widep{grid-template-columns:minmax(0,1fr) 640px}}
+.fsep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+.rec.cols2 dl{grid-template-columns:1fr 1fr;column-gap:16px;grid-auto-flow:row dense}
+.rec.cols2 dl > div{min-width:0}
+.rec.cols2 dl > div.ftext{grid-column:1 / -1}
+.keep2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:700px){.rec.cols2 dl{grid-template-columns:1fr}.keep2{grid-template-columns:1fr}}
+.pol-sum{font-size:13px!important;margin:8px 0 6px!important;color:var(--ink-2)}
+.pol-sum .ps-l{color:var(--ink-3)}
+.rec .chg dd .was{color:var(--ink-3);font-weight:400}
+.widep .rec dl > div{line-height:1.34}
 @media (prefers-reduced-motion: reduce){.pdetail{transition:none}.fbody{transition:none}}
 @media (prefers-reduced-motion: reduce){.reveal{transition:none}}
 </style></head><body>
@@ -1018,6 +1030,7 @@ function makeFlow(cfg){
     const body=panel.querySelector('.fbody'); body.classList.add('fade');
     setTimeout(()=>{ body.innerHTML=`<div class="stepno">Step ${idx+1} of ${cfg.steps.length}${phNow?` · <span class="phtag${phNow.vary?' vary':''}">${phNow.step||phNow.label}</span>`:''}</div><h3>${st.title}</h3>${st.html}`; body.classList.remove('fade'); if(st.after) st.after(body); }, reduce?0:160);
     panel.querySelector('.count').textContent=`${idx+1} / ${cfg.steps.length}`;
+    panel.closest('.flowwrap').classList.toggle('widep', !!st.wide);
     const rb=panel.querySelector('[data-f="replay"]'); rb.hidden=!st.replay; rb.textContent=st.replay==='reset'?'↺ reset':'↻ replay'; rb.setAttribute('aria-label', st.replay==='reset'?'Reset this step':'Replay this step');
   }
   draw();
@@ -1115,7 +1128,7 @@ const M2={id:'m00003',text:'The user spent $9.50 on a coffee on the morning of 2
 const VIS=new Set(['text','date']);
 function recBox(m, fields, prev, o={}){
   const rows=fields.map(f=>{ const was=prev&&prev[f]!==undefined&&prev[f]!==m[f]?prev[f]:null;
-    return `<div class="${VIS.has(f)?'vis':'hid'}${was!==null?' chg':''}${o.newf&&o.newf.includes(f)?' newf':''}"><dt>${f}</dt><dd>${was!==null?(String(was).length>14?`<s>${was}</s><br>`:`<s>${was}</s> → `):''}${m[f]}</dd></div>`; }).join('');
+    return `<div class="${VIS.has(f)?'vis':'hid'}${f==='text'?' ftext':''}${was!==null?' chg':''}${o.newf&&o.newf.includes(f)?' newf':''}"><dt>${f}</dt><dd>${was!==null?(String(was).length>14?`<s>${was}</s><br>`:`<span class="was">${was}</span> → `):''}${m[f]}</dd></div>`; }).join('');
   return `<div class="rec ${o.cls||''}"><div class="rlabel"><span class="rs${(o.title||'').startsWith('shown as')?' shown':''}">${o.title||'stored memory'}</span>${o.tag?`<span class="rtag ${o.tagc||''}">${o.tag}</span>`:''}</div>${o.line?`<div class="rline">${o.line}</div>`:''}<dl>${rows}</dl>${o.foot||''}</div>`; }
 const SELF=['id','text','date','depth','versions','times_recalled','times_selected','status'];
 const SELFX={ both:{p:[1,2],note:'The agent answered <code>{"memories": [1, 2]}</code>: both go on to be rewritten, so 2 rewrite calls.'},
@@ -1141,28 +1154,27 @@ const POLF=['id','text','date','depth','since_user','written_from','sources','cr
 const NEWF=POLF.filter(f=>!SELF.includes(f));
 let polT=null;
 function afterPolicy(body){
-  let pol=null, pr='v4';
+  let pol=null, pr='v4', mem=1;
   const box=body.querySelector('.polc'), sum=body.querySelector('.pol-sum');
-  const draw=()=>{ const base=[[1,Object.assign({},M1,{times_selected:'1'}),'$5.29'],[2,Object.assign({},M2,{times_selected:'4'}),'$9.50']];
-    let html='', live=[]; let nid=53;
-    base.forEach(([n,m,probe])=>{ const rw=RW[pr][n];
-      if(!rw){ html+=recBox(m,POLF,null,{newf:NEWF,title:`[${n}] ${m.id}`,tag:'frozen prompt not run on it',tagc:'no',foot:'<div class="rfoot">The prompt test ran the frozen prompt on a sample of turns, and this memory wasn’t in it, so there is no frozen-prompt rewrite to show. It is left unchanged here.</div>'}); live.push(m.text); return; }
-      const rwl=`<span class="rwl">rewrite:</span> ${rw}`;
-      if(!pol){ html+=recBox(m,POLF,null,{newf:NEWF,title:`[${n}] ${m.id}`,line:rwl}); live.push(m.text); return; }
-      if(pol==='discard'){ html+=recBox(m,POLF,null,{newf:NEWF,title:`[${n}] ${m.id}`,tag:'unchanged',tagc:'yes',line:rwl+' <span class="rwl">(used for this turn, then thrown away)</span>'}); live.push(m.text); }
-      if(pol==='replace'){ const a=Object.assign({},m,{text:rw,depth:String(+m.depth+1),since_user:String(+m.since_user+1),versions:String(+m.versions+1)});
-        html+=recBox(a,POLF,m,{newf:NEWF,cls:'pick',title:`[${n}] ${m.id}`,tag:'overwritten',tagc:'vary',foot:`<div class="rfoot">Old text kept only in its version history, for scoring; never shown to the agent again.</div>`}); live.push(rw); }
-      if(pol==='keep'){ html+=recBox(m,POLF,null,{newf:NEWF,title:`[${n}] ${m.id}`,tag:'unchanged',tagc:'yes'});
-        const c={id:'(new id)',text:rw,date:m.date,depth:String(+m.depth+1),since_user:String(+m.since_user+1),written_from:'memory',sources:m.sources,created:'session 36, turn 14 (this turn)',parents:m.id,versions:'1',times_recalled:'0',times_selected:'0',status:'live'};
-        html+=recBox(c,POLF,null,{newf:NEWF,cls:'pick fresh',title:'new memory',tag:`child of ${m.id}`,tagc:'vary'}); live.push(m.text, rw); } });
-    box.innerHTML=html;
+  const BASE={1:Object.assign({},M1,{times_selected:'1'}),2:Object.assign({},M2,{times_selected:'4'})};
+  function one(n){ const m=BASE[n], rw=RW[pr][n], t=`[${n}] ${m.id}`;
+    if(!pol) return {html:recBox(m,POLF,null,{newf:NEWF,cls:'cols2',title:t,line:`<span class="rwl">rewrite:</span> ${rw}`}), live:[m.text], n:1};
+    if(pol==='discard') return {html:recBox(m,POLF,null,{newf:NEWF,cls:'cols2',title:t,tag:'unchanged',tagc:'yes',line:`<span class="rwl">rewrite, used for this turn then thrown away:</span> ${rw}`}), live:[m.text], n:1};
+    if(pol==='replace'){ const a=Object.assign({},m,{text:rw,depth:String(+m.depth+1),since_user:String(+m.since_user+1),versions:String(+m.versions+1)});
+      return {html:recBox(a,POLF,m,{newf:NEWF,cls:'pick cols2',title:t,tag:'overwritten',tagc:'vary',foot:'<div class="rfoot">The old text stays only in its version history, for scoring.</div>'}), live:[rw], n:1}; }
+    const c={id:'(new id)',text:rw,date:m.date,depth:String(+m.depth+1),since_user:String(+m.since_user+1),written_from:'memory',sources:m.sources,created:'session 36, turn 14',parents:m.id,versions:'1',times_recalled:'0',times_selected:'0',status:'live'};
+    return {html:`<div class="keep2">${recBox(m,POLF,null,{newf:NEWF,title:t,tag:'unchanged',tagc:'yes'})}${recBox(c,POLF,null,{newf:NEWF,cls:'pick fresh',title:'new memory',tag:`child of ${m.id}`,tagc:'vary'})}</div>`, live:[m.text,rw], n:2}; }
+  const draw=()=>{ const r={1:one(1),2:one(2)};
+    box.innerHTML=r[mem].html;
     requestAnimationFrame(()=>requestAnimationFrame(()=> box.querySelectorAll('.fresh').forEach(e=>e.classList.remove('fresh'))));
-    const has=v=>live.some(t=>t.includes(v));
-    sum.innerHTML=pol?`<tr><th>after this turn</th><th>still in live memory?</th></tr>`+['$5.29','$9.50'].map(v=>`<tr><td>${v}</td><td style="color:var(--${has(v)?'good':'bad'})">${has(v)?'✓ yes':'✗ no, lost'}</td></tr>`).join('')+`<tr><td>live memories about these purchases</td><td class="num">${pol==='keep'?(RW[pr][2]?4:3):2}</td></tr>`:'';
+    const live=[...r[1].live,...r[2].live], has=v=>live.some(t=>t.includes(v));
+    sum.innerHTML=pol?`<span class="ps-l">After this turn, still in live memory:</span> `+['$5.29','$9.50'].map(v=>`<span style="color:var(--${has(v)?'good':'bad'})">${v} ${has(v)?'✓':'✗ lost'}</span>`).join(' · ')+` · <span>${r[1].n+r[2].n} live memories about these purchases</span>`:'';
     body.querySelectorAll('button[data-pol]').forEach(b=> b.setAttribute('aria-pressed', b.dataset.pol===pol?'true':'false'));
-    body.querySelectorAll('button[data-pr]').forEach(b=> b.setAttribute('aria-pressed', b.dataset.pr===pr?'true':'false')); };
+    body.querySelectorAll('button[data-pr]').forEach(b=> b.setAttribute('aria-pressed', b.dataset.pr===pr?'true':'false'));
+    body.querySelectorAll('button[data-mem]').forEach(b=> b.setAttribute('aria-pressed', +b.dataset.mem===mem?'true':'false')); };
   body.querySelectorAll('button[data-pol]').forEach(b=> b.onclick=()=>{ clearTimeout(polT); pol=b.dataset.pol; draw(); });
   body.querySelectorAll('button[data-pr]').forEach(b=> b.onclick=()=>{ pr=b.dataset.pr; draw(); });
+  body.querySelectorAll('button[data-mem]').forEach(b=> b.onclick=()=>{ mem=+b.dataset.mem; draw(); });
   draw(); clearTimeout(polT); polT=setTimeout(()=>{ pol='discard'; draw(); }, T(1200));
 }
 /* the two memory records, as stored just before session 36, turn 14 (from the run's event log) */
@@ -1213,7 +1225,7 @@ const TURN = {svg:'fl-turn', panel:'fp-turn', w:880, h:450,
     {nodes:['pres'],edges:['e2'],title:'Present them, newest first',html:`<p>The two memories that cleared 0.70 go into the prompt as numbered lines, newest first. The store keeps more about each one, but the model sees only the text and its date; the rest stays hidden.</p><div class="recs" data-view="model"><div class="recout"><span class="who">The prompt gets exactly this</span>[1] (2025-06-02) The user spent $5.29 on coffee.<br>[2] (2025-06-01) The user spent $9.50 on a coffee on the morning of 2025-06-01.</div><div class="recsrc">where those lines come from: the stored records, masked</div>${recBox(M1,SELF,null,{title:'shown as [1]'})}${recBox(M2,SELF,null,{title:'shown as [2]'})}</div><p style="margin-top:10px">Hidden from the model: memory IDs, depth, versions, how often each was recalled or selected, and which write policy is running. The numbers [1] and [2] last only for this turn.</p>`},
     {nodes:['sel'],edges:['e3'],replay:'replay',title:'Select the useful ones',html:`<p>The same two numbered lines go to one agent call${fn('agent')} that asks which memories help with the user’s latest message. It chooses only among what retrieval passed on (at most 3); any subset is a valid answer, including none. Here are the hidden fields for the first time, and how they update.</p><div class="fctl" style="margin-bottom:8px"><button class="btn" data-pick="both" aria-pressed="true">What happened</button><button class="btn" data-pick="1" aria-pressed="false">If only [1]</button><button class="btn" data-pick="2" aria-pressed="false">If only [2]</button><button class="btn" data-pick="none" aria-pressed="false">If none</button></div><div class="recs selc" data-view="model"></div><p class="sel-note"></p>${fnote('agent')}`, after: afterSelect},
     {nodes:['rew'],edges:['e4'],title:'Rewrite each one on its own',html:`<p>One agent call per selected memory, with the conversation so far. The frozen prompt puts the memory’s date on its own line and warns about look-alike events:</p>${q('Frozen prompt (v5b), excerpt','Memory, from an earlier conversation on 2025-06-02 (the same day as this one):<br>The user spent $5.29 on coffee.<br><br>The memory and the user’s latest message may describe different events of the same kind, such as two different purchases.')}<table class="mini"><tr><th></th><th>old prompt (v4)</th><th>frozen prompt (v5b)</th></tr><tr><td>[1] $5.29</td><td style="color:var(--bad)">“The user spent $6.96 on a coffee and is trying to be more mindful of their expenses.”</td><td style="color:var(--good)">“The user spent $5.29 on coffee in an earlier conversation on 2025-06-02.”</td></tr><tr><td>[2] $9.50</td><td style="color:var(--s2)">“The user is trying to be more mindful of their expenses, having recently spent $6.96 on a coffee on 2025-06-02, following a previous coffee purchase of $9.50 on 2025-06-01.”</td><td style="color:var(--s2)">“The user is trying to be more mindful of their expenses, having spent $9.50 on a coffee on 2025-06-01 and $6.96 on a coffee on 2025-06-02.”</td></tr></table><p>The old prompt swapped [1]’s purchase for the new one. For [2], both prompts keep $9.50 but also bring in the new $6.96 coffee: a merge, which isn’t a loss but does mix two events into one memory.</p>`},
-    {nodes:['pol','store'],edges:['e5','e7'],title:'The write policy decides what is stored',html:`<p class="varies-note">This is the only step that differs between conditions; everything before and after it is identical.</p><p>Both memories were selected and rewritten. Pick a write policy to see what it does to the store.</p><div class="fctl" style="margin-bottom:4px"><button class="btn pol" data-pol="discard" aria-pressed="false">Discard</button><button class="btn pol" data-pol="replace" aria-pressed="false">Replace</button><button class="btn pol" data-pol="keep" aria-pressed="false">Keep</button></div><div class="fctl" style="margin-bottom:8px;font-size:12.5px;color:var(--ink-3)">Rewrites from: <button class="btn sm" data-pr="v4" aria-pressed="true">this run (old prompt v4)</button><button class="btn sm" data-pr="v5b" aria-pressed="false">frozen prompt (v5b)</button></div><p class="newf-key"><span class="newf-sw"></span>fields the earlier steps didn’t show</p><div class="polc"></div><table class="mini pol-sum"></table><p style="font-size:12.5px;color:var(--ink-3)">This run used discard, so replace and keep show what each would do with the same rewrites, on this one turn. In a real replace or keep run, earlier turns would already have changed things: m00003 had been selected 3 times before. A rewrite identical to its memory doesn’t count as one.</p>`, after: afterPolicy},
+    {nodes:['pol','store'],edges:['e5','e7'],wide:true,title:'The write policy decides what is stored',html:`<p class="varies-note">The only step that differs between conditions; everything else is identical.</p><div class="fctl" style="margin-bottom:6px"><button class="btn pol" data-pol="discard" aria-pressed="false">Discard</button><button class="btn pol" data-pol="replace" aria-pressed="false">Replace</button><button class="btn pol" data-pol="keep" aria-pressed="false">Keep</button><span class="fsep"></span><button class="btn sm" data-mem="1" aria-pressed="true">[1] $5.29</button><button class="btn sm" data-mem="2" aria-pressed="false">[2] $9.50</button></div><div class="fctl" style="margin-bottom:8px;font-size:12.5px;color:var(--ink-3)">Rewrites from: <button class="btn sm" data-pr="v4" aria-pressed="true">this run (old prompt v4)</button><button class="btn sm" data-pr="v5b" aria-pressed="false">frozen prompt (v5b)</button><span class="newf-key" style="margin:0 0 0 auto!important"><span class="newf-sw"></span>fields not shown before</span></div><div class="polc"></div><p class="pol-sum"></p><p style="font-size:12px;color:var(--ink-3);margin:0">This run used discard, so replace and keep are what-ifs for this one turn; in a real run, earlier turns would already have changed these memories.</p>`, after: afterPolicy},
     {nodes:['sess','ext'],edges:['e8'],replay:'replay',title:'When the session ends, pull out what to keep',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p><p>After the session’s last turn, the agent model${fn('agent')} reads the whole conversation once, without seeing memory, so what’s already stored can’t steer it. It never sees Memora’s flags of which turns carry facts.</p>${armButtons()}<div class="tscript"></div><div class="xout"></div>${fnote('agent')}`, after: afterExtract},
     {nodes:['cmp','store'],edges:['e9','e10'],title:'Compare each fact with its 5 closest memories',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p>${armButtons()}<div class="armview"></div>`, after: afterCompare},
     {nodes:['dec','store'],edges:['e11','e12'],title:'Decide: add, replace, forget, or nothing',html:`<p class="same-note">Same under every write policy. Ingestion isn’t about rewriting: it decides what gets stored in the first place, after every session, in both arms.</p>${armButtons()}<div class="armview"></div>`, after: afterDecide},
