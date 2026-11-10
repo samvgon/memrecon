@@ -30,8 +30,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;border-bottom:1px solid var(--line)}
 .brand{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em}
 .brand span{color:var(--ink-3);font-weight:500;margin-left:8px}
-.dots{display:flex;gap:6px}
-.dots button{width:18px;height:6px;border-radius:3px;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots{display:flex;gap:5px}
+.dots button{width:14px;height:6px;border-radius:3px;border:0;background:var(--line);cursor:pointer;padding:0}
 .dots button[aria-current="true"]{background:var(--s1)}
 .nav{display:flex;gap:8px;align-items:center;color:var(--ink-3);font-size:13px}
 .btn{font:500 14px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
@@ -113,6 +113,18 @@ details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0
 .mcard.stack{box-shadow:4px 4px 0 -1px var(--bg),4px 4px 0 0 var(--line),8px 8px 0 -1px var(--bg),8px 8px 0 0 var(--line)}
 .skel{display:block;height:7px;border-radius:4px;background:var(--line);margin:5px 0}
 .mcard small{display:block;font-family:var(--f-body);font-size:11px;color:var(--ink-3);margin-top:3px}
+
+.term{border-bottom:1.5px dotted var(--s1);cursor:help}
+.term:hover,.term:focus-visible{background:var(--chip);outline:none;border-radius:3px}
+#gsearch{font:15px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px;width:min(100%,360px);margin-bottom:18px}
+#gsearch:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
+.gcols{columns:2 360px;column-gap:28px}
+.ggroup{break-inside:avoid;margin-bottom:18px}
+.ggroup dl{margin:0}
+.gitem{padding:8px 10px;border-radius:8px;transition:background .6s}
+.gitem dt{font:700 15px var(--f-display);color:var(--ink)}
+.gitem dd{margin:2px 0 0;color:var(--ink-2);font-size:14px;line-height:1.5}
+.gitem.flash{background:var(--chip)}
 @media (prefers-reduced-motion: reduce){.reveal{transition:none}}
 </style>
 </head>
@@ -121,7 +133,7 @@ details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0
 <header>
   <div class="brand">Keep, Discard, or Verify<span>CS329Z midway · Sam Goncalves</span></div>
   <nav class="dots" id="dots" aria-label="Scenes"></nav>
-  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button><span>arrow keys</span></div>
+  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
 </header>
 <main>
 
@@ -293,6 +305,16 @@ details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0
     <div class="card"><div class="stat">43</div><div class="note" style="margin-top:6px">numbered evidence files, each with its script</div></div>
     <div class="card"><div class="stat">62</div><div class="note" style="margin-top:6px">logged design decisions</div></div>
   </div>
+</section>
+
+
+<!-- glossary -->
+<section class="scene" id="glossary" data-name="Glossary" hidden>
+  <p class="kicker">Reference</p>
+  <h2>Glossary</h2>
+  <p class="lede">Every term used in this walkthrough. Underlined terms in the other scenes show their definition on hover; click one to jump here.</p>
+  <input id="gsearch" type="search" placeholder="Search terms" aria-label="Search the glossary">
+  <div class="gcols" id="gloss-list"></div>
 </section>
 
 </main>
@@ -731,6 +753,103 @@ function enter(id){
   if(id==='prompt') enterBars();
   if(id==='retention') drawRet();
 }
+/* Glossary: definitions, auto-linked terms with hover definitions, and a searchable glossary scene */
+const GLOSS = [
+ {g:'The question', t:'Write policy', a:['write policy','write policies','write-policy'], d:'What the agent does with its rewrite of a recalled memory: discard, replace or keep (later, verify). The only thing that differs between conditions.'},
+ {g:'The question', t:'Discard', a:[], d:'Use the rewrite for the current turn, then throw it away. The stored memory never changes. The control condition.'},
+ {g:'The question', t:'Replace', a:[], d:'The rewrite overwrites the memory. The old text is kept only in its version history, for scoring, and is never shown to the agent.'},
+ {g:'The question', t:'Keep', a:[], d:'The rewrite is stored as a new memory beside the original.'},
+ {g:'The question', t:'Verify', a:['verification','verifying'], d:'Planned for Stage 2: store a rewrite only after checking it against the original memory.'},
+ {g:'The question', t:'Rewrite', a:['rewrite','rewrites','rewriting'], d:'The agent’s version of a recalled memory, written for the current conversation. A rewrite identical to the memory does not count as one.'},
+ {g:'The question', t:'Rewrite depth', a:['rewrite depth','depth','depths'], d:'How many generations of rewriting separate a memory’s text from what the user said: the user’s own words are depth 0, a note the agent writes is depth 1, and each stored rewrite adds 1.'},
+ {g:'The question', t:'Memory fidelity', a:['memory fidelity','fidelity'], d:'How faithfully the stored memories keep what the user said. Measured with probes.'},
+ {g:'The question', t:'Drift', a:['drift','drifts'], d:'A memory moving away from what the user actually said, for example a different purchase replacing the remembered one.'},
+ {g:'Memory', t:'Memory store', a:['memory store'], d:'The agent’s long-term memory: dated text entries kept across sessions, outside the model. The model sees only each memory’s text and date.'},
+ {g:'Memory', t:'Live memory', a:['live memory','live memories'], d:'A memory that has not been retired, so retrieval can still find it.'},
+ {g:'Memory', t:'Retired', a:['retired','retires'], d:'Kept for scoring but never retrieved again: superseded by the user’s update, or forgotten at the user’s request. Nothing is deleted.'},
+ {g:'Memory', t:'Note arm', a:['note arm'], d:'Memories are notes the agent writes from what the user said. The write policies run on this arm.'},
+ {g:'Memory', t:'Log arm', a:['log arm'], d:'Memories are the user’s own words, copied verbatim. Append-only and never rewritten: the reference for what ingestion loses.'},
+ {g:'Memory', t:'Ingestion', a:['ingestion'], d:'Writing a finished session into memory, once per session, after it ends.'},
+ {g:'Memory', t:'Two-step ingestion', a:['two-step'], d:'Step 1 extracts the facts from a session without seeing memory; step 2 compares each fact with its 5 most similar memories and adds it, replaces one, or forgets one.'},
+ {g:'Memory', t:'Recall', a:['recall','recalls','recalled'], d:'On a user turn: retrieve the most similar memories, choose the useful ones, and rewrite each for the conversation.'},
+ {g:'Memory', t:'Retrieval threshold', a:['similarity threshold','threshold'], d:'The minimum embedding similarity (0.70) for a memory to be recalled; at most 3 memories per turn.'},
+ {g:'Memory', t:'Select', a:['selects','selection'], d:'The step where the agent picks which recalled memories are useful for the user’s latest message. Memories are shown newest first.'},
+ {g:'Memory', t:'Folding', a:['folding'], d:'Ingestion overwriting a memory about a different record, for example one coffee purchase written over another. The main cause of the note arm’s late loss.'},
+ {g:'Data', t:'Memora', a:['Memora'], d:'A long-term memory benchmark of simulated users’ conversations, with a log of every add, update and delete, so every fact has a true state over time.'},
+ {g:'Data', t:'Persona', a:['persona','personas'], d:'One simulated user in Memora: about 155 sessions over one week (the weekly split).'},
+ {g:'Data', t:'Flagged turn', a:['flagged turn','flagged turns'], d:'A user turn Memora marks as carrying something to remember, update or delete. Used to build the answer key; never shown to the agent.'},
+ {g:'Data', t:'Development personas', a:['development personas','development data'], d:'The 3 personas used for all design choices and for every result in this walkthrough.'},
+ {g:'Data', t:'Test personas', a:['test personas','held-out personas'], d:'The 7 personas kept untouched until the write-policy comparisons. Split from the development personas with a fixed seed before any experiment.'},
+ {g:'Measuring', t:'Probe', a:['probe','probes'], d:'One checkable detail the user stated (a number, date, name, title or list item), with its true state at every point in time.'},
+ {g:'Measuring', t:'Answer key', a:['answer key'], d:'The table of all probes, extracted from the flagged turns by the judge model, hand-checked, then frozen.'},
+ {g:'Measuring', t:'Split pass', a:['split pass'], d:'A second extraction pass that splits details joined by “and” into separate probes.'},
+ {g:'Measuring', t:'Code grader', a:['code grader','grader'], d:'Code, not a model, that checks whether a live memory contains a probe’s detail: numbers by value, dates by the day they mean, names with aliases, items by their content words.'},
+ {g:'Measuring', t:'Miss', a:['misses'], d:'The grader says “not found”, but a memory does state the detail.'},
+ {g:'Measuring', t:'False find', a:['false find','false finds'], d:'The grader says “found”, but no memory states the detail.'},
+ {g:'Measuring', t:'Judge model', a:['judge model','judge'], d:'Gemma 4, from a different model family than the agent (Qwen). It extracts the answer key and scores the agent’s answers against Memora’s sub-questions.'},
+ {g:'Measuring', t:'Sub-question', a:['sub-question','sub-questions'], d:'One of Memora’s yes/no checks on an answer: should it mention a fact, or avoid mentioning an outdated one?'},
+ {g:'Measuring', t:'FAMA', a:['FAMA'], d:'Memora’s forgetting-aware memory accuracy: the share of required facts an answer mentions, minus a penalty for mentioning facts that were updated or deleted.'},
+ {g:'Measuring', t:'Cohen’s κ', a:['κ','kappa'], d:'Agreement corrected for chance: 1 is perfect, 0 is no better than chance. Our pass mark is 0.7.'},
+ {g:'Measuring', t:'Flip rate', a:['flips','flip'], d:'The share of judge verdicts that change when the same item is judged again with a fresh call. Our pass mark is at most 5%.'},
+ {g:'Measuring', t:'Hand labels', a:['hand-labelled','hand labels','hand-checked'], d:'My own yes/no labels on stratified samples: the reference the graders and the answer key are checked against.'},
+ {g:'Measuring', t:'Held-out items', a:['held-out items','fresh items'], d:'Items drawn and labelled after the grader fixes, never used to make them, so they test the grader fairly.'},
+ {g:'Measuring', t:'Control check', a:['control run'], d:'Running recall with discard and checking that memory ends up identical to ingestion alone, so any later difference comes from the write policy.'},
+ {g:'Plan', t:'Stage 0–3', a:['Stage 0','Stage 1','Stage 2','Stage 3'], d:'Stage 0 builds and validates the system and measures; Stage 1 compares discard, replace and keep; Stage 2 tests verifying before storing; Stage 3 tests whether depth or distance can tell when to verify.'}
+];
+(function(){
+  const glossIndex = scenes.findIndex(s=>s.id==='glossary');
+  // glossary scene
+  const groups=[...new Set(GLOSS.map(x=>x.g))];
+  const list=document.getElementById('gloss-list');
+  list.innerHTML = groups.map(g=>`<div class="ggroup"><div class="label">${g}</div><dl>${GLOSS.filter(x=>x.g===g).map(x=>`<div class="gitem" data-gterm="${x.t}"><dt id="g-${x.t.toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${x.t}</dt><dd>${x.d}</dd></div>`).join('')}</dl></div>`).join('');
+  const search=document.getElementById('gsearch');
+  search.addEventListener('input',()=>{ const q=search.value.trim().toLowerCase();
+    list.querySelectorAll('.gitem').forEach(el=>{ el.hidden = q && !el.textContent.toLowerCase().includes(q); });
+    list.querySelectorAll('.ggroup').forEach(gr=>{ gr.hidden = ![...gr.querySelectorAll('.gitem')].some(i=>!i.hidden); }); });
+  // auto-link terms in static prose
+  const pairs=[]; GLOSS.forEach(x=> x.a.forEach(a=>pairs.push([a,x])));
+  pairs.sort((p,q)=>q[0].length-p[0].length);
+  const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re=new RegExp('(^|[^\\p{L}\\p{N}])('+pairs.map(p=>esc(p[0])).join('|')+')(?![\\p{L}\\p{N}])','iu');
+  const lookup=new Map(pairs.map(p=>[p[0].toLowerCase(),p[1]]));
+  scenes.forEach(sc=>{
+    if(sc.id==='contents'||sc.id==='glossary') return;
+    const used=new Set();
+    sc.querySelectorAll('.lede, p.note, .road .note, .card > .note').forEach(el=>{
+      const walker=document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(node=>{
+        if(node.parentElement.closest('.term,.tag,button,svg,b')) return;
+        let text=node.nodeValue, frag=document.createDocumentFragment(), changed=false, m;
+        let guard=0;
+        while((m=re.exec(text)) && guard++<20){
+          const word=m[2], entry=lookup.get(word.toLowerCase());
+          const start=m.index+m[1].length;
+          if(!entry || used.has(entry.t)){ frag.appendChild(document.createTextNode(text.slice(0,start+word.length))); text=text.slice(start+word.length); continue; }
+          used.add(entry.t); changed=true;
+          frag.appendChild(document.createTextNode(text.slice(0,start)));
+          const span=document.createElement('span'); span.className='term'; span.tabIndex=0; span.textContent=word; span.dataset.term=entry.t;
+          frag.appendChild(span); text=text.slice(start+word.length);
+        }
+        if(changed){ frag.appendChild(document.createTextNode(text)); node.parentNode.replaceChild(frag,node); }
+      });
+    });
+  });
+  const byT=new Map(GLOSS.map(x=>[x.t,x]));
+  function tipFor(el,e){ const x=byT.get(el.dataset.term); if(!x) return; const r=el.getBoundingClientRect();
+    showTip(e||{clientX:r.left,clientY:r.bottom}, `<b>${x.t}</b><br>${x.d}<br><span style="color:var(--ink-3)">click for the glossary</span>`); }
+  document.addEventListener('mouseover',e=>{ const el=e.target.closest('.term'); if(el) tipFor(el,e); });
+  document.addEventListener('mousemove',e=>{ const el=e.target.closest('.term'); if(el) tipFor(el,e); });
+  document.addEventListener('mouseout',e=>{ if(e.target.closest('.term')) hideTip(); });
+  document.addEventListener('focusin',e=>{ const el=e.target.closest('.term'); if(el) tipFor(el); });
+  document.addEventListener('focusout',e=>{ if(e.target.closest('.term')) hideTip(); });
+  function openTerm(t){ hideTip(); go(glossIndex); search.value=''; search.dispatchEvent(new Event('input'));
+    const it=list.querySelector(`.gitem[data-gterm="${CSS.escape(t)}"]`); if(it){ it.classList.add('flash'); it.scrollIntoView({block:'center'}); setTimeout(()=>it.classList.remove('flash'),1600); } }
+  document.addEventListener('click',e=>{ const el=e.target.closest('.term'); if(el) openTerm(el.dataset.term); });
+  document.addEventListener('keydown',e=>{ const el=e.target.closest && e.target.closest('.term'); if(el && e.key==='Enter') openTerm(el.dataset.term); });
+  document.getElementById('glossbtn').onclick=()=>go(glossIndex);
+})();
+
 const start = scenes.findIndex(s=>'#'+s.id===location.hash);
 go(start>=0?start:0);
 })();
