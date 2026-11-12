@@ -1,0 +1,72 @@
+# Evidence E44
+script:       scripts/explore/E44_self_preference.py
+run at:       2026-11-12T14:52:29-08:00
+memrecon:     14822d2 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Answers: results/stage0/answers/a0018ce663 (Qwen, answer_v1); judge prompt judge_v1
+Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m
+Mode: full
+
+Sub-questions with all four verdicts: 454 of 454 reached (5 s; calls sent: Qwen 0, Gemma 0)
+Qwen's answers rebuilt from the cache with the same text: 89 of 90 (checks the prompts are identical)
+Gemma's answers that failed: 0
+
+== Pass rate (judge's answer equals Memora's expected answer), writer by judge ==
+                   Qwen judges  Gemma judges  difference
+Qwen wrote               70.3%         78.0%       -7.7
+Gemma wrote              69.6%         73.8%       -4.2
+
+Self-preference (difference in differences): -3.5 points; 95% bootstrap interval [-7.3, +0.2] over 90 questions
+  positive: each judge is kinder to its own family's answers; an interval covering 0 means no clear effect
+
+== By sub-question type (pass rate) ==
+  forgetting_absence   n= 148  qwen/qwen  60.8%  qwen/gemma  87.2%  gemma/qwen  70.9%  gemma/gemma  92.6%   (writer/judge)
+  memory_presence      n= 306  qwen/qwen  74.8%  qwen/gemma  73.5%  gemma/qwen  69.0%  gemma/gemma  64.7%   (writer/judge)
+
+== FAMA, MPA, FAA in each cell (questions with all their sub-questions judged) ==
+  note  qwen  wrote | qwen judges: FAMA  61.0  MPA  70.4  FAA  69.0 | gemma judges: FAMA  68.0  MPA  68.5  FAA  98.2
+  note  gemma wrote | qwen judges: FAMA  51.1  MPA  61.8  FAA  68.5 | gemma judges: FAMA  56.0  MPA  56.8  FAA  97.0
+  log   qwen  wrote | qwen judges: FAMA  63.1  MPA  77.5  FAA  44.6 | gemma judges: FAMA  70.5  MPA  76.2  FAA  70.8
+  log   gemma wrote | qwen judges: FAMA  50.0  MPA  59.9  FAA  66.7 | gemma judges: FAMA  53.7  MPA  56.8  FAA  85.4
+  both  qwen  wrote | qwen judges: FAMA  62.1  MPA  73.9  FAA  56.8 | gemma judges: FAMA  69.3  MPA  72.3  FAA  84.5
+  both  gemma wrote | qwen judges: FAMA  50.6  MPA  60.8  FAA  67.6 | gemma judges: FAMA  54.8  MPA  56.8  FAA  91.2
+
+== Agreement between the judges ==
+  on qwen's answers: 401 of 454 (88.3%), kappa 0.762; Qwen says yes 287, Gemma says yes 244
+  on gemma's answers: 403 of 454 (88.8%), kappa 0.777; Qwen says yes 254, Gemma says yes 209
+
+== Both judges against Sam's hand labels (70 judge-check items; Qwen's answers) ==
+  check set, qwen  judges: 41 of 50 agree with Sam (82.0%), kappa 0.640
+  check set, gemma judges: 48 of 50 agree with Sam (96.0%), kappa 0.920
+  tune  set, qwen  judges: 16 of 20 agree with Sam (80.0%), kappa 0.600
+  tune  set, gemma judges: 20 of 20 agree with Sam (100.0%), kappa 1.000   (judge_v1 was adjusted on these with Gemma)
+
+== Examples where the judges split, each siding with its own family ==
+--- management_consultant log pref_books_general_157_eval_forgetting_2 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  Answer: I don't have any specific book recommendations for you. Based on your recent interests, you have mentioned that you no longer find the work of Ta-Nehisi Coates resonant, you find yourself disliking books about technology, and you are finding yourself less drawn to the topic of mindfulness.
+--- sales_manager note pref_movies_genres_163_eval_forgetting_0 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response reflect or mention the user's preference for thriller?
+  Answer: Based on your interests, I recommend a war film, as you are currently drawn to them for their historical drama and intensity. You used to enjoy superhero movies, but have since changed your mind. Additionally, while you used to like thriller movies, you mentioned they have become too predictable for your taste.
+--- sales_manager note pref_movies_genres_163_eval_forgetting_1 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response reflect or mention the user's preference for superhero?
+  Answer: Based on your interests, I recommend a war film, as you are currently drawn to them for their historical drama and intensity. You used to enjoy superhero movies, but have since changed your mind. Additionally, while you used to like thriller movies, you mentioned they have become too predictable for your taste.
+--- financial_analyst log content_email_writeup_156_email_writeup_1_eval_memory_presence_3 (memory_presence, expected yes); gemma wrote; Qwen judge no, Gemma judge yes
+  Q: Is the email's call_to_action 'Please review the attached preliminary financial report and be prepared to discuss these findings at our strategy meeting next week.' appropriately included?
+  Answer: Subject: Preliminary Financial Analysis: Regional AI Pilot Program Performance and Next Phase Considerations Dear Lead Project Manager for the Mexico Pilot and Head of North American Operations, I am writing to provide a preliminary financial analysis of our expanded pilot program in Mexico. Our internal review of the pilot programs shows a significant uplift in operational efficiency and a faster-than-anticipated payback period, with key metrics such as reduced waste and increased throughput. T…
+--- financial_analyst log pref_music_general_156_eval_forgetting_1 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response reflect or mention the user's preference for 1990s?
+  Answer: Since you mentioned that you used to love 90s music but now find it a bit too chaotic and prefer something more mellow, I would suggest looking for mellow music. Also, please note that you previously mentioned you really dislike ragtime music.
+--- management_consultant log goal_step_tracker_daily_steps_157_0_eval_memory_presence_status_2 (memory_presence, expected yes); qwen wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response indicate that the step goal was MET (actual: 10,025 steps vs goal: 6,000 steps)?
+  Answer: Yes, you are meeting your daily step goal. Your goal is 6,000 steps, and today (2025-06-07) you walked 6,828 steps.
+--- management_consultant note content_meeting_notes_157_meeting_notes_1_eval_forgetting_2 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response mention the attendees 'Ms. Lena Petrov, Lead Management Consultant' that was deleted?
+  Answer: I am sorry, but the memories do not contain the full content or details required to write the meeting notes for the 'Strategic AI Integration Steering Committee - Phase 1 Review'. The available information is limited to the following: - **Attendees:** Mr. David Chen (CFO). (Note: Dr. Anya Sharma, VP of Global Operations and Ms. Lena Petrov, Lead Management Consultant, were removed from the list). - **Key Decisions:** The decision 'Approved transition of successful AI PoC modules to pilot phase w…
+--- management_consultant note pref_books_general_157_eval_forgetting_2 (forgetting_absence, expected no); gemma wrote; Qwen judge yes, Gemma judge no
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  Answer: Based on your past preferences, you absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful. However, I don't have any other current book recommendations for you, as your tastes have evolved away from authors like Ta-Nehisi Coates and Yuval Noah Harari, you no longer prefer mindfulness books, and you have recently found yourself disliking books about technology.
+
+Verdicts: results/e44/verdicts.jsonl; progress: results/e44/progress.log
