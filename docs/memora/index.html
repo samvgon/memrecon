@@ -322,6 +322,18 @@ mark.xmark{animation:markin .5s ease}
 .cite dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .cite a{color:var(--s1)}
 .presenter{color:var(--ink-3);font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+.limits-list{margin:6px 0 0;padding-left:20px}
+.limits-list li{margin:6px 0;color:var(--ink-2)}
+.limits-list li b{color:var(--ink);font-weight:600}
+.limits-empty{color:var(--ink-3);font-style:italic}
+.scene-notes{margin-top:28px;border-top:1px dashed var(--line);padding-top:14px;max-width:900px}
+.sn-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.sn-head .label{color:var(--s2)}
+.sn-status{font-size:12px;color:var(--ink-3)}
+.scene-notes textarea{display:block;width:100%;min-height:170px;resize:vertical;font:14px/1.5 var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px}
+.scene-notes textarea:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
+.scene-notes textarea:disabled{opacity:.6}
+.hide-notes .scene-notes,.no-notes .scene-notes,.no-notes #notesbtn{display:none}
 </style>
 </head>
 <body>
@@ -331,7 +343,7 @@ mark.xmark{animation:markin .5s ease}
 <header>
   <div class="brand">From Recall to Forgetting<span>CS329Z paper video · Sam Goncalves</span></div>
   <nav class="dots" id="dots" aria-label="Scenes"></nav>
-  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="replay" aria-label="Replay this page’s animation" title="Replay this page’s animation" hidden>↻</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
+  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="notesbtn" aria-pressed="true" title="Show or hide the notes boxes">Notes</button><button class="btn" id="replay" aria-label="Replay this page’s animation" title="Replay this page’s animation" hidden>↻</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
 </header>
 <main>
 
@@ -416,6 +428,13 @@ mark.xmark{animation:markin .5s ease}
   <div class="todo"><div class="label">To build</div><ul><li>Order barely matters; dates do, in the log arm</li><li>Memora's prompt + dates: partial recovery; the instruction does the rest</li><li>Holds under either judge prompt</li></ul></div>
 </section>
 
+<!-- limitations -->
+<section class="scene" id="limitations" data-name="Limitations" hidden>
+  <p class="kicker">Limitations</p>
+  <h2>What these results can and can’t tell us</h2>
+  <div class="grid2" id="limits"></div>
+</section>
+
 <!-- 10: takeaways -->
 <section class="scene" id="takeaways" data-name="Takeaways" hidden>
   <p class="kicker">Takeaways</p>
@@ -481,6 +500,65 @@ addEventListener('keydown', e=>{ if(e.target.closest('input,textarea')) return;
   if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); if(!(fc && fc.next && fc.next())) go(cur+1); }
   if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); if(!(fc && fc.prev && fc.prev())) go(cur-1); } });
 
+
+/* Limitations: add entries to LIMITS; each group renders as a card */
+const LIMITS = [
+  {g:'My extension', items:[
+    {t:'Weekly timeline only', d:'Memora also has monthly and quarterly timelines, with about 4 and 13 times as many sessions; I ran only the weekly one.'},
+    {t:'3 development personas only', d:'Out of 10. The other 7 are held out for my course project, so every number here comes from 90 questions (45 per memory arm).'}
+  ]},
+  {g:'The paper (beyond the limitations its authors list)', items:[]}
+];
+(function(){ const box=document.getElementById('limits');
+  box.innerHTML = LIMITS.map(gr=>`<div class="card"><div class="label">${gr.g}</div>${gr.items.length
+    ? '<ul class="limits-list">'+gr.items.map(x=>`<li><b>${x.t}.</b> ${x.d}</li>`).join('')+'</ul>'
+    : '<p class="limits-empty">None yet.</p>'}</div>`).join(''); })();
+
+/* Notes: a working box on each scene, saved to the artifact's database (only the owner and editors can read them) */
+(function(){
+  const boxes = {};
+  scenes.forEach(sc=>{ if(sc.id==='contents'||sc.id==='glossary') return;
+    const w=document.createElement('div'); w.className='scene-notes';
+    w.innerHTML='<div class="sn-head"><span class="label">My notes for this scene</span><span class="sn-status" aria-live="polite"></span></div><textarea aria-label="Notes for '+sc.dataset.name+'" placeholder="Notes, script lines, things to show, limitations…"></textarea>';
+    sc.appendChild(w); boxes[sc.id]={ta:w.querySelector('textarea'), st:w.querySelector('.sn-status'), dirty:false, saving:false, again:false, timer:null, last:''};
+  });
+  const toggle=document.getElementById('notesbtn');
+  let shown=true; try{ shown = localStorage.getItem('memora-notes-shown')!=='0'; }catch(e){}
+  function applyShown(){ document.body.classList.toggle('hide-notes', !shown); toggle.setAttribute('aria-pressed', shown?'true':'false'); }
+  toggle.onclick=()=>{ shown=!shown; try{ localStorage.setItem('memora-notes-shown', shown?'1':'0'); }catch(e){} applyShown(); };
+  applyShown();
+  const all=Object.values(boxes);
+  if(!(window.claude && typeof window.claude.use==='function')){ document.body.classList.add('no-notes'); return; }
+  all.forEach(b=>{ b.ta.disabled=true; b.st.textContent='Loading…'; });
+  window.claude.use('db').then(db=>{
+    if(!db){ all.forEach(b=>{ b.st.textContent='Notes can’t be saved in this view'; }); return; }
+    const col=db.collection('notes');
+    let loaded=false;
+    const slow=setTimeout(()=>{ if(!loaded) all.forEach(b=>{ b.st.textContent='Can’t reach saved notes yet'; }); }, 10000);
+    col.onSnapshot(snap=>{
+      if(!snap.metadata.fromCache){ clearTimeout(slow); }
+      const got={}; snap.docs.forEach(d=>{ const v=d.data(); got[d.id]=(v && typeof v.text==='string') ? v.text : ''; });
+      Object.entries(boxes).forEach(([id,b])=>{
+        if(!loaded){ b.ta.disabled=false; b.st.textContent=''; }
+        if(got[id]!==undefined && !b.dirty){ if(document.activeElement!==b.ta && b.ta.value!==got[id]) b.ta.value=got[id]; b.last=got[id]; }
+      });
+      loaded=true;
+    }, ()=>{ clearTimeout(slow); all.forEach(b=>{ b.st.textContent='Notes unavailable right now'; }); });
+    async function save(id){ const b=boxes[id];
+      if(b.saving){ b.again=true; return; }
+      const text=b.ta.value;
+      if(text===b.last){ b.dirty=false; b.st.textContent='Saved'; return; }
+      b.saving=true; b.st.textContent='Saving…';
+      try{ await col.doc(id).set({text, scene: document.getElementById(id).dataset.name, updated: new Date().toISOString()}); b.last=text; b.st.textContent='Saved'; }
+      catch(e){ b.st.textContent = (e && e.code==='invalid_argument') ? 'Read-only for you' : 'Not saved yet; keep typing to retry'; }
+      b.saving=false; b.dirty = b.ta.value!==b.last;
+      if(b.again){ b.again=false; if(b.dirty) save(id); } }
+    Object.entries(boxes).forEach(([id,b])=>{
+      b.ta.addEventListener('input',()=>{ b.dirty=true; b.st.textContent='Editing…'; clearTimeout(b.timer); b.timer=setTimeout(()=>save(id), 900); });
+      b.ta.addEventListener('blur',()=>{ if(b.dirty){ clearTimeout(b.timer); save(id); } });
+    });
+  });
+})();
 /* Glossary: definitions, auto-linked terms with hover definitions, and a searchable glossary scene */
 
 const GLOSS = [
