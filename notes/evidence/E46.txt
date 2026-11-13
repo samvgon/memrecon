@@ -1,0 +1,117 @@
+# Evidence E46
+script:       scripts/explore/E46_answer_prompt.py
+run at:       2026-11-12T19:12:21-08:00
+memrecon:     354964f (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Answers: results/stage0/answers/a0018ce663 (Stage 0, Qwen, answer_v1); judge Gemma with judge_v1
+Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m
+Conditions, in order: memora, relevance, nodates
+Mode: full
+  relevance: system: 'newest first, each with its date.' -> 'most relevant first, each with its date.'; user: 'Memories, newest first:' -> 'Memories, most relevant first:'
+  nodates: system: 'Each memory has the date of the conversation it came from. When memories disagree, the newer one is what is true now.' -> 'When memories disagree, the newer one is what is true now.'; system: 'newest first, each with its date.' -> 'newest first.'
+
+== Condition: memora (against Stage 0's answer_v1; Qwen writes, Gemma judges with judge_v1) ==
+Questions answered and judged: 90; answers that failed: 0; answers identical to Stage 0's: 0
+                          FAMA     MPA     FAA   FAMA difference, 95% interval
+  note      answer_v1     68.0    68.5    98.2
+            memora        67.9    68.6    97.9   -0.1 [-10.8, +10.3]  (n=45)
+  log       answer_v1     70.5    76.2    70.8
+            memora        55.2    66.1    60.7   -15.4 [-26.8, -4.9]  (n=45)
+  both      answer_v1     69.3    72.3    84.5
+            memora        61.5    67.3    79.3   -7.7 [-16.0, -0.1]  (n=90)
+By question category (both arms), FAMA answer_v1 -> memora:
+  reasoning      n= 30   58.9 ->  43.3
+  recommending   n= 30   74.9 ->  67.7
+  remembering    n= 30   74.1 ->  73.6
+Sub-questions whose verdict changes: forgetting_absence now fails 18, forgetting_absence now passes 8, memory_presence now fails 24, memory_presence now passes 23
+Examples (forgetting sub-questions whose verdict changes):
+--- financial_analyst log content_email_writeup_156_email_writeup_1_eval_forgetting_1 (expected no): answer_v1 yes, memora no
+  Q: Is the removed recipient list information 'Regional Leadership Team' mentioned in the email?
+  answer_v1: Subject: Preliminary Financial Analysis of Regional AI Pilot Program Performance and Next Phase Considerations To: Regional Leadership Team, Head of Innovation Dear Team, Please review the attached preliminary financial report regarding the regional AI pilot program's performance. We request that you be prepared to discuss these findings at our str…
+  memora: Subject: Preliminary Financial Analysis: Regional AI Pilot Program Performance & Next Phase Considerations Dear [Recipient Name], I am writing to provide a preliminary financial analysis of the regional AI pilot program’s performance and to outline key considerations for the next phase of our initiative. **Performance Overview** Our internal review…
+--- management_consultant log content_project_proposal_157_project_proposal_2_eval_forgetting_3 (expected no): answer_v1 yes, memora no
+  Q: Is the deleted project objectives 'Identify and evaluate key integration points for existing national digital health platforms.' included?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'Pan-European Digital Health Ecosystem Integration Strategy', incorporating the latest updates from June 6, 2025. **Project Title:** Pan-European Digital Health Ecosystem Integration Strategy **Project Lead:** Dr. Elara Vance, Senior Management Consultant **Project Description:** …
+  memora: Based on your stored memories, here is the structured project proposal for the **Pan-European Digital Health Ecosystem Integration Strategy**. ### **Project Proposal: Pan-European Digital Health Ecosystem Integration Strategy** **Project Lead:** Dr. Elara Vance, Senior Management Consultant #### **1. Executive Summary & Strategic Initiative** This …
+--- financial_analyst log content_project_proposal_156_project_proposal_2_eval_forgetting_1 (expected no): answer_v1 yes, memora no
+  Q: Is the removed objectives information 'Reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.' mentioned in the proposal?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'AI-Driven Credit Risk Scoring Model Enhancement': **Project Title:** AI-Driven Credit Risk Scoring Model Enhancement **Project Lead:** Dr. Anya Sharma, Senior Financial Analyst **Key Stakeholders:** * Head of Lending Operations * Head of Product Development * Chief Risk Officer (…
+  memora: Based on your stored memories, here is the draft for the updated project proposal for the **'AI-Driven Credit Risk Scoring Model Enhancement'**. ### Project Proposal: AI-Driven Credit Risk Scoring Model Enhancement **Project Lead:** Dr. Anya Sharma, Senior Financial Analyst **1. Executive Summary & Objectives** We are proposing an initiative to sig…
+(0 s; calls sent: agent 0, judge 0)
+
+== Condition: relevance (against Stage 0's answer_v1; Qwen writes, Gemma judges with judge_v1) ==
+Questions answered and judged: 90; answers that failed: 1; answers identical to Stage 0's: 0
+                          FAMA     MPA     FAA   FAMA difference, 95% interval
+  note      answer_v1     68.0    68.5    98.2
+            relevance     64.6    65.9    94.6   -3.5 [-14.1, +7.8]  (n=45)
+  log       answer_v1     69.9    75.6    70.8
+            relevance     65.2    69.3    79.8   -4.6 [-15.8, +5.5]  (n=44)
+  both      answer_v1     68.9    72.0    84.5
+            relevance     64.9    67.6    87.2   -4.1 [-11.8, +3.0]  (n=89)
+By question category (both arms), FAMA answer_v1 -> relevance:
+  reasoning      n= 30   58.9 ->  47.8
+  recommending   n= 30   74.9 ->  73.6
+  remembering    n= 29   73.2 ->  73.5
+Sub-questions whose verdict changes: forgetting_absence now fails 5, forgetting_absence now passes 7, memory_presence now fails 22, memory_presence now passes 17
+Examples (forgetting sub-questions whose verdict changes):
+--- financial_analyst log content_project_proposal_156_project_proposal_1_eval_forgetting_0 (expected no): answer_v1 yes, relevance no
+  Q: Does the response include the deleted deliverables: Comprehensive cost-benefit analysis report for proposed infrastructure investments.?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'Regional Logistics Network Optimization Initiative': **Project Title:** Regional Logistics Network Optimization Initiative **Project Lead:** Anya Sharma, Senior Financial Analyst **Objective:** This project aims to enhance operational efficiency and cost-effectiveness across our …
+  relevance: Project Proposal: Regional Logistics Network Optimization Initiative 1. Project Overview This project aims to enhance operational efficiency and cost-effectiveness across our regional logistics network through strategic infrastructure upgrades and process re-engineering. 2. Objectives The main objectives are to: - Reduce average delivery times by 1…
+--- management_consultant log content_project_proposal_157_project_proposal_2_eval_forgetting_0 (expected no): answer_v1 yes, relevance no
+  Q: Does the response include the deleted stakeholders: Digital Health Product Owners?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'Pan-European Digital Health Ecosystem Integration Strategy', incorporating the latest updates from June 6, 2025. **Project Title:** Pan-European Digital Health Ecosystem Integration Strategy **Project Lead:** Dr. Elara Vance, Senior Management Consultant **Project Description:** …
+  relevance: Project Proposal: Pan-European Digital Health Ecosystem Integration Strategy Project Overview This project is a strategic initiative to unify disparate digital health platforms across key European markets, enhancing patient data interoperability and improving care coordination. Objectives The main objectives are: - Establish clear ROI metrics for d…
+--- financial_analyst note content_project_proposal_156_project_proposal_2_eval_forgetting_1 (expected no): answer_v1 no, relevance yes
+  Q: Is the removed objectives information 'Reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.' mentioned in the proposal?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'AI-Driven Credit Risk Scoring Model Enhancement': **Project Title:** AI-Driven Credit Risk Scoring Model Enhancement **Project Lead:** Dr. Anya Sharma, Senior Financial Analyst **Budget:** $1,550,000 (Updated from $1,700,000) **Timeline:** 15 months, structured into three distinc…
+  relevance: Project Proposal: AI-Driven Credit Risk Scoring Model Enhancement 1. Executive Summary This proposal outlines the initiative to enhance long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources. The primary goal is to improve accuracy and reduce default rates in fintech lending …
+(16 s; calls sent: agent 0, judge 1)
+
+== Condition: nodates (against Stage 0's answer_v1; Qwen writes, Gemma judges with judge_v1) ==
+Questions answered and judged: 90; answers that failed: 1; answers identical to Stage 0's: 2
+                          FAMA     MPA     FAA   FAMA difference, 95% interval
+  note      answer_v1     68.0    68.5    98.2
+            nodates       64.0    64.1    99.6   -4.1 [-13.4, +4.3]  (n=45)
+  log       answer_v1     71.2    76.2    73.5
+            nodates       51.3    58.9    65.6   -19.8 [-31.3, -9.3]  (n=44)
+  both      answer_v1     69.6    72.3    86.1
+            nodates       57.7    61.6    82.9   -11.9 [-19.7, -5.1]  (n=89)
+By question category (both arms), FAMA answer_v1 -> nodates:
+  reasoning      n= 30   58.9 ->  27.8
+  recommending   n= 30   74.9 ->  71.1
+  remembering    n= 29   75.2 ->  74.9
+Sub-questions whose verdict changes: forgetting_absence now fails 11, forgetting_absence now passes 7, memory_presence now fails 19, memory_presence now passes 11
+Examples (forgetting sub-questions whose verdict changes):
+--- financial_analyst log pref_books_general_156_eval_forgetting_0 (expected no): answer_v1 no, nodates yes
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  answer_v1: Based on your memories, you recently enjoyed "Silent Spring" by Rachel Carson and found it powerful. You also mentioned that you used to like Malcolm Gladwell but are now really into Mary Roach, finding her books more engaging because she dives deep into quirky, specific topics with humor. Additionally, you have an interest in new technologies and …
+  nodates: Based on your memories, here are some book suggestions that align with your current interests: 1. **Mary Roach**: You mentioned you are really into Mary Roach now and find her books more engaging than Malcolm Gladwell's. Her books dive deep into quirky, specific topics with humor. 2. **Michio Kaku**: You previously expressed great appreciation for …
+--- management_consultant log content_project_proposal_157_project_proposal_2_eval_forgetting_1 (expected no): answer_v1 yes, nodates no
+  Q: Is the removed deliverables information 'Detailed Integration Blueprint and API Strategy Document.' mentioned in the proposal?
+  answer_v1: Based on the memories provided, here is the project proposal for the 'Pan-European Digital Health Ecosystem Integration Strategy', incorporating the latest updates from June 6, 2025. **Project Title:** Pan-European Digital Health Ecosystem Integration Strategy **Project Lead:** Dr. Elara Vance, Senior Management Consultant **Project Description:** …
+  nodates: Based on the memories provided, here is the project proposal for the 'Pan-European Digital Health Ecosystem Integration Strategy'. **Project Title:** Pan-European Digital Health Ecosystem Integration Strategy **Project Lead:** Dr. Elara Vance, Senior Management Consultant **Project Description:** This project is a strategic initiative to unify disp…
+--- financial_analyst log pref_movies_general_156_eval_forgetting_0 (expected no): answer_v1 no, nodates yes
+  Q: Does the response reflect or mention the user's preference for J.J. Abrams?
+  answer_v1: Based on your memories, you recently expressed a strong preference for Jodie Foster, noting that her performances are incredible and that you are "all about" her now, having moved away from Sandra Bullock. You also mentioned enjoying Rian Johnson's work for its fresh storytelling and risk-taking, although you noted a shift in preference from J.J. A…
+  nodates: Based on your memories, you currently prefer Jodie Foster over Sandra Bullock, and you enjoy directors like Rian Johnson for his engaging and thought-provoking narratives, as well as J.J. Abrams for blending action, mystery, and character development (specifically in movies like *Super 8* and *Star Trek*). Therefore, I suggest watching a movie star…
+(20 s; calls sent: agent 1, judge 3)
+
+== All conditions (questions every condition answered; Gemma judges) ==
+88 questions
+  note  answer_v1  FAMA  68.0  MPA  68.5  FAA  98.2
+        memora     FAMA  67.9  MPA  68.6  FAA  97.9
+        relevance  FAMA  64.6  MPA  65.9  FAA  94.6
+        nodates    FAMA  64.0  MPA  64.1  FAA  99.6
+  log   answer_v1  FAMA  70.5  MPA  75.6  FAA  73.5
+        memora     FAMA  54.0  MPA  65.1  FAA  61.0
+        relevance  FAMA  65.6  MPA  69.8  FAA  79.0
+        nodates    FAMA  50.2  MPA  58.0  FAA  65.6
+  both  answer_v1  FAMA  69.2  MPA  72.0  FAA  86.1
+        memora     FAMA  61.1  MPA  66.9  FAA  79.8
+        relevance  FAMA  65.0  MPA  67.8  FAA  87.0
+        nodates    FAMA  57.2  MPA  61.1  FAA  82.9
+
+Per-condition reports: results/e46/<condition>-report.txt; progress: results/e46/progress.log
