@@ -1,0 +1,106 @@
+# Evidence E45
+script:       scripts/explore/E45_memora_judge_prompt.py
+run at:       2026-11-12T17:58:57-08:00
+memrecon:     d095600 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Sub-questions and answers: results/e44/verdicts.jsonl (454 rows); rules = judge_v1 (E44's verdicts); memora = Memora's judge prompt (a6493188)
+Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m
+Mode: full
+
+Sub-questions with all eight verdicts: 454 of 454 reached (0 s; calls sent: Qwen 0, Gemma 0; calls that failed: 0)
+How the Memora-prompt replies were read (Memora's reading; 'unclear' fails, as in Memora):
+  qwen  judges: json 908
+  gemma judges: json in a code fence 906, json 2
+
+== Pass rate, writer by judge: rules prompt ==
+                   Qwen judges  Gemma judges  difference
+Qwen wrote               70.3%         78.0%       -7.7
+Gemma wrote              69.6%         73.8%       -4.2
+Self-preference (difference in differences): -3.5 points; 95% bootstrap interval [-7.3, +0.2] over 90 questions
+
+== Pass rate, writer by judge: memora prompt ==
+                   Qwen judges  Gemma judges  difference
+Qwen wrote               70.5%         68.1%       +2.4
+Gemma wrote              70.5%         68.1%       +2.4
+Self-preference (difference in differences): +0.0 points; 95% bootstrap interval [-2.6, +2.5] over 90 questions
+
+== By sub-question type (pass rate, writer/judge) ==
+  forgetting_absence   n= 148  rules   qwen/qwen  60.8%  qwen/gemma  87.2%  gemma/qwen  70.9%  gemma/gemma  92.6%
+  forgetting_absence   n= 148  memora  qwen/qwen  62.8%  qwen/gemma  56.1%  gemma/qwen  73.0%  gemma/gemma  68.2%
+  memory_presence      n= 306  rules   qwen/qwen  74.8%  qwen/gemma  73.5%  gemma/qwen  69.0%  gemma/gemma  64.7%
+  memory_presence      n= 306  memora  qwen/qwen  74.2%  qwen/gemma  73.9%  gemma/qwen  69.3%  gemma/gemma  68.0%
+
+== Agreement between the judges ==
+  rules  on qwen 's answers, all               : 401 of 454 ( 88.3%), kappa 0.762; yes: Qwen 287, Gemma 244
+  rules  on qwen 's answers, forgetting_absence: 107 of 148 ( 72.3%), kappa 0.340; yes: Qwen 58, Gemma 19
+  rules  on qwen 's answers, memory_presence   : 294 of 306 ( 96.1%), kappa 0.898; yes: Qwen 229, Gemma 225
+  rules  on gemma's answers, all               : 403 of 454 ( 88.8%), kappa 0.777; yes: Qwen 254, Gemma 209
+  rules  on gemma's answers, forgetting_absence: 114 of 148 ( 77.0%), kappa 0.286; yes: Qwen 43, Gemma 11
+  rules  on gemma's answers, memory_presence   : 289 of 306 ( 94.4%), kappa 0.875; yes: Qwen 211, Gemma 198
+  memora on qwen 's answers, all               : 439 of 454 ( 96.7%), kappa 0.929; yes: Qwen 282, Gemma 291
+  memora on qwen 's answers, forgetting_absence: 138 of 148 ( 93.2%), kappa 0.861; yes: Qwen 55, Gemma 65
+  memora on qwen 's answers, memory_presence   : 301 of 306 ( 98.4%), kappa 0.958; yes: Qwen 227, Gemma 226
+  memora on gemma's answers, all               : 433 of 454 ( 95.4%), kappa 0.906; yes: Qwen 252, Gemma 255
+  memora on gemma's answers, forgetting_absence: 137 of 148 ( 92.6%), kappa 0.821; yes: Qwen 40, Gemma 47
+  memora on gemma's answers, memory_presence   : 296 of 306 ( 96.7%), kappa 0.924; yes: Qwen 212, Gemma 208
+
+== FAMA, MPA, FAA in each cell (questions with all their sub-questions judged) ==
+  note  qwen  wrote, qwen  judges | rules: FAMA  61.0  MPA  70.4  FAA  69.0 | memora: FAMA  59.9  MPA  67.9  FAA  72.0
+  note  qwen  wrote, gemma judges | rules: FAMA  68.0  MPA  68.5  FAA  98.2 | memora: FAMA  55.7  MPA  66.9  FAA  63.7
+  note  gemma wrote, qwen  judges | rules: FAMA  51.1  MPA  61.8  FAA  68.5 | memora: FAMA  52.5  MPA  60.3  FAA  76.8
+  note  gemma wrote, gemma judges | rules: FAMA  56.0  MPA  56.8  FAA  97.0 | memora: FAMA  49.2  MPA  61.0  FAA  64.6
+  log   qwen  wrote, qwen  judges | rules: FAMA  63.1  MPA  77.5  FAA  44.6 | memora: FAMA  64.1  MPA  76.9  FAA  50.5
+  log   qwen  wrote, gemma judges | rules: FAMA  70.5  MPA  76.2  FAA  70.8 | memora: FAMA  62.5  MPA  78.0  FAA  42.5
+  log   gemma wrote, qwen  judges | rules: FAMA  50.0  MPA  59.9  FAA  66.7 | memora: FAMA  49.7  MPA  60.0  FAA  62.5
+  log   gemma wrote, gemma judges | rules: FAMA  53.7  MPA  56.8  FAA  85.4 | memora: FAMA  48.5  MPA  58.5  FAA  65.8
+  both  qwen  wrote, qwen  judges | rules: FAMA  62.1  MPA  73.9  FAA  56.8 | memora: FAMA  62.0  MPA  72.4  FAA  61.3
+  both  qwen  wrote, gemma judges | rules: FAMA  69.3  MPA  72.3  FAA  84.5 | memora: FAMA  59.1  MPA  72.5  FAA  53.1
+  both  gemma wrote, qwen  judges | rules: FAMA  50.6  MPA  60.8  FAA  67.6 | memora: FAMA  51.1  MPA  60.1  FAA  69.6
+  both  gemma wrote, gemma judges | rules: FAMA  54.8  MPA  56.8  FAA  91.2 | memora: FAMA  48.9  MPA  59.7  FAA  65.2
+
+== Verdicts that change from the rules prompt to Memora's (both answer sets) ==
+  qwen  judges, forgetting_absence:  22 of 296 change (no->yes 8, yes->no 14)
+  qwen  judges, memory_presence   :  19 of 612 change (no->yes 9, yes->no 10)
+  gemma judges, forgetting_absence:  82 of 296 change (no->yes 82)
+  gemma judges, memory_presence   :  29 of 612 change (no->yes 20, yes->no 9)
+
+== Both judges, both prompts, against Sam's hand labels (70 judge-check items; Qwen's answers) ==
+  check set, qwen  judges, rules : 41 of 50 (82.0%), kappa 0.640   (labels given directly: 35 of 37; labels given by her rules: 6 of 13)
+  check set, qwen  judges, memora: 40 of 50 (80.0%), kappa 0.600   (labels given directly: 36 of 37; labels given by her rules: 4 of 13)
+  check set, gemma judges, rules : 48 of 50 (96.0%), kappa 0.920   (labels given directly: 36 of 37; labels given by her rules: 12 of 13)
+  check set, gemma judges, memora: 38 of 50 (76.0%), kappa 0.520   (labels given directly: 36 of 37; labels given by her rules: 2 of 13)
+  tune  set, qwen  judges, rules : 16 of 20 (80.0%), kappa 0.600   (labels given directly: 16 of 17; labels given by her rules: 0 of 3)
+  tune  set, qwen  judges, memora: 17 of 20 (85.0%), kappa 0.700   (labels given directly: 16 of 17; labels given by her rules: 1 of 3)
+  tune  set, gemma judges, rules : 20 of 20 (100.0%), kappa 1.000   (labels given directly: 17 of 17; labels given by her rules: 3 of 3)
+  tune  set, gemma judges, memora: 16 of 20 (80.0%), kappa 0.600   (labels given directly: 16 of 17; labels given by her rules: 0 of 3)
+  (judge_v1 was adjusted on the tune set with Gemma; Memora's prompt was not adjusted at all)
+
+== Examples: forgetting sub-questions where Gemma's verdict changes between the prompts ==
+--- management_consultant note pref_books_general_157_eval_forgetting_2 (expected no); gemma wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt no
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  Answer: Based on your past preferences, you absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful. However, I don't have any other current book recommendations for you, as your tastes have evolved away from authors like Ta-Nehisi Coates and Yuval Noah Harari, you no longer prefer mindfulness books, and you have recently found yourself disliking books about technology.
+  Gemma's explanation (Memora's prompt): The response explicitly mentions Ta-Nehisi Coates when stating that the user's tastes have evolved away from him.
+--- management_consultant log pref_movies_directors_157_eval_forgetting_0 (expected no); qwen wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt no
+  Q: Does the response reflect or mention the user's preference for Victor Fleming?
+  Answer: Based on your memories, your current favorite director is George Stevens, whom you prefer over Ernst Lubitsch and Victor Fleming. You specifically praised Stevens for his dramatic scope and for handling epic themes with intimacy and emotional depth, citing "Shane" and "Giant" as examples. Therefore, I recommend watching "Shane" or "Giant" by George Stevens.
+  Gemma's explanation (Memora's prompt): The response explicitly mentions Victor Fleming when stating that the user prefers George Stevens over him ('...whom you prefer over Ernst Lubitsch and Victor Fleming').
+--- sales_manager note pref_travel_general_163_eval_forgetting_0 (expected no); gemma wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt yes
+  Q: Does the response reflect or mention the user's preference for South America?
+  Answer: Based on your recent interests, you might consider traveling to East Asian cultures, specifically Japan or South Korea, as you have become fascinated with them. You may want to avoid the Mediterranean, as you have felt less drawn to it lately because you feel you have seen so much of it already, and you are also no longer keen on traveling to South America. Since you love finding live music venues…
+  Gemma's explanation (Memora's prompt): The response explicitly mentions the user's preference regarding South America by stating, 'you are also no longer keen on traveling to South America.'
+--- management_consultant note pref_books_general_157_eval_forgetting_1 (expected no); gemma wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt yes
+  Q: Does the response reflect or mention the user's preference for mindfulness?
+  Answer: Based on your past preferences, you absolutely loved the book "Becoming" by Michelle Obama, finding it inspiring and insightful. However, I don't have any other current book recommendations for you, as your tastes have evolved away from authors like Ta-Nehisi Coates and Yuval Noah Harari, you no longer prefer mindfulness books, and you have recently found yourself disliking books about technology.
+  Gemma's explanation (Memora's prompt): The response explicitly mentions the user's preference regarding mindfulness by stating that the user 'no longer prefer[s] mindfulness books'.
+--- financial_analyst note pref_books_authors_156_eval_forgetting_1 (expected no); gemma wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt no
+  Q: Does the response reflect or mention the user's preference for Malcolm Gladwell?
+  Answer: Based on your interests, I recommend looking for books by Mary Roach, as you are currently really into her work and find her humor and deep dives into quirky, specific topics more engaging than Malcolm Gladwell. You also enjoyed "Thinking, Fast and Slow" by Daniel Kahneman and "Silent Spring" (which you found powerful and eye-opening). While you have previously liked Ta-Nehisi Coates and Michio Ka…
+  Gemma's explanation (Memora's prompt): The response explicitly mentions Malcolm Gladwell in the context of the user's preferences, stating that the user finds Mary Roach's work more engaging than his.
+--- management_consultant note pref_travel_general_157_eval_forgetting_1 (expected no); qwen wrote; Gemma: rules no, Memora's prompt yes; Qwen: rules yes, Memora's prompt yes
+  Q: Does the response reflect or mention the user's preference for monsoon?
+  Answer: Based on your memories, you should travel to Scandinavia. You mentioned that you used to dislike the idea of traveling there, but you have recently warmed up to it and now want to visit because of the stunning fjords and the Northern Lights, which you find magical. Additionally, since you now prefer a drier heat and no longer like monsoon climates, Scandinavia's climate might be a suitable alterna…
+  Gemma's explanation (Memora's prompt): The response explicitly mentions the user's preference regarding monsoon climates by stating: 'since you now prefer a drier heat and no longer like monsoon climates...'
+
+Verdicts: results/e45/verdicts.jsonl; progress: results/e45/progress.log
