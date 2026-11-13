@@ -14,7 +14,7 @@ Stage 0's answers judged with Memora's prompt are E45's calls (cached). For each
 arm under both judge prompts, the FAMA difference against `answer_v1` under each with a bootstrap interval
 over questions (seed 47), and the difference between those two differences (positive: Memora's judge
 prompt favours the condition more than `judge_v1` does).
-Conditions are judged one at a time in E46's order and each report is printed, and saved to
+E46's memora_dates condition (added Nov 12) is judged last. Conditions are judged one at a time in E46's order and each report is printed, and saved to
 results/e47/<condition>-report.txt, as soon as it is done.
 Pausing: every call is cached, so Ctrl-C and rerun to resume. `--cached-only` (or
 MEMRECON_E47_CACHED_ONLY=1) makes no calls. `MEMRECON_E47_CONDITIONS` to choose and order them.
@@ -33,7 +33,7 @@ from memrecon.monitor import wait_for_memory
 
 sys.stdout.reconfigure(line_buffering=True)
 CACHED_ONLY = "--cached-only" in sys.argv or os.environ.get("MEMRECON_E47_CACHED_ONLY") == "1"
-CONDITIONS = [c.strip() for c in os.environ.get("MEMRECON_E47_CONDITIONS", "memora,relevance,nodates").split(",") if c.strip()]
+CONDITIONS = [c.strip() for c in os.environ.get("MEMRECON_E47_CONDITIONS", "memora,relevance,nodates,memora_dates").split(",") if c.strip()]
 E46 = ROOT / "results" / "e46"
 OUT = ROOT / "results" / "e47"
 

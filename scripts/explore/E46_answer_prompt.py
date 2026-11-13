@@ -14,6 +14,10 @@ and Gemma judges every answer with `judge_v1` (the validated judge, D61):
              newer-wins rule kept; "newest first" in the prompt changed to "most relevant first"). Order alone.
   nodates    answer_v1 with the dates hidden (newest-first order and the newer-wins rule kept; the sentence
              saying each memory has a date removed). Does the model use the dates, or the position?
+  memora_dates  Memora's answering prompt with one change: each memory line shows its date,
+             "i. (date) text (relevance: 0.xx)"; still by relevance, no newer-wins rule, prompt text verbatim.
+             Does adding the dates alone recover what Memora's prompt loses? (Added Nov 12 after E46's first
+             three conditions; they replay from the cache.)
 The prompt changes for relevance and nodates are made by exact replacements in answer_v1, listed below and
 checked to apply once each. Relevance is the retrieval similarity the Stage 0 answers recorded.
 Conditions run one at a time, in the order above (or MEMRECON_E46_CONDITIONS, comma-separated), and each
@@ -45,7 +49,7 @@ from memrecon.monitor import wait_for_memory
 sys.stdout.reconfigure(line_buffering=True)
 CACHED_ONLY = "--cached-only" in sys.argv or os.environ.get("MEMRECON_E46_CACHED_ONLY") == "1"
 PILOT = int(os.environ.get("MEMRECON_E46_PILOT", "0") or 0)
-CONDITIONS = [c.strip() for c in os.environ.get("MEMRECON_E46_CONDITIONS", "memora,relevance,nodates").split(",") if c.strip()]
+CONDITIONS = [c.strip() for c in os.environ.get("MEMRECON_E46_CONDITIONS", "memora,relevance,nodates,memora_dates").split(",") if c.strip()]
 ANSWERS = ROOT / "results" / "stage0" / "answers"
 OUT = ROOT / "results" / "e46"
 
@@ -69,8 +73,8 @@ EDITS = {
                 ("system", "newest first, each with its date.", "newest first.")],
 }
 for c in CONDITIONS:
-    if c not in ("memora", "relevance", "nodates"):
-        sys.exit(f"Unknown condition {c!r}: use memora, relevance, nodates.")
+    if c not in ("memora", "relevance", "nodates", "memora_dates"):
+        sys.exit(f"Unknown condition {c!r}: use memora, relevance, nodates, memora_dates.")
 
 
 class NotCached(Exception):
@@ -121,15 +125,16 @@ def by_relevance(row):
     return [(t, d, s) for t, d, s, _ in sorted(items, key=lambda x: (-x[2], x[3]))]
 
 
-def ask_memora(c, row, persona):
-    mem = "\n".join(f"{i}. {t} (relevance: {s:.2f})" for i, (t, _, s) in enumerate(by_relevance(row), start=1))
+def ask_memora(c, row, persona, dates=False):
+    mem = "\n".join(f"{i}. ({d}) {t} (relevance: {s:.2f})" if dates and d else f"{i}. {t} (relevance: {s:.2f})"
+                    for i, (t, d, s) in enumerate(by_relevance(row), start=1))
     messages = [{"role": "system", "content": MEMORA_SYSTEM},
                 {"role": "user", "content": MEMORA_USER.replace("{question}", row["question"]).replace("{memory_text}", mem)}]
     limit = 1024
     for attempt in range(1, 4):
         try:
             result = c.chat(messages, max_tokens=limit, tag="E46",
-                            meta={"step": "answer-memora", "persona": persona, "question": row["question_id"], "attempt": attempt})
+                            meta={"step": "answer-memora" + ("-dates" if dates else ""), "persona": persona, "question": row["question_id"], "attempt": attempt})
         except OutputTruncated:
             limit *= 2
             continue
@@ -142,8 +147,8 @@ def ask_memora(c, row, persona):
 
 
 def answer(cond, row, persona):
-    if cond == "memora":
-        return ask_memora(writer, row, persona)
+    if cond in ("memora", "memora_dates"):
+        return ask_memora(writer, row, persona, dates=cond == "memora_dates")
     system, template = PROMPTS[cond]
     if cond == "relevance":
         mem = "\n".join(f"[{k}] ({d}) {t}" if d else f"[{k}] {t}" for k, (t, d, _) in enumerate(by_relevance(row), start=1))
@@ -294,4 +299,22 @@ for arm in ("note", "log", "both"):
         sub = [r for r in rows if (r["persona"], r["arm"], r["question_id"]) in keys and (arm == "both" or r["arm"] == arm)]
         c = scores(sub, "cond_v")
         print(f"  {'':5} {cond:10} FAMA {c[0]:5.1f}  MPA {c[1]:5.1f}  FAA {c[2]:5.1f}")
+
+# -- the dates alone: Memora's prompt with and without them -----------------------------------------
+if done.get("memora") and done.get("memora_dates"):
+    print("\n== Memora's prompt: with dates against without (paired by question; Gemma judges with judge_v1) ==")
+    a = {(r["persona"], r["arm"], r["question_id"]): r for r in done["memora"]
+         if r["cond_text"] is not None and None not in r["cond_v"]}
+    b = {(r["persona"], r["arm"], r["question_id"]): r for r in done["memora_dates"]
+         if r["cond_text"] is not None and None not in r["cond_v"]}
+    both = sorted(set(a) & set(b))
+    for arm in ("note", "log", "both"):
+        ks = [k for k in both if arm == "both" or k[1] == arm]
+        if not ks:
+            continue
+        x, y = scores([a[k] for k in ks], "cond_v"), scores([b[k] for k in ks], "cond_v")
+        base = scores([a[k] for k in ks], "base_v")
+        d, lo, hi = boot_diff(x[3], y[3])
+        print(f"  {arm:5} n={len(ks):3}  answer_v1 {base[0]:5.1f} | memora {x[0]:5.1f} (FAA {x[2]:5.1f}) -> memora_dates {y[0]:5.1f} "
+              f"(FAA {y[2]:5.1f}): {d:+.1f} [{lo:+.1f}, {hi:+.1f}]")
 print(f"\nPer-condition reports: {(OUT).relative_to(ROOT)}/<condition>-report.txt; progress: {(OUT / 'progress.log').relative_to(ROOT)}")
