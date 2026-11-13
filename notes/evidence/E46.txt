@@ -1,13 +1,13 @@
 # Evidence E46
 script:       scripts/explore/E46_answer_prompt.py
-run at:       2026-11-12T19:12:21-08:00
-memrecon:     354964f (scripts clean)
+run at:       2026-11-12T22:32:58-08:00
+memrecon:     10895bb (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
 Answers: results/stage0/answers/a0018ce663 (Stage 0, Qwen, answer_v1); judge Gemma with judge_v1
 Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m
-Conditions, in order: memora, relevance, nodates
+Conditions, in order: memora, relevance, nodates, memora_dates
 Mode: full
   relevance: system: 'newest first, each with its date.' -> 'most relevant first, each with its date.'; user: 'Memories, newest first:' -> 'Memories, most relevant first:'
   nodates: system: 'Each memory has the date of the conversation it came from. When memories disagree, the newer one is what is true now.' -> 'When memories disagree, the newer one is what is true now.'; system: 'newest first, each with its date.' -> 'newest first.'
@@ -68,7 +68,7 @@ Examples (forgetting sub-questions whose verdict changes):
   Q: Is the removed objectives information 'Reduce non-performing loan (NPL) rates by 5-7% over the next two years through better risk assessment.' mentioned in the proposal?
   answer_v1: Based on the memories provided, here is the project proposal for the 'AI-Driven Credit Risk Scoring Model Enhancement': **Project Title:** AI-Driven Credit Risk Scoring Model Enhancement **Project Lead:** Dr. Anya Sharma, Senior Financial Analyst **Budget:** $1,550,000 (Updated from $1,700,000) **Timeline:** 15 months, structured into three distinc…
   relevance: Project Proposal: AI-Driven Credit Risk Scoring Model Enhancement 1. Executive Summary This proposal outlines the initiative to enhance long-term credit risk scoring capabilities through the integration of advanced predictive analytics and alternative data sources. The primary goal is to improve accuracy and reduce default rates in fintech lending …
-(16 s; calls sent: agent 0, judge 1)
+(0 s; calls sent: agent 0, judge 0)
 
 == Condition: nodates (against Stage 0's answer_v1; Qwen writes, Gemma judges with judge_v1) ==
 Questions answered and judged: 90; answers that failed: 1; answers identical to Stage 0's: 2
@@ -97,7 +97,36 @@ Examples (forgetting sub-questions whose verdict changes):
   Q: Does the response reflect or mention the user's preference for J.J. Abrams?
   answer_v1: Based on your memories, you recently expressed a strong preference for Jodie Foster, noting that her performances are incredible and that you are "all about" her now, having moved away from Sandra Bullock. You also mentioned enjoying Rian Johnson's work for its fresh storytelling and risk-taking, although you noted a shift in preference from J.J. A…
   nodates: Based on your memories, you currently prefer Jodie Foster over Sandra Bullock, and you enjoy directors like Rian Johnson for his engaging and thought-provoking narratives, as well as J.J. Abrams for blending action, mystery, and character development (specifically in movies like *Super 8* and *Star Trek*). Therefore, I suggest watching a movie star…
-(20 s; calls sent: agent 1, judge 3)
+(0 s; calls sent: agent 0, judge 0)
+
+== Condition: memora_dates (against Stage 0's answer_v1; Qwen writes, Gemma judges with judge_v1) ==
+Questions answered and judged: 90; answers that failed: 0; answers identical to Stage 0's: 0
+                          FAMA     MPA     FAA   FAMA difference, 95% interval
+  note      answer_v1     68.0    68.5    98.2
+            memora_dates    69.3    71.0    94.6   +1.2 [-7.4, +9.8]  (n=45)
+  log       answer_v1     70.5    76.2    70.8
+            memora_dates    60.7    69.3    62.2   -9.8 [-21.6, +1.8]  (n=45)
+  both      answer_v1     69.3    72.3    84.5
+            memora_dates    65.0    70.1    78.4   -4.3 [-12.0, +3.1]  (n=90)
+By question category (both arms), FAMA answer_v1 -> memora_dates:
+  reasoning      n= 30   58.9 ->  51.1
+  recommending   n= 30   74.9 ->  68.3
+  remembering    n= 30   74.1 ->  75.5
+Sub-questions whose verdict changes: forgetting_absence now fails 12, forgetting_absence now passes 6, memory_presence now fails 17, memory_presence now passes 21
+Examples (forgetting sub-questions whose verdict changes):
+--- financial_analyst log pref_music_general_156_eval_forgetting_1 (expected no): answer_v1 no, memora_dates yes
+  Q: Does the response reflect or mention the user's preference for 1990s?
+  answer_v1: Based on your memories, your taste in music has shifted significantly. While you used to enjoy pop-punk, grunge, and 90s music (and even Count Basie's big band sound), you now find 90s music too chaotic and dislike ragtime. You currently prefer something more mellow. Therefore, I would suggest mellow genres or artists that align with a calmer, less…
+  memora_dates: Based on your memories, your music taste has shifted quite a bit recently! Here are a few suggestions based on what you’ve shared: 1. **Mellow & Smooth:** Since you mentioned that 90s music feels "too chaotic" and you prefer something "more mellow" now, you might enjoy artists or playlists that focus on smoother, calmer vibes rather than high-energ…
+--- management_consultant log pref_books_general_157_eval_forgetting_2 (expected no): answer_v1 no, memora_dates yes
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  answer_v1: Based on your memories, you recently expressed that you really enjoyed 'Becoming' by Michelle Obama. However, please note that your preferences have shifted significantly in the last few days: you mentioned on 2025-06-07 that you no longer resonate with Ta-Nehisi Coates (whom you liked in June), you dislike technology books (which you liked in June…
+  memora_dates: Based on your recent reading preferences, it sounds like you are looking for something with more depth and powerful writing, as you mentioned you've moved away from technology and mindfulness topics. You seem to be really enjoying **Ta-Nehisi Coates** right now, noting that his writing is "so powerful" and that you've shifted your focus from Yuval …
+--- financial_analyst log pref_books_general_156_eval_forgetting_0 (expected no): answer_v1 no, memora_dates yes
+  Q: Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  answer_v1: Based on your memories, you recently enjoyed "Silent Spring" by Rachel Carson and found it powerful. You also mentioned that you used to like Malcolm Gladwell but are now really into Mary Roach, finding her books more engaging because she dives deep into quirky, specific topics with humor. Additionally, you have an interest in new technologies and …
+  memora_dates: Based on your recent reading preferences, I have a few suggestions that align with what you've been enjoying lately: 1. **Mary Roach**: You mentioned recently that you are really into Mary Roach now, finding her books much more engaging than Malcolm Gladwell's. Since you appreciate her humor and how she dives deep into quirky, specific topics, her …
+(0 s; calls sent: agent 0, judge 0)
 
 == All conditions (questions every condition answered; Gemma judges) ==
 88 questions
@@ -105,13 +134,21 @@ Examples (forgetting sub-questions whose verdict changes):
         memora     FAMA  67.9  MPA  68.6  FAA  97.9
         relevance  FAMA  64.6  MPA  65.9  FAA  94.6
         nodates    FAMA  64.0  MPA  64.1  FAA  99.6
+        memora_dates FAMA  69.3  MPA  71.0  FAA  94.6
   log   answer_v1  FAMA  70.5  MPA  75.6  FAA  73.5
         memora     FAMA  54.0  MPA  65.1  FAA  61.0
         relevance  FAMA  65.6  MPA  69.8  FAA  79.0
         nodates    FAMA  50.2  MPA  58.0  FAA  65.6
+        memora_dates FAMA  60.2  MPA  68.4  FAA  64.5
   both  answer_v1  FAMA  69.2  MPA  72.0  FAA  86.1
         memora     FAMA  61.1  MPA  66.9  FAA  79.8
         relevance  FAMA  65.0  MPA  67.8  FAA  87.0
         nodates    FAMA  57.2  MPA  61.1  FAA  82.9
+        memora_dates FAMA  64.8  MPA  69.7  FAA  79.8
+
+== Memora's prompt: with dates against without (paired by question; Gemma judges with judge_v1) ==
+  note  n= 45  answer_v1  68.0 | memora  67.9 (FAA  97.9) -> memora_dates  69.3 (FAA  94.6): +1.3 [-5.3, +8.8]
+  log   n= 45  answer_v1  70.5 | memora  55.2 (FAA  60.7) -> memora_dates  60.7 (FAA  62.2): +5.5 [-6.8, +18.0]
+  both  n= 90  answer_v1  69.3 | memora  61.5 (FAA  79.3) -> memora_dates  65.0 (FAA  78.4): +3.4 [-3.7, +10.8]
 
 Per-condition reports: results/e46/<condition>-report.txt; progress: results/e46/progress.log

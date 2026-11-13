@@ -1,12 +1,12 @@
 # Evidence E47
 script:       scripts/explore/E47_answer_prompt_memora_judge.py
-run at:       2026-11-12T21:04:29-08:00
-memrecon:     9c4c343 (scripts clean)
+run at:       2026-11-12T22:32:59-08:00
+memrecon:     10895bb (scripts clean)
 Memora data:  a6493188
 exit status:  0
 ------------------------------------------------------------
 Answers: results/e46/<condition>.jsonl (E46); judge Gemma = gemma-4-26b-a4b-it-ud-q4_k_m
-Conditions, in order: memora, relevance, nodates
+Conditions, in order: memora, relevance, nodates, memora_dates
 Mode: full
 
 == Condition: memora against answer_v1, judged by Gemma with judge_v1 (E46) and with Memora's judge prompt ==
@@ -93,9 +93,38 @@ Questions with every verdict: 89
   nodates   : forgetting sub-questions Memora's judge says the answer mentions: 74 of 146
 (0 s; judge calls sent 0)
 
+== Condition: memora_dates against answer_v1, judged by Gemma with judge_v1 (E46) and with Memora's judge prompt ==
+Questions with every verdict: 90
+        answers    judge prompt    FAMA    MPA    FAA
+  note  answer_v1  judge_v1        68.0   68.5   98.2
+  note  answer_v1  Memora's        55.7   66.9   63.7
+  note  memora_dates judge_v1        69.3   71.0   94.6
+  note  memora_dates Memora's        56.2   71.4   53.0
+        memora_dates - answer_v1, judge_v1                     +1.2 [-7.4, +9.5]
+        memora_dates - answer_v1, Memora's judge               +0.6 [-8.4, +8.9]
+        difference of the two (Memora's judge - judge_v1)      -0.7 [-6.1, +4.4]
+  log   answer_v1  judge_v1        70.5   76.2   70.8
+  log   answer_v1  Memora's        62.5   78.0   42.5
+  log   memora_dates judge_v1        60.7   69.3   62.2
+  log   memora_dates Memora's        55.3   72.8   32.1
+        memora_dates - answer_v1, judge_v1                     -9.8 [-21.3, +1.6]
+        memora_dates - answer_v1, Memora's judge               -7.2 [-18.8, +4.1]
+        difference of the two (Memora's judge - judge_v1)      +2.6 [-4.4, +9.8]
+  both  answer_v1  judge_v1        69.3   72.3   84.5
+  both  answer_v1  Memora's        59.1   72.5   53.1
+  both  memora_dates judge_v1        65.0   70.1   78.4
+  both  memora_dates Memora's        55.8   72.1   42.6
+        memora_dates - answer_v1, judge_v1                     -4.3 [-11.9, +3.1]
+        memora_dates - answer_v1, Memora's judge               -3.3 [-10.4, +4.0]
+        difference of the two (Memora's judge - judge_v1)      +1.0 [-3.7, +5.7]
+  answer_v1 : forgetting sub-questions Memora's judge says the answer mentions: 65 of 148
+  memora_dates: forgetting sub-questions Memora's judge says the answer mentions: 81 of 148
+(0 s; judge calls sent 0)
+
 == FAMA of every answer condition under both judge prompts (both arms; each condition's own questions) ==
   memora     n= 90  judge_v1: answer_v1  69.3, memora  61.5  |  Memora's judge: answer_v1  59.1, memora  53.5
   relevance  n= 89  judge_v1: answer_v1  68.9, relevance  64.9  |  Memora's judge: answer_v1  58.6, relevance  55.8
   nodates    n= 89  judge_v1: answer_v1  69.6, nodates  57.7  |  Memora's judge: answer_v1  59.3, nodates  47.9
+  memora_dates n= 90  judge_v1: answer_v1  69.3, memora_dates  65.0  |  Memora's judge: answer_v1  59.1, memora_dates  55.8
 
 Per-condition reports: results/e47/<condition>-report.txt; progress: results/e47/progress.log
