@@ -1,0 +1,124 @@
+# Evidence E49
+script:       scripts/explore/E49_persona_only_baseline.py
+run at:       2026-11-13T16:58:06-08:00
+memrecon:     1b28f13 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Questions: results/stage0/answers/a0018ce663 (Stage 0, note arm's rows); comparison: results/e47/memora.jsonl
+Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m; judge prompts judge_v1 and Memora's
+Conditions, in order: generic, persona
+Mode: full
+  financial_analyst profile, as shown to the persona condition:
+    1. Profile: Finance professional focused on data analysis, budgets, and financial planning.
+    2. Movies: Passionate about science fiction and futuristic concepts with technological themes
+    3. Books: Focuses on educational, biographical, and self-improvement books
+    4. Music: Appreciates sophisticated jazz, classical, and traditional music
+    5. Travel: Prefers comfortable, high-end, and exclusive travel experiences
+  management_consultant profile, as shown to the persona condition:
+    1. Profile: Strategy consultant focused on helping organizations improve operations and solve business problems.
+    2. Movies: Prefers timeless films from Hollywood's golden age and classic cinema
+    3. Books: Focuses on educational, biographical, and self-improvement books
+    4. Music: Appreciates sophisticated jazz, classical, and traditional music
+    5. Travel: Focuses on cultural immersion, art, and historical experiences
+  sales_manager profile, as shown to the persona condition:
+    1. Profile: Sales professional focused on client relationships, revenue growth, and team leadership.
+    2. Movies: Loves action films with practical effects and adrenaline-pumping sequences
+    3. Books: Prefers fast-paced thrillers, mysteries, and suspenseful stories
+    4. Music: Enjoys rock, metal, and high-energy guitar-driven music
+    5. Travel: Enjoys vibrant cities, nightlife, and metropolitan experiences
+
+== Recommending criteria and the persona's archetype pool (no model calls) ==
+  memory_presence      34 of 34 name an item from the persona's own archetype pool
+  forgetting_absence   36 of 36 name an item from the persona's own archetype pool
+
+== Condition: generic: 45 of 45 questions answered and judged ==
+  category         n   judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+  remembering     15              16.0  18.2  92.3  |                 20.6  25.4  71.2
+  reasoning       15               0.0   0.0   nan  |                  0.0   0.0   nan
+  recommending    15              29.8  29.8 100.0  |                 28.4  28.4  91.7
+  all             45              15.3  16.0  96.4  |                 16.3  17.9  82.1
+(1155 s; calls sent: agent 34, judge 354)
+
+== Condition: persona: 45 of 45 questions answered and judged ==
+  category         n   judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+  remembering     15               7.3   7.3 100.0  |                 17.4  18.5  96.2
+  reasoning       15               0.0   0.0   nan  |                  0.0   0.0   nan
+  recommending    15              32.0  32.0  98.3  |                 36.2  37.6  95.0
+  all             45              13.1  13.1  99.1  |                 17.9  18.7  95.5
+(871 s; calls sent: agent 45, judge 452)
+
+== Every condition side by side (questions every condition has; FAMA, with MPA/FAA) ==
+45 questions
+
+  remembering (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    generic (no memory)               16.0  18.2  92.3  |                 20.6  25.4  71.2
+    persona (no memory)                7.3   7.3 100.0  |                 17.4  18.5  96.2
+    memora prompt, note               82.7  83.3  99.2  |                 77.9  83.3  87.3
+    answer_v1, note                   80.6  80.6 100.0  |                 76.6  81.3  84.0
+    memora prompt, log                64.5  73.7  70.4  |                 64.4  77.0  54.2
+    answer_v1, log                    67.6  79.2  50.0  |                 63.7  79.2  41.5
+
+  reasoning (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    generic (no memory)                0.0   0.0   nan  |                  0.0   0.0   nan
+    persona (no memory)                0.0   0.0   nan  |                  0.0   0.0   nan
+    memora prompt, note               37.8  37.8   nan  |                 37.8  37.8   nan
+    answer_v1, note                   51.1  51.1   nan  |                 48.9  48.9   nan
+    memora prompt, log                48.9  48.9   nan  |                 51.1  51.1   nan
+    answer_v1, log                    66.7  66.7   nan  |                 66.7  66.7   nan
+
+  recommending (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    generic (no memory)               29.8  29.8 100.0  |                 28.4  28.4  91.7
+    persona (no memory)               32.0  32.0  98.3  |                 36.2  37.6  95.0
+    memora prompt, note               83.3  84.7  96.7  |                 50.2  81.3  42.2
+    answer_v1, note                   72.4  73.8  96.7  |                 41.5  70.4  46.1
+    memora prompt, log                52.1  75.8  52.2  |                 39.8  82.4  13.9
+    answer_v1, log                    77.3  82.7  88.9  |                 57.0  88.2  43.3
+
+  all (n=45)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    generic (no memory)               15.3  16.0  96.4  |                 16.3  17.9  82.1
+    persona (no memory)               13.1  13.1  99.1  |                 17.9  18.7  95.5
+    memora prompt, note               67.9  68.6  97.9  |                 55.3  67.5  63.2
+    answer_v1, note                   68.0  68.5  98.2  |                 55.7  66.9  63.7
+    memora prompt, log                55.2  66.1  60.7  |                 51.8  70.2  32.6
+    answer_v1, log                    70.5  76.2  70.8  |                 62.5  78.0  42.5
+
+== Recommending: persona only − answering from memory (Memora's answering prompt), paired by question ==
+  note judge_v1        persona  32.0  memory  83.3  difference  -51.3 [-71.6, -31.6]  persona reaches   38% of memory's FAMA  (n=15)
+  note Memora's judge  persona  36.2  memory  50.2  difference  -14.0 [-31.4, +2.8]  persona reaches   72% of memory's FAMA  (n=15)
+  log  judge_v1        persona  32.0  memory  52.1  difference  -20.1 [-40.8, +3.5]  persona reaches   61% of memory's FAMA  (n=15)
+  log  Memora's judge  persona  36.2  memory  39.8  difference   -3.6 [-24.9, +20.2]  persona reaches   91% of memory's FAMA  (n=15)
+
+== Forgetting sub-questions the judge says the answer mentions (should be 'no') ==
+  generic  judge_v1        2 of 74
+  generic  Memora's judge  9 of 74
+  persona  judge_v1        1 of 74
+  persona  Memora's judge  3 of 74
+
+== Examples: persona-only answers to recommending questions (highest FAMA under Memora's judge, then 2 at random) ==
+--- financial_analyst pref_music_general_156: Can you suggest me some music?
+  Answer: Based on your appreciation for sophisticated jazz, classical, and traditional music, I would suggest exploring some of the more complex and intricate compositions in those genres. Since you have a background in finance and data analysis, you might enjoy jazz pieces that feature complex structures and improvisation, such as works by John Coltrane or Miles Davis, or classical compositions that demonstrate mathematical precision, like those by Bach. If you're looking to branch out slightly while staying within your preferred sophisticated style, you might also consider modern classical or neo-cla…
+    [P] expected yes  judge_v1 yes  Memora's yes      Does the response avoid recommending ragtime (which the user dislikes)?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for Count Basie?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for 1990s?
+  FAMA: judge_v1 100, Memora's judge 100
+--- financial_analyst pref_books_general_156: I'm looking for a good book to read. Any suggestions?
+  Answer: Based on your preference for **educational, biographical, and self-improvement books**, I’d recommend looking into titles that blend these genres, especially those relevant to your background in finance and data analysis. Here are a few directions you might enjoy: 1. **Biographies of Innovators in Finance or Tech**: Since you’re a finance professional focused on data, you might appreciate biographies of figures like **Warren Buffett** (for value investing wisdom) or **Nassim Nicholas Taleb** (who writes extensively on risk, probability, and decision-making). These often double as self-improvem…
+    [P] expected yes  judge_v1 no   Memora's no       Does the response reflect or align with the user's preference for Mary Roach?
+    [P] expected yes  judge_v1 yes  Memora's yes      Does the response avoid recommending Michio Kaku (which the user dislikes)?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response reflect or align with the user's preference for The Tipping Point?
+    [P] expected yes  judge_v1 yes  Memora's yes      Does the response reflect or align with the user's preference for Thinking, Fast and Slow?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response reflect or align with the user's preference for Silent Spring?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for Malcolm Gladwell?
+  FAMA: judge_v1 40, Memora's judge 40
+--- management_consultant pref_books_general_157: I'm looking for a good book to read. Any suggestions?
+  Answer: Based on your preference for **educational, biographical, and self-improvement books**, I’d recommend looking into biographies of influential business leaders or historical figures known for their strategic thinking. Since you’re a strategy consultant, you might enjoy books that blend personal narrative with operational insights or problem-solving frameworks. For example, you might consider: * **Biographies** of renowned strategists or innovators (e.g., Peter Drucker, Henry Ford, or modern tech leaders) to see how they navigated complex business challenges. * **Self-improvement books** focused…
+    [P] expected yes  judge_v1 no   Memora's yes      Does the response avoid recommending technology (which the user dislikes)?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response reflect or align with the user's preference for Becoming?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for Yuval Noah Harari?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for mindfulness?
+    [F] expected no   judge_v1 no   Memora's no       Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+  FAMA: judge_v1 0, Memora's judge 50
+
+Per-condition reports: results/e49/<condition>-report.txt; answers and verdicts: results/e49/<condition>.jsonl
