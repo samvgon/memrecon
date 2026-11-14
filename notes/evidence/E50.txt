@@ -1,0 +1,105 @@
+# Evidence E50
+script:       scripts/explore/E50_full_history.py
+run at:       2026-11-13T17:57:33-08:00
+memrecon:     01f38c1 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+Questions: results/stage0/answers/a0018ce663 (Stage 0, note arm's rows); comparison: results/e47/memora.jsonl and results/e49
+Qwen = qwen3.6-35b-a3b-ud-q4_k_m; Gemma = gemma-4-26b-a4b-it-ud-q4_k_m; judge prompts judge_v1 and Memora's
+Context 131,072 tokens -> history budget 81,750 (Memora's formula: ctx x 0.7 - 10,000); tokenizer http://localhost:8080/tokenize
+Mode: full
+
+== Each persona's history as shown ==
+  financial_analyst        whole history 37,447 tokens; shown 37,447 tokens, 156 of 156 sessions (nothing cut)
+  management_consultant    whole history 40,666 tokens; shown 40,666 tokens, 157 of 157 sessions (nothing cut)
+  sales_manager            whole history 39,762 tokens; shown 39,762 tokens, 163 of 163 sessions (nothing cut)
+
+== Full history: 45 questions answered and judged (979 s; calls sent: agent 43, judge 404) ==
+
+== Side by side (45 questions every condition has; FAMA, with MPA/FAA) ==
+
+  remembering (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    full history                       10.2  11.2  94.0  |                 10.5  12.9  83.6
+    memories, Memora prompt, note      82.7  83.3  99.2  |                 77.9  83.3  87.3
+    memories, answer_v1, note          80.6  80.6 100.0  |                 76.6  81.3  84.0
+    memories, Memora prompt, log       64.5  73.7  70.4  |                 64.4  77.0  54.2
+    memories, answer_v1, log           67.6  79.2  50.0  |                 63.7  79.2  41.5
+    no memory, generic                 16.0  18.2  92.3  |                 20.6  25.4  71.2
+    no memory, persona                  7.3   7.3 100.0  |                 17.4  18.5  96.2
+
+  reasoning (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    full history                        4.4   4.4   nan  |                  4.4   4.4   nan
+    memories, Memora prompt, note      37.8  37.8   nan  |                 37.8  37.8   nan
+    memories, answer_v1, note          51.1  51.1   nan  |                 48.9  48.9   nan
+    memories, Memora prompt, log       48.9  48.9   nan  |                 51.1  51.1   nan
+    memories, answer_v1, log           66.7  66.7   nan  |                 66.7  66.7   nan
+    no memory, generic                  0.0   0.0   nan  |                  0.0   0.0   nan
+    no memory, persona                  0.0   0.0   nan  |                  0.0   0.0   nan
+
+  recommending (n=15)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    full history                       38.7  57.1  56.7  |                 31.7  67.3  17.8
+    memories, Memora prompt, note      83.3  84.7  96.7  |                 50.2  81.3  42.2
+    memories, answer_v1, note          72.4  73.8  96.7  |                 41.5  70.4  46.1
+    memories, Memora prompt, log       52.1  75.8  52.2  |                 39.8  82.4  13.9
+    memories, answer_v1, log           77.3  82.7  88.9  |                 57.0  88.2  43.3
+    no memory, generic                 29.8  29.8 100.0  |                 28.4  28.4  91.7
+    no memory, persona                 32.0  32.0  98.3  |                 36.2  37.6  95.0
+
+  all (n=45)            judge_v1: FAMA   MPA   FAA  | Memora's judge: FAMA   MPA   FAA
+    full history                       17.8  24.3  74.0  |                 15.5  28.2  48.3
+    memories, Memora prompt, note      67.9  68.6  97.9  |                 55.3  67.5  63.2
+    memories, answer_v1, note          68.0  68.5  98.2  |                 55.7  66.9  63.7
+    memories, Memora prompt, log       55.2  66.1  60.7  |                 51.8  70.2  32.6
+    memories, answer_v1, log           70.5  76.2  70.8  |                 62.5  78.0  42.5
+    no memory, generic                 15.3  16.0  96.4  |                 16.3  17.9  82.1
+    no memory, persona                 13.1  13.1  99.1  |                 17.9  18.7  95.5
+
+== Full history − retrieved memories (Memora's agent prompt), paired by question ==
+  remembering   note judge_v1        full  10.2  memories  82.7  difference  -72.5 [-82.7, -62.1]  (n=15)
+  remembering   note Memora's judge  full  10.5  memories  77.9  difference  -67.4 [-79.8, -55.0]  (n=15)
+  remembering   log  judge_v1        full  10.2  memories  64.5  difference  -54.3 [-67.1, -41.5]  (n=15)
+  remembering   log  Memora's judge  full  10.5  memories  64.4  difference  -53.9 [-66.6, -41.0]  (n=15)
+  reasoning     note judge_v1        full   4.4  memories  37.8  difference  -33.3 [-55.6, -13.3]  (n=15)
+  reasoning     note Memora's judge  full   4.4  memories  37.8  difference  -33.3 [-55.6, -13.3]  (n=15)
+  reasoning     log  judge_v1        full   4.4  memories  48.9  difference  -44.4 [-68.9, -20.0]  (n=15)
+  reasoning     log  Memora's judge  full   4.4  memories  51.1  difference  -46.7 [-71.1, -24.4]  (n=15)
+  recommending  note judge_v1        full  38.7  memories  83.3  difference  -44.6 [-66.1, -23.3]  (n=15)
+  recommending  note Memora's judge  full  31.7  memories  50.2  difference  -18.6 [-33.4, -2.5]  (n=15)
+  recommending  log  judge_v1        full  38.7  memories  52.1  difference  -13.4 [-29.4, +1.5]  (n=15)
+  recommending  log  Memora's judge  full  31.7  memories  39.8  difference   -8.2 [-25.5, +8.7]  (n=15)
+  all           note judge_v1        full  17.8  memories  67.9  difference  -50.1 [-62.0, -38.1]  (n=45)
+  all           note Memora's judge  full  15.5  memories  55.3  difference  -39.8 [-50.9, -28.2]  (n=45)
+  all           log  judge_v1        full  17.8  memories  55.2  difference  -37.4 [-48.2, -26.1]  (n=45)
+  all           log  Memora's judge  full  15.5  memories  51.8  difference  -36.2 [-47.8, -24.5]  (n=45)
+
+Forgetting sub-questions the judge says the full-history answer mentions (judge_v1): 20 of 74
+Forgetting sub-questions the judge says the full-history answer mentions (Memora's judge): 37 of 74
+
+== Examples: one full-history answer per category, at random ==
+--- management_consultant content_meeting_notes_157_meeting_notes_1: Write meeting notes for: Strategic AI Integration Steering Committee - Phase 1 Review
+  Answer: Based on the conversation history, I can help you organize the details for these meeting notes. To proceed, I need the following information: 1. **Agenda items:** What were the main topics discussed? 2. **Key decisions:** What decisions were made during the review? 3. **Attendees:** Who was present at the meeting? 4. **Action items:** What tasks need to be completed, and by whom? Please provide these details so I can structure the notes for you.
+    [P] expected yes  judge_v1 no   Memora's no       Does the response include the meeting title: Strategic AI Integration Steering Committee - Phase 1 Review?
+    [P] expected yes  judge_v1 no   Memora's no       Is the agenda items information 'Assessment of initial ROI and impact on production efficiency' correctly included in the notes?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response mention the key decisions details: Established a cross-functional AI governance working group to standardize data protocols.?
+    [P] expected yes  judge_v1 no   Memora's no       Is the meeting's attendees 'Mr. David Chen, CFO' appropriately included?
+    [F] expected no   judge_v1 no   Memora's no       Does the response include the deleted key decisions: Approved transition of successful AI PoC modules to pilot phase within two manufacturing plants.?
+    [F] expected no   judge_v1 no   Memora's no       Is the removed attendees information 'Dr. Anya Sharma, VP of Global Operations' mentioned in the notes?
+    [F] expected no   judge_v1 no   Memora's no       Does the response mention the attendees 'Ms. Lena Petrov, Lead Management Consultant' that was deleted?
+    [F] expected no   judge_v1 no   Memora's no       Is the deleted meeting agenda items 'Discussion on vendor selection for enterprise-wide AI platform' included?
+  FAMA: judge_v1 0, Memora's judge 0
+--- sales_manager goal_step_tracker_daily_steps_163_0: Am I meeting my daily step goal?
+  Answer: Based on the conversation history, I do not have access to your real-time step count or a specific daily step goal you have set. However, there are several instances in the history where you have shared your step counts for specific days, and I have acknowledged them: * In **Session 13**, you mentioned a goal to boost your activity, and I wished you the best with your new fitness goal. * In **Session 47**, you mentioned getting coffee, and I asked how many steps you got that day. * In **Session 51**, you mentioned food expenses, and I asked how many steps you got that day. * In **Session 71**,…
+    [P] expected yes  judge_v1 no   Memora's no       Does the response mention the daily_steps goal of 11000 steps?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response mention the actual step count (9,414 steps) compared to the goal (11,000 steps)?
+    [P] expected yes  judge_v1 no   Memora's no       Does the response indicate that the step goal was NOT MET (actual: 9,414 steps vs goal: 11,000 steps)?
+  FAMA: judge_v1 0, Memora's judge 0
+--- financial_analyst pref_books_authors_156: Can you recommend a book by authors I like?
+  Answer: Based on the conversation history, you have expressed a preference for authors who blend history, personal narrative, and social commentary, specifically mentioning **Ta-Nehisi Coates**. You also previously mentioned enjoying **Malcolm Gladwell** for his ability to make complex topics accessible, though you later noted a preference for **Mary Roach** over Gladwell. Additionally, you have expressed a dislike for **Sandra Bullock** (an actress, not an author) and **ragtime music**, and you dislike **Mediterranean climates**. Since you liked Ta-Nehisi Coates, I would recommend **"Between the Worl…
+    [P] expected yes  judge_v1 yes  Memora's yes      Does the response reflect or align with the user's preference for Mary Roach?
+    [P] expected yes  judge_v1 yes  Memora's yes      Does the response avoid recommending Michio Kaku (which the user dislikes)?
+    [F] expected no   judge_v1 yes  Memora's yes      Does the response reflect or mention the user's preference for Ta-Nehisi Coates?
+    [F] expected no   judge_v1 no   Memora's yes      Does the response reflect or mention the user's preference for Malcolm Gladwell?
+  FAMA: judge_v1 75, Memora's judge 50
+
+Answers and verdicts: results/e50/full_history.jsonl; progress: results/e50/progress.log

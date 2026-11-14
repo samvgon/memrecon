@@ -1,0 +1,26 @@
+# Evidence E51
+script:       scripts/explore/E51_free_credit.py
+run at:       2026-11-13T17:37:55-08:00
+memrecon:     01f38c1 (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+150 questions over 10 weekly personas; presence sub-questions of unrecognised kind: 0
+
+== development personas (as E49) ==
+  category         n  presence by kind                              forgetting   silent-answer FAMA
+  remembering     15  plain 92                                          38         0.0
+  reasoning       15  coffee 3, plain 6, progress 6, status 6, total 6     0         0.0
+  recommending    15  dislike 12, like 22                               36        35.3
+                    dislike sub-questions: 12 of 34 presence sub-questions (35%)
+
+== all 10 weekly personas ==
+  category         n  presence by kind                              forgetting   silent-answer FAMA
+  remembering     50  plain 260                                        150         0.0
+  reasoning       50  coffee 10, plain 20, progress 20, status 20, total 20     0         0.0
+  recommending    50  dislike 45, like 84                              106        32.3
+                    dislike sub-questions: 45 of 129 presence sub-questions (35%)
+
+E49, measured on the development personas' recommending questions (FAMA; judge_v1, Memora's judge):
+  generic  (no memory)   29.8   28.4
+  persona  (no memory)   32.0   36.2
