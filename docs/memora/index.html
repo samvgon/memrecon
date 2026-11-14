@@ -518,10 +518,11 @@ mark.xmark{animation:markin .5s ease}
 .stile .stat{font-size:34px;color:var(--s1);min-width:42px}
 .stile b{display:block;font-size:15px}
 .stile span{color:var(--ink-2);font-size:13.5px;line-height:1.45}
+.keyrow{margin-bottom:10px}
 .armrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .armrow .chip{font-size:13px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
 .vtag{display:inline-block;font:700 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:999px;color:#fff;flex:none}
-.v-confirms{background:var(--good)} .v-complicates{background:#c98a12} .v-contradicts{background:var(--bad)} .v-pending{background:var(--ink-3)}
+.v-confirms{background:var(--good)} .v-complicates{background:#c98a12} .v-contradicts{background:var(--bad)} .v-pending{background:var(--ink-3)} .v-take{background:var(--ink);color:var(--bg)}
 .vrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
 .vtext{color:var(--ink);font-size:15.5px;max-width:70ch}
 .cmp{display:grid;gap:10px;margin:2px 0 16px}
@@ -537,12 +538,12 @@ mark.xmark{animation:markin .5s ease}
 .hb-row{display:grid;grid-template-columns:minmax(110px,30%) minmax(0,1fr);gap:4px 10px;align-items:center}
 .hb-lab{font-size:13.5px;color:var(--ink);line-height:1.25}
 .hb-lab small{display:block;color:var(--ink-3);font-size:12px}
-.hb-bars{display:grid;gap:3px}
+.hb-bars{display:grid;gap:3px;padding-right:46px}
 .hb-bar{position:relative;height:16px;width:var(--w);min-width:2px;border-radius:0 4px 4px 0}
 .hb-bar span{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);font:600 12px var(--f-body);color:var(--ink-2);white-space:nowrap}
 .hb-note{grid-column:2;font-size:12px;color:var(--ink-3)}
 .b-v1{background:var(--s1)} .b-mj{background:var(--s2)} .b-gray{background:var(--ink-3)} .b-warn{background:var(--bad)}
-.hb-ref{position:absolute;top:-4px;bottom:-4px;left:calc(30% + 10px + (70% - 10px) * 0);right:0;pointer-events:none}
+.hb-ref{position:absolute;top:-4px;bottom:-4px;left:calc(30% + 10px);right:46px;pointer-events:none}
 .hb-ref::before{content:"";position:absolute;top:0;bottom:0;left:var(--a);width:calc(var(--b) - var(--a));background:color-mix(in srgb,var(--ink-3) 14%,transparent);border-left:1.5px dashed var(--ink-3);border-right:1.5px dashed var(--ink-3)}
 .hb-ref span{position:absolute;top:-16px;right:calc(100% - var(--b));font-size:11px;color:var(--ink-3);white-space:nowrap}
 .legend2{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin:4px 0 16px}
@@ -558,6 +559,124 @@ mark.xmark{animation:markin .5s ease}
 .tm-f{font-size:12.5px;color:var(--ink-3);text-align:right}
 .tm-f.bad{color:var(--bad);font-weight:600}
 @media (max-width:640px){.tm-row{grid-template-columns:1fr;gap:4px}.tm-arrow{display:none}.tm-f{text-align:left}}
+.cnav{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 12px}
+.cnav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font:600 13px var(--f-body);color:var(--ink-2);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.cnav a:hover,.cnav a:focus-visible{border-color:var(--ink-3);color:var(--ink)}
+.cnav a.ltr{width:28px;height:28px;padding:0;justify-content:center;border-radius:8px;color:#fff;background:var(--tc);border-color:var(--tc);opacity:.55}
+.cnav a.ltr.cur{opacity:1;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--tc)}
+.cnav a.ltr:hover{opacity:1}
+.cnav .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.claim{display:flex;gap:10px;align-items:baseline;margin:-4px 0 16px;font-size:16px;color:var(--ink);max-width:80ch}
+.xb{display:inline-block;flex:none;font:700 10.5px var(--f-body);letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:5px;margin-right:8px;vertical-align:1px}
+.xb-paper{background:var(--chip);color:var(--ink-2);border:1px solid var(--line)}
+.xb-test{background:var(--s1);color:#fff}
+.xb-count{background:color-mix(in srgb,var(--s1) 14%,transparent);color:var(--s1);border:1px solid color-mix(in srgb,var(--s1) 40%,transparent)}
+.xb-proj{background:color-mix(in srgb,var(--cp) 16%,transparent);color:var(--cp);border:1px solid color-mix(in srgb,var(--cp) 40%,transparent)}
+.label .xb{letter-spacing:.07em}
+.rvbar{display:flex;align-items:center;gap:12px;margin:-4px 0 16px}
+.scene.rv-intro > *:not(.cnav):not(.kicker):not(h2):not(.claim):not(.rvbar):not(.cmp){display:none}
+.scene.rv-intro .cmp{max-width:900px;margin:0 auto 24px}
+.scene.rv-intro .claim:has(+ .cmp){margin-bottom:28px}
+.scene.rv-intro .cmp .rv-hid{display:none}
+.scene.rv-intro .cmp + .rvbar,.scene.rv-intro .rvbar{order:0}
+.scene.rv-intro .claim{flex-direction:column;align-items:center;text-align:center;gap:14px;margin:12vh auto 28px;max-width:30ch;font:600 clamp(22px,3vw,32px)/1.3 var(--f-display);text-wrap:balance}
+.scene.rv-intro .claim .xb{font-size:12px;margin:0}
+.scene.rv-intro .rvbar{justify-content:center;margin:0 0 12vh}
+.scene.rv-intro .rv-btn{font-size:16px;padding:10px 18px}
+.rv-count{font-size:13px;color:var(--ink-3)}
+.rv-hid{visibility:hidden;opacity:0}
+.rv-in{animation:rvin .45s ease both}
+@keyframes rvin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.rv-in{animation:none}}
+.lc-d .lc-bar{background:var(--s1)} .lc-nd .lc-bar{background:var(--s2)}
+.lc-key{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--ink-2)}
+.lc-key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.k-d{background:var(--s1)} .k-nd{background:var(--s2)}
+.lc-track.lc2{background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 20%);border-left:0}
+.lc-track.lc2::before{content:"";position:absolute;left:var(--z);top:-3px;bottom:-3px;border-left:1.5px solid var(--ink-3)}
+.lc2 .lc-bar{border-radius:0 4px 4px 0}
+.lc3 .lc-track{margin-right:8px;margin-left:44px;background:none!important}
+.lc3 .lc-ticks{margin-right:8px;margin-left:44px}
+.lc-g{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--line)}
+.lc-v3{position:absolute;top:50%;transform:translateY(-50%);font:700 13px var(--f-body);color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lc-axl{font-size:11.5px;color:var(--ink-3);text-align:center;margin:-6px 8px 0 44px}
+.lc3-key{margin:4px 0 6px}
+.lc3 .lc-head span:last-child{text-align:center;margin-left:44px}
+.lc{display:grid;gap:12px;margin:12px 0 6px}
+.lc-head,.lc-row,.lc-axis{display:grid;grid-template-columns:minmax(120px,40%) minmax(0,1fr);gap:12px;align-items:center}
+.lc-head{font-size:12px;color:var(--ink-3)}
+.lc-lab{font-size:14px;color:var(--ink);line-height:1.25}
+.lc-lab small{display:block;font-size:12px;color:var(--ink-3)}
+.lc-track{position:relative;height:22px;margin-right:52px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 25%);border-left:1.5px solid var(--ink-3)}
+.lc-bar{position:absolute;left:0;top:3px;bottom:3px;width:var(--w);background:var(--s2);border-radius:0 4px 4px 0}
+.lc-ci{position:absolute;top:50%;height:2px;left:var(--l);width:calc(var(--r) - var(--l));background:var(--ink);transform:translateY(-50%)}
+.lc-ci::before,.lc-ci::after{content:"";position:absolute;top:-4px;width:2px;height:10px;background:var(--ink)}
+.lc-ci::before{left:0}.lc-ci::after{right:0}
+.lc-v{position:absolute;left:calc(var(--w) + 8px);top:50%;transform:translateY(-50%);font:700 13px var(--f-body);color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lc-ticks{position:relative;height:16px;margin-right:52px}
+.lc-ticks span{position:absolute;left:var(--x);transform:translateX(-50%);font-size:11.5px;color:var(--ink-3)}
+.fairg #fair-result{max-width:980px}
+.gb-row{grid-template-columns:minmax(90px,18%) minmax(0,1fr) 190px !important}
+.gb-ld{display:grid;gap:2px;font-size:12.5px}
+.ld{display:flex;align-items:baseline;gap:6px;padding:1px 8px;border-radius:6px;border-left:4px solid}
+.ld b{font-variant-numeric:tabular-nums} .ld small{color:var(--ink-3);font-size:11.5px}
+.ld.g-note{border-color:var(--s1);background:color-mix(in srgb,var(--s1) 8%,transparent)}
+.ld.g-log{border-color:var(--ck);background:color-mix(in srgb,var(--ck) 8%,transparent)}
+.ld-unclear{opacity:.5}
+.gb-ldh{font-size:12px;color:var(--ink-2);line-height:1.3}
+.gb-ldh small{color:var(--ink-3);font-size:11px}
+@media (max-width:640px){.gb-row{grid-template-columns:1fr !important}.gb-ldh{display:none}.gb-ld{grid-template-columns:1fr 1fr}}
+.g-mem{background:var(--s1)}
+.gb-bar.mj{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 3px,transparent 3px 7px)}
+.gb-gap{height:4px}
+.lg-j i{margin-right:2px!important}
+.ld.l-v1{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.ld.l-mj{border-color:var(--ink-3);border-left-style:dashed;background:color-mix(in srgb,var(--ink-3) 8%,transparent)}
+.gb-ld{align-content:center}
+.legend2 i.g-key{background:var(--ink-3)}
+.legend2 i.mj{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.6) 0 2px,transparent 2px 5px)}
+.mcomb{margin-bottom:14px}
+.mc-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+@media (max-width:760px){.mc-grid{grid-template-columns:minmax(0,1fr)}}
+.mc-sub{font-size:12.5px;color:var(--ink-3);margin:6px 0 2px}
+.hb-axis{margin-top:-4px}
+.hb-ticks{position:relative;height:14px;margin-right:46px;border-top:1px solid var(--line)}
+.hb-ticks span{position:absolute;left:var(--x);top:2px;transform:translateX(-50%);font-size:11px;color:var(--ink-3)}
+.hb-axlab{font-size:11.5px;color:var(--ink-3);margin:-6px 46px 0 0;text-align:center}
+.mcomb2{margin-bottom:14px}
+.mc2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:760px){.mc2{grid-template-columns:minmax(0,1fr)}}
+.mc2-k{display:block;font:600 11px var(--f-body);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-top:6px}
+.mc2-ans blockquote{margin:4px 0 8px;padding:8px 14px;border-left:3px solid var(--line);font-size:17px;color:var(--ink)}
+.mc2-q{margin:4px 0 0;font-size:15px;color:var(--ink)} .mc2-q small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:2px}
+.mc2-v{display:grid;gap:10px}
+.vd{display:grid;grid-template-columns:150px minmax(0,1fr);gap:2px 12px;align-items:baseline;padding:10px 14px;border-radius:10px;border:1.5px solid}
+.vd-who{font-weight:700;grid-row:span 2}
+.vd-says{color:var(--ink-2);font-style:italic}
+.vd-res{font-weight:600}
+.vd-ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 7%,transparent)} .vd-ok .vd-res{color:var(--good)}
+.vd-bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 6%,transparent)} .vd-bad .vd-res{color:var(--bad)}
+.mc2-tot{border-top:1px solid var(--line);margin-top:14px;padding-top:8px}
+.mc2-nums{display:flex;align-items:center;gap:18px;margin:6px 0 2px}
+.mc2-nums div{display:grid}
+.mc2-nums b{font:700 36px var(--f-display);line-height:1}
+.mc2-nums span{font-size:12.5px;color:var(--ink-3)}
+.n-v1{color:var(--s1)} .n-mj{color:var(--s2)}
+.mc2-arrow{font-size:22px;color:var(--ink-3)}
+.cardline{margin:-2px 0 10px;font-size:14px;color:var(--ink-2)}
+.gb{display:grid;gap:12px;margin:10px 0 4px}
+.gb-row{display:grid;grid-template-columns:minmax(90px,26%) minmax(0,1fr);gap:10px;align-items:center}
+.gb-lab{font-size:14px;color:var(--ink)}
+.gb-all .gb-lab{font-weight:700}
+.gb-all{border-top:1px solid var(--line);padding-top:10px}
+.gb-track{position:relative;display:grid;gap:2px;margin-right:44px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 25%);border-left:1.5px solid var(--ink-3);padding:2px 0}
+.gb-bar{position:relative;height:12px;width:var(--w);min-width:2px;border-radius:0 3px 3px 0}
+.gb-bar span{position:absolute;left:calc(100% + 5px);top:50%;transform:translateY(-50%);font:600 11.5px var(--f-body);color:var(--ink-2);white-space:nowrap}
+.g-full{background:var(--ink-3)} .g-note{background:var(--s1)} .g-log{background:var(--ck)}
+.gb-ticks{position:relative;height:14px;margin-right:44px}
+.gb-ticks span{position:absolute;left:var(--x);transform:translateX(-50%);font-size:11px;color:var(--ink-3)}
+.gb-axlab{font-size:11.5px;color:var(--ink-3);margin-right:44px;text-align:center;margin-top:-6px}
+.gb-axisrow{margin-top:-8px}
 .bgrid,.cgrid,.dgrid,.fairg{margin-bottom:14px}
 .wrow{display:grid;gap:6px;margin:10px 0 14px}
 .wlab{font-size:14px;color:var(--ink-2)}
@@ -588,20 +707,93 @@ mark.xmark{animation:markin .5s ease}
 .pv-a{border-color:var(--s1)} .pv-arrow{color:var(--ink-3)}
 .dgrid p{color:var(--ink-2);font-size:14.5px;line-height:1.55;margin:0}
 @media (prefers-reduced-motion: reduce){.ctile{transition:none}}
+
+.howtest{margin:18px 0 0;border-top:1px solid var(--line);padding-top:14px}
+.htrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:2px 0 12px}
+.ht{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ht b{font:600 15px var(--f-display);color:var(--s1)}
+.ht span{font-size:13px;color:var(--ink-2)}
+.ptl svg{width:100%;height:auto;display:block;margin:4px 0 2px}
+.ptl .pl{font:600 15px var(--f-display);fill:var(--ink)}
+.ptl .pt{font:500 13px var(--f-body);fill:var(--ink-2)}
+.ptl .ps{font:italic 13px var(--f-body);fill:var(--ink-3)}
+.ptl .pax{stroke:var(--line);stroke-width:2}
+.ptl .pticks line{stroke:var(--hollow);stroke-width:1.5}
+.ptl .pbr{fill:none;stroke:var(--ink-3);stroke-width:1.2}
+.ptl .pd{stroke:var(--panel);stroke-width:2}
+.pd-add{fill:var(--good)} .pd-upd{fill:#c98a12} .pd-del{fill:var(--bad)} .pd-ask{fill:var(--ink)}
+.ptl .pq{margin:4px 0 0;color:var(--ink-2);font-size:14px}
+.pgrid{margin-top:16px}
+.pbars{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.pb{display:grid;grid-template-columns:96px minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:14px}
+.pn{color:var(--ink-2)} .pb-m .pn,.pchg .pb-m b{color:var(--s1)}
+.ptr{height:14px;background:color-mix(in srgb,var(--line) 50%,transparent);border-radius:4px;overflow:hidden}
+.ptr i{display:block;height:100%;background:var(--ink-3);border-radius:0 4px 4px 0}
+.pb-m .ptr i{background:var(--s1)}
+.pv{font:600 14px var(--f-mono);color:var(--ink);text-align:right}
+.pchg{display:flex;flex-direction:column;gap:10px;margin:4px 0}
+.pchg div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:14px}
+.pchg b{font-weight:600;color:var(--ink-2)} .pchg span{color:var(--ink)} .pchg em{color:var(--ink-3)}
+.ctiles.tk .tkx{margin:4px 0 0;color:var(--ink-2);font-size:14.5px}
+.tkgrid{margin-top:16px}
+.lessons{margin:4px 0 0;padding-left:20px} .lessons li{margin:6px 0}
+.oq{margin-top:16px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:16px;border-left:4px solid var(--s2);padding:10px 14px;background:var(--panel);border-radius:0 10px 10px 0}
+.oq .label{margin:0}
+.cite .authors sup,.cite .aff sup,.cite .affn sup{font-size:.62em;line-height:0;margin-left:1px;color:var(--ink-3)}
+.cite .aff sup{margin:0 2px 0 0}
+.cite .affn{font-size:13px;color:var(--ink-3);margin-top:4px}
+
+.rchart .legend2{margin:2px 0 4px}
+.rsvg{width:100%;height:auto;display:block}
+.rsvg .rg{stroke:var(--line);stroke-width:1}
+.rsvg .rax{stroke:color-mix(in srgb,var(--line) 60%,transparent);stroke-width:1}
+.rsvg .rt{font:12px var(--f-body);fill:var(--ink-3)}
+.rsvg .rl{font:600 15px var(--f-display);fill:var(--ink)}
+.rsvg .rlab{font:500 12.5px var(--f-body);fill:var(--ink-2)}
+.rsvg .rd{stroke:var(--panel);stroke-width:1.5;opacity:.9}
+.rsvg .rd-llm{fill:var(--ink-3)} .rsvg .rd-mem{fill:var(--s1)}
+.rsvg .rd:hover{opacity:1;stroke:var(--ink);stroke-width:2}
+.grid3.rpat{margin-top:16px} .rpat p{margin:0;font-size:14.5px;color:var(--ink)}
+.rtm{margin-top:16px}
+.rsvg .rbase{stroke:var(--ink-3);stroke-width:1.2}
+.rsvg .rat{font:500 13px var(--f-body);fill:var(--ink-2)}
+
+.rrows{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.rrow{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;align-items:center}
+.rtask{font:600 15px var(--f-display)}
+.rbars{display:flex;flex-direction:column;gap:5px}
+.rb{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px;align-items:center}
+.rtr{position:relative;height:16px;background:color-mix(in srgb,var(--line) 45%,transparent);border-radius:4px}
+.rtr i{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0}
+.rb-llm .rtr i{background:var(--ink-3)} .rb-mem .rtr i{background:var(--s1)}
+.rwh{position:absolute;top:50%;height:2px;margin-top:-1px;background:var(--ink);opacity:.55}
+.rwh::before,.rwh::after{content:"";position:absolute;top:-4px;width:2px;height:10px;background:inherit}
+.rwh::before{left:0}.rwh::after{right:0}
+.rv{font:600 14px var(--f-mono);color:var(--ink)} .rv small{font:400 12px var(--f-body);color:var(--ink-3)}
+.rticks{display:flex;justify-content:space-between;margin-right:102px;font-size:12px;color:var(--ink-3)}
+.ratitle{font-size:13px;color:var(--ink-2);margin-right:102px;text-align:center}
+@media (max-width:560px){.rrow{grid-template-columns:minmax(0,1fr)}}
+.g-think{background:var(--ink-2)} .rb-think .rtr i{background:var(--ink-2)}
+.rbars{gap:4px}
+.cs329 .tag{font:600 13px var(--f-body);color:var(--s1);background:color-mix(in srgb,var(--s1) 12%,transparent);border-radius:6px;padding:4px 10px}
+.vmini{display:inline-block;font:700 10.5px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:#fff;border-radius:999px;padding:2px 8px;margin-right:4px;vertical-align:1px}
+.srcs{margin:16px 0 0;font-size:12.5px;color:var(--ink-3);max-width:none}
+.srcs .label{margin-right:8px}
+.srcs a{color:var(--ink-2)}
 </style>
 
 <div class="wrap">
 <header>
   <div class="brand">From Recall to Forgetting<span>CS329Z paper video · Sam Goncalves</span></div>
   <nav class="dots" id="dots" aria-label="Scenes"></nav>
-  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="notesbtn" aria-pressed="true" title="Show or hide the notes boxes">Notes</button><button class="btn" id="replay" aria-label="Replay this page’s animation" title="Replay this page’s animation" hidden>↻</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
+  <div class="nav"><button class="btn" id="tocbtn" aria-label="Back to contents">☰ Contents</button><button class="btn" id="glossbtn" aria-label="Glossary">Glossary</button><button class="btn" id="replay" aria-label="Replay this page’s animation" title="Replay this page’s animation" hidden>↻</button><button class="btn" id="prev" aria-label="Previous scene">←</button><button class="btn" id="next" aria-label="Next scene">→</button></div>
 </header>
 <main>
 
 <!-- contents -->
 <section class="scene" id="contents" data-name="Contents">
   <p class="kicker">CS329Z paper video · Sam Goncalves</p>
-  <h1>Memora: benchmarking whether memory agents forget</h1>
+  <h1>Memora: benchmarking long-term memory for personalized agents</h1>
   <p class="lede">A review of Uddin et al., “From Recall to Forgetting” (Findings of ACL 2026), and an extension that tests how its judge and answer prompts shape the score. Pick a section, or press → to start.</p>
   <div class="toc" id="toc-grid"></div>
 </section>
@@ -611,8 +803,9 @@ mark.xmark{animation:markin .5s ease}
   <div class="cite">
     <p class="kicker">The paper</p>
     <h1>From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents</h1>
-    <div><div class="authors">Md Nayem Uddin, Kumar Shubham, Eduardo Blanco, Chitta Baral, Gengyu Wang</div>
-    <div class="aff">Arizona State University · Genies · University of Arizona</div></div>
+    <div><div class="authors">Md Nayem Uddin<sup>1,2*</sup>, Kumar Shubham<sup>2</sup>, Eduardo Blanco<sup>3</sup>, Chitta Baral<sup>1</sup>, Gengyu Wang<sup>2</sup></div>
+    <div class="aff"><sup>1</sup>Arizona State University · <sup>2</sup>Genies · <sup>3</sup>University of Arizona</div>
+    <div class="affn"><sup>*</sup>Work done during an internship at Genies.</div></div>
     <dl>
       <dt>Venue</dt><dd>Findings of the Association for Computational Linguistics: ACL 2026, pages 26814–26841</dd>
       <dt>DOI</dt><dd>10.18653/v1/2026.findings-acl.1337</dd>
@@ -627,7 +820,46 @@ mark.xmark{animation:markin .5s ease}
 <section class="scene" id="problem" data-name="The problem" hidden>
   <p class="kicker">The problem</p>
   <h2>Memory has to change, not just be stored</h2>
-  <div class="todo"><div class="label">To build</div><ul><li>Problem & motivation: what problem, and why it matters</li><li>What came before (LoCoMo, LongMemEval, PersonaMem…) and where it falls short: mostly 1–2 sessions back, few updates or deletions (their Table 1)</li><li>Idea: one preference on a timeline, added → updated → deleted</li></ul></div>
+  <p class="lede">Most memory benchmarks test recall: can the agent find something it was told a session or two ago? For memory to stay useful over long time horizons, it has to be updated as things change. Memora’s contribution is a dataset built with more updates and deletions before each question, and more earlier sessions that have to be combined to answer it.</p>
+  <div class="card ptl">
+    <div class="label">One preference over time</div>
+    <svg viewBox="0 0 900 200" role="img" aria-label="A recall benchmark asks about a fact told one or two sessions earlier. Memora adds, updates and deletes a memory over many sessions, then asks about what is true now.">
+      <text class="pl" x="0" y="64">Recall benchmark</text>
+      <line class="pax" x1="150" y1="60" x2="880" y2="60"/>
+      <g class="pticks" id="ptk1"></g>
+      <circle class="pd pd-add" cx="720" cy="60" r="9"/><text class="pt" x="720" y="38" text-anchor="middle">told</text>
+      <rect class="pd pd-ask" x="812" y="52" width="16" height="16" transform="rotate(45 820 60)"/><text class="pt" x="820" y="38" text-anchor="middle">asked</text>
+      <path class="pbr" d="M720 80 v6 H820 v-6"/><text class="ps" x="770" y="102" text-anchor="middle">1–2 sessions back</text>
+
+      <text class="pl" x="0" y="154">Memora</text>
+      <line class="pax" x1="150" y1="150" x2="880" y2="150"/>
+      <g class="pticks" id="ptk2"></g>
+      <circle class="pd pd-add" cx="230" cy="150" r="9"/><text class="pt" x="230" y="128" text-anchor="middle">added</text>
+      <circle class="pd pd-upd" cx="430" cy="150" r="9"/><text class="pt" x="430" y="128" text-anchor="middle">updated</text>
+      <circle class="pd pd-del" cx="640" cy="150" r="9"/><text class="pt" x="640" y="128" text-anchor="middle">deleted</text>
+      <rect class="pd pd-ask" x="812" y="142" width="16" height="16" transform="rotate(45 820 150)"/><text class="pt" x="820" y="128" text-anchor="middle">asked</text>
+      <path class="pbr" d="M230 170 v6 H820 v-6"/><text class="ps" x="525" y="192" text-anchor="middle">many sessions back, and the right answer is what’s true at the time of asking</text>
+    </svg>
+  </div>
+  <div class="grid2 pgrid">
+    <div class="card"><div class="label"><span class="xb xb-paper">The paper</span>Earlier sessions each question draws on</div>
+      <div class="pbars">
+        <div class="pb"><span class="pn">LoCoMo</span><span class="ptr"><i style="width:21.5%"></i></span><span class="pv">1.3</span></div>
+        <div class="pb"><span class="pn">LongMemEval</span><span class="ptr"><i style="width:31.7%"></i></span><span class="pv">1.9</span></div>
+        <div class="pb pb-m"><span class="pn">Memora</span><span class="ptr"><i style="width:88.3%"></i></span><span class="pv">5.3</span></div>
+      </div>
+      <p class="note">Average per question. 94% of LoCoMo’s and 85% of LongMemEval’s questions need at most two. I recounted all three from the released data and got the same picture (Memora 5.6).</p>
+    </div>
+    <div class="card"><div class="label">Changes the memory goes through</div>
+      <div class="pchg">
+        <div><b>LoCoMo</b><span>no updates or deletions recorded</span></div>
+        <div><b>LongMemEval</b><span>78 of 500 questions are about an update, each spanning 2 sessions</span></div>
+        <div class="pb-m"><b>Memora</b><span>2.7 updates or deletions before the average question, up to 11</span></div>
+      </div>
+      <p class="note">LoCoMo and LongMemEval are my counts of their released data; Memora’s figure is from the paper’s Table 1.</p>
+    </div>
+  </div>
+  <p class="srcs"><span class="label">Sources</span>LoCoMo: Maharana et al., “Evaluating Very Long-Term Conversational Memory of LLM Agents,” ACL 2024, <a href="https://aclanthology.org/2024.acl-long.747/">aclanthology.org/2024.acl-long.747</a> · LongMemEval: Wu et al., “LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory,” ICLR 2025, <a href="https://arxiv.org/abs/2410.10813">arXiv:2410.10813</a></p>
 </section>
 
 <!-- 3: how -->
@@ -637,15 +869,14 @@ mark.xmark{animation:markin .5s ease}
   <figure class="pipefig">
     <div class="scroll"><svg class="pipe" viewBox="0 142 1045 626" role="img" aria-labelledby="pipe-t pipe-d"><title id="pipe-t">How Memora is built and scored</title><desc id="pipe-d">Seed data has three parts: persona traits go to the session simulator and to both turn writers; memory types and constraints go only to the simulator. The simulator writes the memory trace, the plan, as two outputs. Each session’s planned change goes to the memory-turn writer and to the checks. The small-talk writer produces neutral sessions and the openings and closings of memory sessions; the memory-turn writer produces memory sessions. The memory-turn writer hands its plan to the checks, which look only at the memory turns plus one turn either side; neutral sessions skip the checks. A failed conversation is rewritten whole. Accepted conversations go two ways: to a memory system (one of six), whose top 50 memories, as text with a relevance score and no dates, go to a shared answer step, GPT-4o-mini with one prompt; or, in the paper’s other setting, to an LLM that reads the whole history. Both get the question and both answers go to the judges. Every state over time goes to the question writer, which produces the question, its date, the criteria and the evidence; only the question and the criteria are used, the date is never read and the evidence is only saved.</desc><defs><marker id="a0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah0"/></marker><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah1"/></marker><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah2"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahp"/></marker><marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aht"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahc"/></marker><marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahs"/></marker><marker id="aq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahq"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahm"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aho"/></marker><pattern id="net" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V7M0 0H7" class="netl"/></pattern><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahr"/></marker><marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahk"/></marker></defs><rect class="grp" x="392" y="200" width="159" height="202" rx="14"/><rect class="nb" x="10" y="165" width="125" height="120" rx="10"/><text class="bt" x="72.5" y="191" text-anchor="middle">Seed data</text><circle class="dot cc" cx="24" cy="211" r="4"/><text class="tcg" x="34" y="215" text-anchor="start">constraints</text><g class="mtypes" tabindex="0" role="button" aria-label="Memory types: preference, activity and goal"><rect class="hit" x="14" y="225" width="118" height="22" rx="4"/><circle class="dot ct" cx="24" cy="236" r="4"/><text class="tct mtu" x="34" y="240" text-anchor="start">memory types</text></g><circle class="dot cp" cx="24" cy="261" r="4"/><text class="tcp" x="34" y="265" text-anchor="start">persona traits</text><path class="lc" d="M135 211H171" marker-end="url(#ac)"/><path class="lt" d="M135 236H171" marker-end="url(#at)"/><path class="lp" d="M135 261H171" marker-end="url(#ap)"/><path class="lp" d="M152 261V380H400" marker-end="url(#ap)"/><path class="lp" d="M372 380V270H400" marker-end="url(#ap)"/><rect class="nb" x="175" y="165" width="180" height="135" rx="10"/><text class="bt" x="265" y="188" text-anchor="middle">Session simulator</text><text class="bs" x="265" y="205" text-anchor="middle">decides what happens</text><circle class="dot d1" cx="189" cy="229" r="4"/><text class="c1s" x="199" y="233" text-anchor="start">session trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="248" text-anchor="start">each session’s change</text><circle class="dot d2" cx="189" cy="269" r="4"/><text class="c2s" x="199" y="273" text-anchor="start">memory trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="288" text-anchor="start">every state over time</text><path class="l1" d="M355 237H400" marker-end="url(#a1)"/><path class="l1" d="M544 222H751" marker-end="url(#a1)"/><path class="l2" d="M265 300V600H501" marker-end="url(#a2)"/><rect class="nb k1" x="404" y="210" width="140" height="84" rx="10"/><text class="bt" x="474" y="231" text-anchor="middle">Memory-turn writer</text><text class="bs" x="474" y="248" text-anchor="middle">LLMs state the</text><text class="bs" x="474" y="263" text-anchor="middle">planned change</text><circle class="dot dm" cx="422" cy="281" r="4"/><text class="tcm" x="432" y="285" text-anchor="start">memory sessions</text><rect class="nb k3" x="404" y="318" width="140" height="74" rx="10"/><text class="bt" x="474" y="339" text-anchor="middle">Small-talk writer‡</text><text class="bs" x="474" y="356" text-anchor="middle">non-memory turns</text><circle class="dot ds" cx="420" cy="374" r="4"/><text class="tcs" x="430" y="378" text-anchor="start">neutral sessions</text><path class="lm" d="M544 281H581" marker-end="url(#am)"/><path class="ls" d="M544 374H566V318H581" marker-end="url(#as)"/><rect class="nb" x="585" y="262" width="124" height="78" rx="10"/><text class="bt" x="647.0" y="288.0" text-anchor="middle">Conversations</text><text class="bs" x="647.0" y="305.0" text-anchor="middle">generated,</text><text class="bs" x="647.0" y="322.0" text-anchor="middle">one per session</text><rect class="gatebg" x="755" y="196" width="22" height="206" rx="4"/><rect class="gate" x="755" y="196" width="22" height="206" rx="4"/><path class="wv1" d="M709 300H755"/><path class="wv2" d="M709 300H755"/><path class="wvg" d="M755 300H777"/><path class="wv1" d="M777 300H826"/><path class="wv2" d="M777 300H826"/><path class="wv0" d="M825 300H826" marker-end="url(#a0)"/><path class="wv1" d="M790 300V410H680V436"/><path class="wv2" d="M790 300V410H680V436"/><path class="wv0" d="M680 435V436" marker-end="url(#a0)"/><text class="gl" x="788" y="214" text-anchor="start">Auto-eval loop</text><text class="gs" x="788" y="230" text-anchor="start">memory grounding + coherence†</text><path class="rej" d="M755 204H745V178H472V196" marker-end="url(#a0)"/><text class="bm" x="608" y="170" text-anchor="middle">return to writers if failed</text><rect class="nb" x="585" y="440" width="190" height="96" rx="10"/><text class="bt" x="680.0" y="456.5" text-anchor="middle">LLM, history in context</text><text class="bs" x="680.0" y="473.5" text-anchor="middle">GPT-5.2 · Claude Sonnet 4.5</text><text class="bs" x="680.0" y="490.5" text-anchor="middle">Gemini 3 Pro · Qwen3-32B</text><text class="bm" x="680.0" y="507.5" text-anchor="middle">with and without thinking</text><circle class="dot dn" cx="599" cy="522" r="4"/><text class="tcg" x="609" y="526" text-anchor="start">answer</text><rect class="nb" x="830" y="265" width="190" height="118" rx="10"/><text class="bt" x="925" y="286" text-anchor="middle">Memory system</text><text class="bm" x="925" y="302" text-anchor="middle">agents: one of six</text><text class="bs" x="925" y="320" text-anchor="middle">A-Mem · LangMem</text><text class="bs" x="925" y="335" text-anchor="middle">Mem-0 · MemoBase</text><text class="bs" x="925" y="350" text-anchor="middle">MemoryOS§ · Nemori</text><circle class="dot dr" cx="844" cy="368" r="4"/><text class="tcr" x="854" y="372" text-anchor="start">top 50 memories</text><path class="lr" d="M925 383V423" marker-end="url(#ar)"/><rect class="nb" x="830" y="427" width="190" height="80" rx="10"/><text class="bt" x="925.0" y="445" text-anchor="middle">Answer step</text><text class="bs" x="925.0" y="462" text-anchor="middle">GPT-4o-mini, no thinking</text><text class="bs" x="925.0" y="479" text-anchor="middle">one prompt for every system</text><circle class="dot dn" cx="844" cy="493" r="4"/><text class="tcg" x="854" y="497" text-anchor="start">answer</text><rect class="nb k2" x="505" y="560" width="170" height="108" rx="10"/><text class="bt" x="590" y="582" text-anchor="middle">Question writer</text><circle class="dot dq" cx="519" cy="600" r="4"/><text class="tcq" x="529" y="604" text-anchor="start">the question</text><circle class="dot dk" cx="519" cy="624" r="4"/><text class="tck" x="529" y="628" text-anchor="start">criteria</text><text class="bm" x="529" y="643" text-anchor="start">yes/no, with</text><text class="bm" x="529" y="657" text-anchor="start">expected answers</text><path class="lq" d="M675 600H700V540" marker-end="url(#aq)"/><path class="lq" d="M700 600H799V458H826" marker-end="url(#aq)"/><path class="lk" d="M675 624H745V648H826" marker-end="url(#ak)"/><a class="jlink" href="#fama" aria-label="Go to the Scoring scene: how FAMA is computed"><g class="jl-in"><rect class="nb jbox" x="830" y="600" width="190" height="70" rx="10"/><text class="bt" x="925.0" y="622.0" text-anchor="middle">3 judges, majority</text><text class="bs" x="925.0" y="639.0" text-anchor="middle">score each answer</text><text class="bs jfama" x="925.0" y="656.0" text-anchor="middle">on the criteria → <tspan class="jf">FAMA</tspan></text><circle class="jgo" cx="1006" cy="614" r="8"/><path class="jgo-a" d="M1002.5 614H1009M1006 611L1009 614L1006 617"/></g></a><path class="l0" d="M775 522H785V618H826" marker-end="url(#a0)"/><path class="l0" d="M925 507V596" marker-end="url(#a0)"/><text class="gs" x="20" y="640" text-anchor="start">* Neither trace is released, and the simulator is not seeded,</text><text class="gs" x="20" y="655" text-anchor="start">so they cannot be regenerated.</text><text class="gs" x="20" y="675" text-anchor="start">† Coherence is described in the paper but not in the released code.</text><text class="gs" x="20" y="690" text-anchor="start">The code checks memory grounding only: the memory turns ± 1 turn,</text><text class="gs" x="20" y="705" text-anchor="start">one LLM rather than three, and neutral sessions skip the loop.</text><text class="gs" x="20" y="725" text-anchor="start">‡ The small-talk writer also writes the openings and closings of memory sessions.</text><text class="gs" x="20" y="745" text-anchor="start">§ The paper names MemoryOS and links memoryos.com, a memory-training app;</text><text class="gs" x="20" y="760" text-anchor="start">the released code integrates MemOS (MemTensor), a different system.</text></svg></div>
     <div class="flowbar"><button class="btn" id="pipe-play" type="button" aria-pressed="false">▶ Play the flow</button><span class="flowhint">dots follow each kind of data, stage by stage</span></div>
-    <figcaption>The simulator writes two traces, and they feed everything downstream: the session trace (each session’s planned change) goes to the memory-turn writer, which hands it on to the auto-eval loop, and the memory trace (every state over time) goes to the question writer, which turns it into the criteria. Small-talk turns get only the persona traits; neutral sessions skip the auto-eval loop, and nothing from small talk reaches the criteria. Question-writer outputs are wired as the released evaluation code uses them; both settings’ answers go to the same judges.</figcaption>
   </figure>
-  <div class="todo"><div class="label">To build</div><ul><li>How the system works, sketchable: environment (persona sessions over weeks), memory (the memory system's store), tools (retrieval), models (answering model, judges), control loop (ingest → question → retrieve → answer → judge)</li><li>Two settings: whole history in an LLM's context, and memory systems answered by GPT-4o-mini</li><li>Three tasks: remembering, reasoning, recommending</li><li>Idea: a stepped flow diagram, one real question going through it</li></ul></div>
 </section>
 
 <!-- 4: fama -->
 <section class="scene" id="fama" data-name="Scoring" hidden>
   <p class="kicker">Scoring</p>
-  <h2>FAMA: credit for what's current, a penalty for what isn't</h2>
+  <h2>Forgetting-Aware Memory Accuracy (FAMA)</h2>
+  <p class="lede">Credit for current memories, a penalty for outdated ones.</p>
   <div class="fama" id="fama-demo">
     <div class="fq"><span class="fq-who">sales_manager asks</span>“I'm looking for a good book to read. Any suggestions?”</div>
     <p class="fhint">Each question comes with yes/no checks. Tap a check to change what the answer says.</p>
@@ -665,14 +896,29 @@ mark.xmark{animation:markin .5s ease}
     <div class="fctl"><button class="btn" type="button" id="fama-reset">Reset to a perfect answer</button>
       <details class="fmath"><summary>The formula</summary><p class="fm"></p></details></div>
   </div>
-  <div class="todo"><div class="label">To build</div><ul><li>Memory presence vs forgetting absence criteria (in the demo above; script the words)</li></ul></div>
 </section>
 
 <!-- 5: results -->
 <section class="scene" id="results" data-name="What they found" hidden>
   <p class="kicker">What they found</p>
-  <h2>Results</h2>
-  <div class="todo"><div class="label">To build</div><ul><li>Evidence: baselines (4 LLMs with and without thinking, 6 memory systems), key results, and what they actually show</li><li>Cite their table; note Tables 4–5 are sums (0–300), not percentages</li><li>Their three patterns: worse over longer timelines, task-dependent, forgetting penalty is large</li></ul></div>
+  <h2>Which setup wins depends on the task</h2>
+  <p class="lede">They ran two settings on the same questions: strong LLMs reading the whole history, and six memory systems answered by GPT-4o-mini. Every answer is scored with FAMA by a three-judge majority vote.</p>
+  <div class="card rchart"><div class="label"><span class="xb xb-paper">The paper</span>Weekly FAMA by task (their Table 3)</div>
+    <div class="legend2"><span><i class="g-full"></i>LLM reading the whole history, thinking off (4 models)</span><span><i class="g-think"></i>same 4 LLMs, thinking on</span><span><i class="g-mem"></i>memory systems answered by GPT-4o-mini (6)</span></div>
+    <div class="rrows">
+<div class="rrow"><div class="rtask">Remembering</div><div class="rbars"><div class="rb rb-llm"><span class="rtr"><i style="width:24.8%"></i><b class="rwh" style="left:20.4%;width:7.1%"></b></span><span class="rv">25 <small>(20–28)</small></span></div><div class="rb rb-think"><span class="rtr"><i style="width:24.3%"></i><b class="rwh" style="left:21.0%;width:5.5%"></b></span><span class="rv">24 <small>(21–27)</small></span></div><div class="rb rb-mem"><span class="rtr"><i style="width:57.3%"></i><b class="rwh" style="left:40.4%;width:31.4%"></b></span><span class="rv">57 <small>(40–72)</small></span></div></div></div>
+<div class="rrow"><div class="rtask">Recommending</div><div class="rbars"><div class="rb rb-llm"><span class="rtr"><i style="width:48.4%"></i><b class="rwh" style="left:43.6%;width:11.2%"></b></span><span class="rv">48 <small>(44–55)</small></span></div><div class="rb rb-think"><span class="rtr"><i style="width:49.8%"></i><b class="rwh" style="left:43.4%;width:10.0%"></b></span><span class="rv">50 <small>(43–53)</small></span></div><div class="rb rb-mem"><span class="rtr"><i style="width:53.5%"></i><b class="rwh" style="left:35.0%;width:33.9%"></b></span><span class="rv">53 <small>(35–69)</small></span></div></div></div>
+<div class="rrow"><div class="rtask">Reasoning</div><div class="rbars"><div class="rb rb-llm"><span class="rtr"><i style="width:6.0%"></i><b class="rwh" style="left:4.7%;width:2.0%"></b></span><span class="rv">6 <small>(5–7)</small></span></div><div class="rb rb-think"><span class="rtr"><i style="width:5.3%"></i><b class="rwh" style="left:4.0%;width:2.7%"></b></span><span class="rv">5 <small>(4–7)</small></span></div><div class="rb rb-mem"><span class="rtr"><i style="width:17.6%"></i><b class="rwh" style="left:2.0%;width:28.0%"></b></span><span class="rv">18 <small>(2–30)</small></span></div></div></div>
+    <div class="rrow raxis"><div></div><div class="rticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div></div>
+    <div class="rrow"><div></div><div class="ratitle">FAMA score (out of 100)</div></div>
+    </div>
+    <p class="note">Bars show each group’s average; thin lines show the range across the group.</p>
+  </div>
+  <div class="grid3 rpat">
+    <div class="card"><div class="label">Task-dependent</div><p>All six memory systems beat every LLM on remembering. Recommending is close, and reasoning is low for all systems (30 at best).</p></div>
+    <div class="card"><div class="label">Longer timelines score lower</div><p>Most systems drop from weekly to quarterly. MemoBase falls from 44 to 15 on remembering.</p></div>
+    <div class="card"><div class="label">The forgetting penalty</div><p>Scoring only what’s mentioned overstates performance. The penalty for outdated items affects memory systems more as timelines get longer.</p></div>
+  </div>
 </section>
 
 <!-- 6: critique -->
@@ -681,122 +927,134 @@ mark.xmark{animation:markin .5s ease}
   <h2>Beyond the limits they admit</h2>
   <div class="admit"><span class="label">They already say</span><span class="chip">simulated conversations</span><span class="chip">a narrow set of personas and memory types</span><span class="chip">LLM judges</span><span class="chip">no latency or cost</span></div>
   <div class="ctiles">
-    <a class="ctile t-a" href="#fair"><span class="cl">A</span><h3>Is the comparison fair?</h3><ul><li><span class="cn">1</span>Conclusions about memory without holding the model fixed</li></ul><span class="ct">Tested: same model, two ways (E50) →</span></a>
-    <a class="ctile t-b" href="#mention"><span class="cl">B</span><h3>Does the score measure memory?</h3><ul><li><span class="cn">4</span>A fixed checklist, scored yes or no</li><li><span class="cn">5</span>Forgetting treated as one rule: never mention</li></ul><span class="ct">Tested: no-memory answers, judge prompts (E44, E45, E49, E51) →</span></a>
-    <a class="ctile t-c" href="#dates"><span class="cl">C</span><h3>Does the agent get what it needs?</h3><ul><li><span class="cn">6</span>No dates, anywhere</li></ul><span class="ct">Tested: the answer prompt (E46, E47) →</span></a>
-    <a class="ctile t-d" href="#checked"><span class="cl">D</span><h3>Was the data checked?</h3><ul><li><span class="cn">2</span>Scored against the plan, not the conversation</li><li><span class="cn">3</span>Neutral sessions never checked</li><li><span class="cn">7</span>Too little checking of their own pipeline</li></ul><span class="ct">From my project’s own checks (E06, E26) →</span></a>
+    <a class="ctile t-a" href="#fair"><span class="cl">A</span><h3>Models vs agents</h3><ul><li><span class="cn">1</span>Conclusions about memory agents drawn without an appropriate control condition</li></ul><span class="ct">Tested: same model, two ways →</span></a>
+    <a class="ctile t-b" href="#mention"><span class="cl">B</span><h3>The FAMA measure</h3><ul><li><span class="cn">2</span>Scored against a one-size-fits-all template</li><li><span class="cn">3</span>A black-and-white view of forgetting</li></ul><span class="ct">Tested: no-memory answers, judge prompts →</span></a>
+    <a class="ctile t-c" href="#dates"><span class="cl">C</span><h3>Time-dependent updates with no clock</h3><ul><li><span class="cn">4</span>No date for the question, the memories, or “today”</li></ul><span class="ct">Tested: the answer prompt →</span></a>
+    <a class="ctile t-d" href="#checked"><span class="cl">D</span><h3>Gaps in their pipeline</h3><ul><li><span class="cn">5</span>Scored against the plan, not the conversation</li><li><span class="cn">6</span>Neutral sessions leak unchecked memories</li></ul><span class="ct">From my project’s own checks →</span></a>
   </div>
-  <div class="admit cs329"><span class="label">Connects to CS329Z</span><span class="chip">LLM-as-judge: who checks the checker</span><span class="chip">memory: what to write, what to forget</span><span class="chip">context engineering: what the answer step is shown</span></div>
+  <div class="howtest">
+    <div class="label">How I tested</div>
+    <div class="htrow">
+      <div class="ht"><b>Qwen3.6-35B</b><span>writes the answers</span></div>
+      <div class="ht"><b>Gemma 4 26B</b><span>judges them, checked against 70 of my hand labels</span></div>
+      <div class="ht"><b>45 questions</b><span>3 development personas; the other 7 stay held out for my project</span></div>
+      <div class="ht"><b>All local</b><span>no paid calls, and every number reruns from a script</span></div>
+    </div>
+    <div class="armrow keyrow"><span class="label">How to read the next pages</span><span class="chip"><span class="xb xb-paper">The paper</span>what they claim or did</span><span class="chip"><span class="xb xb-test">My test</span>new runs I did for this video</span><span class="chip"><span class="xb xb-count">My count of their data</span>counting their released files</span><span class="chip"><span class="xb xb-proj">From my project</span>checks I’d already done</span></div>
+  </div>
+  <div class="admit cs329"><span class="label">Relevant CS329Z topics</span><span class="tag">Memory</span><span class="tag">Evaluation</span><span class="tag">LLM-as-judge</span><span class="tag">Context engineering</span></div>
 </section>
 
 <!-- 7: setup -->
-<section class="scene" id="setup" data-name="My extension" hidden>
-  <p class="kicker">My extension</p>
-  <h2>Testing their claims with my project’s harness</h2>
-  <p class="lede">For my course project I had already built a memory agent on Memora and checked its judge against my own labels. That gave me a tested setup to probe the paper with, and some of the evidence below comes straight from that work.</p>
-  <div class="stiles">
-    <div class="stile"><div class="stat">2</div><div><b>local models</b><span>Qwen3.6-35B writes the answers and Gemma 4 26B judges them, on my own machine.</span></div></div>
-    <div class="stile"><div class="stat">45</div><div><b>questions</b><span>The 3 development personas, 15 questions each. The other 7 personas stay held out for my project.</span></div></div>
-    <div class="stile"><div class="stat">70</div><div><b>hand labels</b><span>I labelled judge verdicts myself, so I know how far to trust each judge.</span></div></div>
-    <div class="stile"><div class="stat">0</div><div><b>paid calls</b><span>Every model call is local and cached, so each number here reruns from a numbered script.</span></div></div>
-  </div>
-  <div class="armrow"><span class="label">Two kinds of memory in my agent</span><span class="chip"><b>note</b>: the agent’s own summary of what was said</span><span class="chip"><b>log</b>: the user’s own words, kept as said</span></div>
-</section>
-<section class="scene" id="fair" data-name="A · Is the comparison fair?" hidden>
-  <p class="kicker">A · Is the comparison fair?</p>
-  <h2>Two things change at once</h2>
+<section class="scene" id="fair" data-name="A · Models vs agents" hidden>
+  <p class="kicker">A · Models vs agents</p>
+  <h2>Modifying two independent variables at once</h2>
+  <p class="claim"><span class="xb xb-paper">The paper</span>The paper concludes that memory agents offer only marginal improvements, but its agents and its LLMs answer with different models.</p>
   <div class="cmp">
     <div class="cmprow"><div class="cmplab">Their comparison</div>
       <div class="pill"><span class="m">GPT-4o-mini</span> + <span class="k">memory system</span></div><span class="vs">vs</span>
       <div class="pill"><span class="m">GPT-5.2, Sonnet 4.5, Gemini 3 Pro, Qwen3-32B</span> + <span class="k">whole history</span></div>
       <span class="diffs bad">model and memory both change</span></div>
-    <div class="cmprow"><div class="cmplab">My test (E50)</div>
-      <div class="pill"><span class="m">Qwen</span> + <span class="k">top-50 memories</span></div><span class="vs">vs</span>
-      <div class="pill"><span class="m">Qwen</span> + <span class="k">whole history</span></div>
+    <div class="cmprow"><div class="cmplab">My test</div>
+      <div class="pill"><span class="m">Qwen3.6-35B</span> + <span class="k">top-50 memories</span></div><span class="vs">vs</span>
+      <div class="pill"><span class="m">Qwen3.6-35B</span> + <span class="k">whole history</span></div>
       <span class="diffs good">only memory changes</span></div>
   </div>
-  <div class="grid2 fairg">
-    <div class="card"><div class="label">How much of a weekly history each model saw</div>
-      <div class="hb"><div class="hb-row"><div class="hb-lab">Most models</div><div class="hb-bars"><div class="hb-bar b-gray" style="--w:100.00%" title="all of it"><span>100%</span></div></div></div><div class="hb-row"><div class="hb-lab">Qwen3-32B</div><div class="hb-bars"><div class="hb-bar b-warn" style="--w:46.00%" title="about 18.7k of about 40k tokens"><span>46%</span></div></div><div class=hb-note>their code’s budget for its 41k window</div></div></div>
-      <p class="note">History about 40k tokens with Qwen’s tokenizer (E50). Their code counts with OpenAI’s tokenizer, so the share is approximate.</p></div>
-    <div class="card" id="fair-result"><div class="label">Same model (Qwen), FAMA out of 100, all 45 questions</div><div class="legend2"><span><i class="b-v1"></i>our judge (judge_v1)</span><span><i class="b-mj"></i>Memora’s judge prompt</span></div><div class="hb"><div class="hb-row"><div class="hb-lab">Whole history<small>about 40k tokens, nothing cut</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:17.8%" title="judge_v1"><span>17.8</span></div><div class="hb-bar b-mj" style="--w:15.5%" title="Memora’s judge"><span>15.5</span></div></div></div><div class="hb-row"><div class="hb-lab">Retrieved memories<small>note arm</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:67.9%" title="judge_v1"><span>67.9</span></div><div class="hb-bar b-mj" style="--w:55.3%" title="Memora’s judge"><span>55.3</span></div></div></div><div class="hb-row"><div class="hb-lab">Retrieved memories<small>log arm</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:55.2%" title="judge_v1"><span>55.2</span></div><div class="hb-bar b-mj" style="--w:51.8%" title="Memora’s judge"><span>51.8</span></div></div></div></div><p class="note">Memories score higher on every task; only on recommending, log arm, is the gap within noise. Overall paired difference, whole history − memories: −36 to −50, every 95% interval below −24. Reading the whole history, Qwen often asked for details it had been given, or said it had no access. (E50)</p></div>
+  <div class="fairg">
+    <div class="card" id="fair-result"><div class="label"><span class="xb xb-test">My test</span>Same model (Qwen3.6-35B), same questions: FAMA by task</div><div class="legend2"><span><i class="g-full"></i>reads the whole history</span><span><i class="g-mem"></i>retrieved memories</span><span><i class="g-key"></i>solid: our judge</span><span><i class="g-key mj"></i>striped: Memora’s judge prompt</span></div><div class="gb"><div class="gb-row gb-head"><div></div><div></div><div class="gb-ldh">Memories’ lead<br><small>average, with 95% range; top our judge, bottom Memora’s</small></div></div><div class="gb-row"><div class="gb-lab">Remembering</div><div class="gb-track"><div class="gb-bar g-full" style="--w:10.2%"><span>10.2</span></div><div class="gb-bar g-mem" style="--w:82.7%"><span>82.7</span></div><div class="gb-gap"></div><div class="gb-bar g-full mj" style="--w:10.5%"><span>10.5</span></div><div class="gb-bar g-mem mj" style="--w:77.9%"><span>77.9</span></div></div><div class="gb-ld"><span class="ld l-v1"><b>+72</b> <small>(62 to 83)</small></span><span class="ld l-mj"><b>+67</b> <small>(55 to 80)</small></span></div></div><div class="gb-row"><div class="gb-lab">Reasoning</div><div class="gb-track"><div class="gb-bar g-full" style="--w:4.4%"><span>4.4</span></div><div class="gb-bar g-mem" style="--w:37.8%"><span>37.8</span></div><div class="gb-gap"></div><div class="gb-bar g-full mj" style="--w:4.4%"><span>4.4</span></div><div class="gb-bar g-mem mj" style="--w:37.8%"><span>37.8</span></div></div><div class="gb-ld"><span class="ld l-v1"><b>+33</b> <small>(13 to 56)</small></span><span class="ld l-mj"><b>+33</b> <small>(13 to 56)</small></span></div></div><div class="gb-row"><div class="gb-lab">Recommending</div><div class="gb-track"><div class="gb-bar g-full" style="--w:38.7%"><span>38.7</span></div><div class="gb-bar g-mem" style="--w:83.3%"><span>83.3</span></div><div class="gb-gap"></div><div class="gb-bar g-full mj" style="--w:31.7%"><span>31.7</span></div><div class="gb-bar g-mem mj" style="--w:50.2%"><span>50.2</span></div></div><div class="gb-ld"><span class="ld l-v1"><b>+45</b> <small>(23 to 66)</small></span><span class="ld l-mj"><b>+19</b> <small>(2 to 33)</small></span></div></div><div class="gb-row gb-all"><div class="gb-lab">All questions</div><div class="gb-track"><div class="gb-bar g-full" style="--w:17.8%"><span>17.8</span></div><div class="gb-bar g-mem" style="--w:67.9%"><span>67.9</span></div><div class="gb-gap"></div><div class="gb-bar g-full mj" style="--w:15.5%"><span>15.5</span></div><div class="gb-bar g-mem mj" style="--w:55.3%"><span>55.3</span></div></div><div class="gb-ld"><span class="ld l-v1"><b>+50</b> <small>(38 to 62)</small></span><span class="ld l-mj"><b>+40</b> <small>(28 to 51)</small></span></div></div><div class="gb-row gb-axisrow"><div></div><div class="gb-ticks"><span style="--x:0%">0</span><span style="--x:25%">25</span><span style="--x:50%">50</span><span style="--x:75%">75</span><span style="--x:100%">100</span></div><div></div></div><div class="gb-row"><div></div><div class="gb-axlab">FAMA, out of 100</div><div></div></div></div><p class="note">Under both judges, retrieved memories beat reading the whole history on every task; every range stays above zero. Reading the whole history, Qwen often asked for details it had been given, or said it had no access.</p></div>
   </div>
-  <div class="vrow"><span class="vtag v-contradicts">Contradicts</span><span class="vtext">With the model held fixed, retrieved memory is far from marginal: it beats reading the whole history by 36 to 50 points. How much memory helps depends on the model, which is exactly what their comparison can’t separate.</span></div>
+  <div class="vrow"><span class="vtag v-contradicts">Contradicts</span><span class="vtext">With the model held fixed, retrieved memory beats reading the whole history by 40 to 50 points overall. How much memory helps depends on the model, which is not adequately controlled for in their experiments.</span></div>
 </section>
 
 <!-- 8: mention -->
-<section class="scene" id="mention" data-name="B · Does the score measure memory?" hidden>
-  <p class="kicker">B · Does the score measure memory?</p>
-  <h2>Silence scores, and the judge decides what “mention” means</h2>
+<section class="scene" id="mention" data-name="B · The FAMA measure" hidden>
+  <p class="kicker">B · The FAMA measure</p>
+  <h2>Some points need no memory, and “mention” is left to the judge</h2>
+  <p class="claim"><span class="xb xb-paper">The paper</span>The paper scores every answer against a fixed checklist: anything listed must appear, anything outdated must not, and an LLM judge decides what “mention” means.</p>
   <div class="grid2 bgrid">
-    <div class="card"><div class="label">Recommending score, out of 100</div>
+    <div class="card"><div class="label"><span class="xb xb-test">My test</span>Recommending score, out of 100</div>
       <div class="legend2"><span><i class="b-v1"></i>our judge (judge_v1)</span><span><i class="b-mj"></i>Memora’s judge prompt</span></div>
-      <div class="hb"><div class="hb-ref" style="--a:46.00%;--b:51.00%"><span>their systems: 46–51</span></div><div class="hb-row"><div class="hb-lab">Says nothing<small>rubric only, no model</small></div><div class="hb-bars"><div class="hb-bar b-gray" style="--w:35.30%" title="computed from the rubric (E51)"><span>35.3</span></div></div></div><div class="hb-row"><div class="hb-lab">No memory<small>question only</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:29.80%" title="judge_v1"><span>29.8</span></div><div class="hb-bar b-mj" style="--w:28.40%" title="Memora’s judge"><span>28.4</span></div></div></div><div class="hb-row"><div class="hb-lab">No memory<small>persona profile</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:32.00%" title="judge_v1"><span>32.0</span></div><div class="hb-bar b-mj" style="--w:36.20%" title="Memora’s judge"><span>36.2</span></div></div></div><div class="hb-row"><div class="hb-lab">Memories<small>note arm</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:83.30%" title="judge_v1"><span>83.3</span></div><div class="hb-bar b-mj" style="--w:50.20%" title="Memora’s judge"><span>50.2</span></div></div></div><div class="hb-row"><div class="hb-lab">Memories<small>log arm</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:52.10%" title="judge_v1"><span>52.1</span></div><div class="hb-bar b-mj" style="--w:39.80%" title="Memora’s judge"><span>39.8</span></div></div></div></div>
-      <p class="note">With no memory at all, an answer earns about 30. Knowing the persona adds 2 to 8 points. (E49, E51; 15 questions, wide intervals)</p></div>
-    <div class="card"><div class="label">Why silence scores: the checks an answer passes by naming nothing</div>
+      <div class="hb"><div class="hb-ref" style="--a:46.00%;--b:51.00%"><span>paper’s averages: 46–51</span></div><div class="hb-row"><div class="hb-lab">Says nothing<small>rubric only, no model</small></div><div class="hb-bars"><div class="hb-bar b-gray" style="--w:35.30%" title="computed from the rubric"><span>35.3</span></div></div></div><div class="hb-row"><div class="hb-lab">No memory<small>question only</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:29.80%" title="judge_v1"><span>29.8</span></div><div class="hb-bar b-mj" style="--w:28.40%" title="Memora’s judge"><span>28.4</span></div></div></div><div class="hb-row"><div class="hb-lab">No memory<small>persona profile</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:32.00%" title="judge_v1"><span>32.0</span></div><div class="hb-bar b-mj" style="--w:36.20%" title="Memora’s judge"><span>36.2</span></div></div></div><div class="hb-row"><div class="hb-lab">Retrieved memories<small>same questions</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:83.30%" title="judge_v1"><span>83.3</span></div><div class="hb-bar b-mj" style="--w:50.20%" title="Memora’s judge"><span>50.2</span></div></div></div></div>
+      <p class="note">With no memory at all, an answer earns about 30. Knowing the persona adds 2 to 8 points. The shaded band is the paper’s own average recommending score per timeline (agents 46, LLMs 48, LLMs with thinking 51), for scale only: different models and judges. (15 questions, so the ranges are wide.)</p></div>
+    <div class="card"><div class="label"><span class="xb xb-count">My count of their data</span>Points awarded to a non-answer</div>
       <div class="wrow"><div class="wlab"><b>12 of 34</b> “should mention” checks are really “avoid recommending X”</div><div class="waffle" role="img" aria-label="12 of 34"><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class="on-a"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div>
       <div class="wrow"><div class="wlab"><b>36 of 36</b> “should leave out” checks</div><div class="waffle" role="img" aria-label="36 of 36"><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i><i class="on-b"></i></div></div>
       <p class="note">Development personas’ recommending questions. Across all 10 personas, 45 of 129 “should mention” checks are avoid checks.</p></div>
   </div>
-  <div class="grid2 bgrid">
-    <div class="card mquote"><div class="label">Does this count as mentioning South America?</div>
-      <blockquote>“…you’re no longer keen on South America…”</blockquote>
-      <div class="mq-v"><span><b>My labelling rule</b> no, it sets it aside</span><span><b>Memora’s judge prompt</b> yes, it mentions it</span></div></div>
-    <div class="card"><div class="label">Same answers, two judge prompts (E45)</div>
-      <div class="hb"><div class="hb-row"><div class="hb-lab">Forgetting score<small>Gemma on Qwen’s answers</small></div><div class="hb-bars"><div class="hb-bar b-v1" style="--w:84.50%" title="judge_v1"><span>84.5</span></div><div class="hb-bar b-mj" style="--w:53.10%" title="Memora’s judge"><span>53.1</span></div></div></div></div>
-      <p class="note">82 of 296 forgetting verdicts flip, every one toward “mentioned”. The judges don’t favour their own model family’s answers (E44).</p></div>
-  </div>
-  <div class="card tmap"><div class="label">Each “task” is really one kind of memory (all 150 weekly questions, E52)</div>
-    <div class="tm-rows">
-      <div class="tm-row"><span class="tm-task">Recommending</span><span class="tm-arrow">=</span><span class="tm-bar"><span class="tm-mem m-pref" style="flex:50">preferences 50</span></span><span class="tm-f">forgetting checks: 50 of 50</span></div>
-      <div class="tm-row"><span class="tm-task">Reasoning</span><span class="tm-arrow">=</span><span class="tm-bar"><span class="tm-mem m-act" style="flex:30">expense & step logs 30</span><span class="tm-mem m-goal" style="flex:20">goals 20</span></span><span class="tm-f bad">forgetting checks: 0 of 50</span></div>
-      <div class="tm-row"><span class="tm-task">Remembering</span><span class="tm-arrow">=</span><span class="tm-bar"><span class="tm-mem m-doc" style="flex:38">work documents 38</span><span class="tm-mem m-act" style="flex:12">to-dos, calendar 12</span></span><span class="tm-f">forgetting checks: 48 of 50</span></div>
+  <div class="card mcomb2"><div class="label"><span class="xb xb-test">My test</span>One sentence, two verdicts</div>
+    <div class="mc2">
+      <div class="mc2-ans"><span class="mc2-k">The answer said</span><blockquote>“…you’re no longer keen on South America…”</blockquote>
+        <span class="mc2-k">The check</span><p class="mc2-q">Does the answer mention the user’s old preference for South America? <small>Expected answer: no</small></p></div>
+      <div class="mc2-v">
+        <div class="vd vd-ok"><span class="vd-who">Our judge</span><span class="vd-says">reads it as not a mention: it sets it aside</span><span class="vd-res">✓ credited with forgetting</span></div>
+        <div class="vd vd-bad"><span class="vd-who">Memora’s judge prompt</span><span class="vd-says">reads it as a mention: it names it</span><span class="vd-res">✕ penalised for remembering</span></div>
+      </div>
     </div>
-    <p class="note">So “reasoning is hardest” could just as well mean “summing a long log is hardest”. Reasoning is 8 question texts asked 50 times (“What is my total food spending this week?”), and an outdated number only shows up as a wrong total.</p></div>
-  <div class="vrow"><span class="vtag v-complicates">Complicates</span><span class="vtext">A third of a typical recommending score needs no memory, and the forgetting penalty depends on how a judge reads one word.</span></div>
+    <div class="mc2-tot"><span class="mc2-k">All 296 checks like this one across my answers: share where the answer was credited with forgetting</span>
+      <div class="mc2-nums"><div><b class="n-v1">84%</b><span>our judge</span></div><div class="mc2-arrow">→</div><div><b class="n-mj">53%</b><span>Memora’s judge prompt</span></div></div>
+      <p class="note">Using the same answers and judge model, and changing only the judge prompt, every one of the 82 verdicts that flipped went from “forgot” to “remembered”. The paper does not specify which interpretation is intended.</p></div>
+  </div>
+  <div class="vrow"><span class="vtag v-complicates">Complicates</span><span class="vtext">About a third of a typical recommending score requires no memory at all, and how the judge interprets the word “mention” moves the forgetting score by more than 30 points.</span></div>
 </section>
 
 <!-- 9: dates -->
-<section class="scene" id="dates" data-name="C · Does the agent get what it needs?" hidden>
-  <p class="kicker">C · Does the agent get what it needs?</p>
-  <h2>Same memories, different prompt: dates matter</h2>
+<section class="scene" id="dates" data-name="C · Time-dependent updates with no clock" hidden>
+  <p class="kicker">C · Time-dependent updates with no clock</p>
+  <h2>Time awareness for time-dependent updates</h2>
+  <p class="claim"><span class="xb xb-paper">The paper</span>The paper measures time-dependent memory updates, but its answer step can’t tell time.</p>
   <div class="grid2 cgrid">
-    <div class="card"><div class="label">One memory, as each prompt shows it</div>
+    <div class="card"><div class="label"><span class="xb xb-paper">Their setup</span>One memory, as each prompt shows it</div>
       <div class="pline"><span class="pl-who">Memora’s prompt</span><code>3. Prefers Tana French (relevance: 0.82)</code></div>
       <div class="pline"><span class="pl-who">My prompt</span><code>[3] (2025-05-02) Prefers Tana French</code><span class="pl-rule">+ “when memories disagree, the newer one is true now”</span></div>
       <p class="note">Memora’s answer step gets no dates and no today. Mine gets both, newest first.</p></div>
-    <div class="card"><div class="label">FAMA change against my prompt, same 50 memories (E46)</div>
-      <div class="db"><div class="db-axis"><span>−20</span><span>−10</span><span>0</span></div><div class="db-row"><div class="db-lab">Memora’s prompt <b class="db-v2">-7.7</b></div><div class="db-track"><div class="db-bar" style="--w:38.5%"></div><i class="db-ci" style="--l:20.0%;--r:99.5%"></i></div></div><div class="db-row"><div class="db-lab">Memora’s prompt + dates <b class="db-v2">-4.3</b></div><div class="db-track"><div class="db-bar" style="--w:21.5%"></div></div></div><div class="db-row"><div class="db-lab">Mine, by relevance order <b class="db-v2">-4.1</b></div><div class="db-track"><div class="db-bar" style="--w:20.5%"></div></div></div><div class="db-row"><div class="db-lab">Mine, dates hidden <b class="db-v2">-11.9</b></div><div class="db-track"><div class="db-bar" style="--w:59.5%"></div><i class="db-ci" style="--l:1.5%;--r:74.5%"></i></div></div></div>
-      <p class="note">Both arms, 90 answers. In the log arm, the user’s own words, hiding dates costs about 20. Lines show 95% intervals where computed.</p></div>
+    <div class="card"><div class="label"><span class="xb xb-test">My test</span>What each prompt change costs</div>
+      <div class="legend2 lc3-key"><span><i class="k-nd"></i>no dates in the prompt</span><span><i class="k-d"></i>dates shown</span></div><div class="lc lc3"><div class="lc-head"><span></span><span>← worse than my prompt · better →</span></div><div class="lc-row lc-nd"><div class="lc-lab">Memora’s prompt<small>no dates, ordered by relevance</small></div><div class="lc-track lc2" data-g="1" style="--z:78.6%"><i class="lc-g" style="left:7.1%"></i><i class="lc-g" style="left:25.0%"></i><i class="lc-g" style="left:42.9%"></i><i class="lc-g" style="left:60.7%"></i><i class="lc-g" style="left:96.4%"></i><div class="lc-bar" style="left:51.1%;width:27.5%;border-radius:4px 0 0 4px"></div><i class="lc-ci" style="--l:21.4%;--r:78.2%"></i><span class="lc-v3" style="right:calc(100% - 21.4% + 6px)">-7.7</span></div></div><div class="lc-row lc-d"><div class="lc-lab">Memora’s prompt + dates<small>only change: each memory’s date shown</small></div><div class="lc-track lc2" data-g="1" style="--z:78.6%"><i class="lc-g" style="left:7.1%"></i><i class="lc-g" style="left:25.0%"></i><i class="lc-g" style="left:42.9%"></i><i class="lc-g" style="left:60.7%"></i><i class="lc-g" style="left:96.4%"></i><div class="lc-bar" style="left:63.2%;width:15.4%;border-radius:4px 0 0 4px"></div><i class="lc-ci" style="--l:35.7%;--r:89.6%"></i><span class="lc-v3" style="right:calc(100% - 35.7% + 6px)">-4.3</span></div></div><div class="lc-row lc-d"><div class="lc-lab">My prompt, relevance order<small>dates kept, order changed</small></div><div class="lc-track lc2" data-g="1" style="--z:78.6%"><i class="lc-g" style="left:7.1%"></i><i class="lc-g" style="left:25.0%"></i><i class="lc-g" style="left:42.9%"></i><i class="lc-g" style="left:60.7%"></i><i class="lc-g" style="left:96.4%"></i><div class="lc-bar" style="left:63.9%;width:14.6%;border-radius:4px 0 0 4px"></div><i class="lc-ci" style="--l:36.4%;--r:89.3%"></i><span class="lc-v3" style="right:calc(100% - 36.4% + 6px)">-4.1</span></div></div><div class="lc-row lc-nd"><div class="lc-lab">My prompt, dates hidden<small>order kept, dates removed</small></div><div class="lc-track lc2" data-g="1" style="--z:78.6%"><i class="lc-g" style="left:7.1%"></i><i class="lc-g" style="left:25.0%"></i><i class="lc-g" style="left:42.9%"></i><i class="lc-g" style="left:60.7%"></i><i class="lc-g" style="left:96.4%"></i><div class="lc-bar" style="left:36.1%;width:42.5%;border-radius:4px 0 0 4px"></div><i class="lc-ci" style="--l:8.2%;--r:60.4%"></i><span class="lc-v3" style="right:calc(100% - 8.2% + 6px)">-11.9</span></div></div><div class="lc-axis"><span></span><div class="lc-ticks"><span style="--x:7.1%">-20</span><span style="--x:25.0%">-15</span><span style="--x:42.9%">-10</span><span style="--x:60.7%">-5</span><span style="--x:78.6%">0</span><span style="--x:96.4%">+5</span></div></div><div class="lc-axis"><span></span><div class="lc-axl">change in FAMA compared with my prompt (0 = no change)</div></div></div>
+      <p class="note">Same model, same 50 retrieved memories for every answer; only the prompt changes. Bars are the average change; error bars show the 95% range.</p></div>
   </div>
-  <div class="vrow"><span class="vtag v-complicates">Complicates</span><span class="vtext">Part of what looks like a memory failure is the answer prompt. Order hardly matters, dates do, and the result holds under Memora’s own judge (E47).</span></div>
+  <div class="vrow"><span class="vtag v-complicates">Complicates</span><span class="vtext">Part of what looks like a memory failure is the answer prompt. A sense of time matters more than memory ordering, and this held under Memora’s judge prompt.</span></div>
 </section>
-<section class="scene" id="checked" data-name="D · Was the data checked?" hidden>
-  <p class="kicker">D · Was the data checked?</p>
-  <h2>Checks I ran before trusting the data</h2>
+<section class="scene" id="checked" data-name="D · Gaps in their pipeline" hidden>
+  <p class="kicker">D · Gaps in their pipeline</p>
+  <h2>What their pipeline doesn’t check</h2>
+  <p class="claim"><span class="xb xb-paper">The paper</span>The paper scores against the simulator’s plan, and never checks the conversations against it, or the neutral sessions at all.</p>
   <div class="grid2 dgrid">
-    <div class="card"><div class="label">Planned change vs what the user said</div>
+    <div class="card"><div class="label"><span class="xb xb-proj">From my project</span>Planned change vs what the user said</div>
       <div class="pvs"><div class="pv-a"><span>planned (session 36)</span>update liked artist: Queen → Guns N’ Roses</div><div class="pv-arrow">→</div><div class="pv-b"><span>said</span>“I used to be all about Queen, but now I’m really into Guns N’ Roses!”</div></div>
-      <p>On my development personas nearly every planned change is said in the conversation (E26), so scoring against the plan mostly works. The paper never checks this. Activity records are another matter: the plan holds the whole record, the user says only what changed, and only about a third of planned values appear word for word (E06).</p></div>
-    <div class="card"><div class="label">A fact from a session nobody checked</div>
+      <p>On my development personas nearly every planned change is said in the conversation, so scoring against the plan mostly works. The paper never checks this. Activity records are another matter: the plan holds the whole record, the user says only what changed, and only about a third of planned values appear word for word.</p></div>
+    <div class="card"><div class="label"><span class="xb xb-proj">From my project</span>A fact from a neutral session</div>
       <blockquote>“…you find reading relaxing and are interested in <mark>ancient philosophies</mark> and how their ideas resonate today…”</blockquote>
       <p>Found while hand-labelling: this came from a neutral small-talk session. It’s true, relevant and helpful, and the rubric can’t see it. Their quality loop skips those sessions entirely.</p></div>
   </div>
-  <div class="vrow"><span class="vtag v-confirms">Confirms</span><span class="vtext">The plan and the conversation mostly agree, so their scores hold up here. They just never showed it.</span></div>
+  <div class="vrow"><span class="vtag v-confirms">Mostly confirms</span><span class="vtext">The plan and the conversations mostly agree. Facts leaking in from unchecked neutral sessions seem rare in what I read, but I don’t have a count.</span></div>
 </section>
 
 <!-- limitations -->
-<section class="scene" id="limitations" data-name="Limitations" hidden>
-  <p class="kicker">Limitations</p>
-  <h2>What these results can and can’t tell us</h2>
-  <div class="grid2" id="limits"></div>
-</section>
-
 <!-- 10: takeaways -->
 <section class="scene" id="takeaways" data-name="Takeaways" hidden>
   <p class="kicker">Takeaways</p>
-  <h2>What this means for builders</h2>
-  <div class="todo"><div class="label">To build</div><ul><li>Does the extension confirm, complicate or contradict their claims?</li><li>1–2 lessons for agent builders</li><li>An open question or follow-up experiment</li></ul></div>
+  <h2>What to take from it</h2>
+  <div class="ctiles tk">
+    <a class="ctile t-a" href="#fair"><span class="cl">A</span><h3>Models vs agents</h3><p class="tkx"><span class="vmini v-contradicts">Contradicts</span> With the model held fixed, retrieved memories beat the whole history by 40 to 50 points.</p></a>
+    <a class="ctile t-b" href="#mention"><span class="cl">B</span><h3>The FAMA measure</h3><p class="tkx"><span class="vmini v-complicates">Complicates</span> About a third of a recommending score needs no memory, and how the judge reads “mention” moves forgetting by more than 30 points.</p></a>
+    <a class="ctile t-c" href="#dates"><span class="cl">C</span><h3>Time-dependent updates with no clock</h3><p class="tkx"><span class="vmini v-complicates">Complicates</span> Hiding the dates costs about 12 points against my prompt. Part of what looks like a memory failure is the prompt.</p></a>
+    <a class="ctile t-d" href="#checked"><span class="cl">D</span><h3>Gaps in their pipeline</h3><p class="tkx"><span class="vmini v-confirms">Mostly confirms</span> The plan and the conversations mostly agree, but nothing checks that, and neutral sessions add facts nobody tracks.</p></a>
+  </div>
+  <div class="grid2 tkgrid">
+    <div class="card"><div class="label">If you build memory agents</div>
+      <ol class="lessons">
+        <li><b>Test memory on the model you’ll actually use.</b> Their memory systems all ran on GPT-4o-mini, so their scores say little about your model. On Qwen3.6-35B, memory added 40 to 50 points.</li>
+        <li><b>Check how a benchmark’s judge reads your answers.</b> Changing only the judge prompt moved my forgetting score by more than 30 points.</li>
+        <li><b>Give the answer step a sense of time.</b> Show it when each memory was saved and what “today” is; hiding the dates cost about 12 points.</li>
+      </ol></div>
+    <div class="card"><div class="label">What my results can’t tell you</div>
+      <ul class="limits-list">
+        <li><b>Weekly timeline only.</b> Memora also has monthly and quarterly timelines, with about 4 and 13 times as many sessions.</li>
+        <li><b>45 questions.</b> Only the 3 development personas; the other 7 stay held out for my project, so the ranges are wide.</li>
+        <li><b>My models, not theirs.</b> I used Qwen3.6-35B to answer and Gemma to judge, not GPT-4o-mini and their three-judge vote, so compare the differences within my runs, not my scores with their table.</li>
+        <li><b>My judge is an LLM too.</b> Checked against 70 of my hand labels, not a full human study.</li>
+      </ul></div>
+  </div>
+  <div class="oq"><span class="label">Open question</span><span>When is it appropriate to remember what has been forgotten? How does this change based on our expectations for computational systems?</span></div>
 </section>
 
 <!-- glossary -->
@@ -858,63 +1116,44 @@ addEventListener('keydown', e=>{ if(e.target.closest('input,textarea')) return;
   if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); if(!(fc && fc.prev && fc.prev())) go(cur-1); } });
 
 
-/* Limitations: add entries to LIMITS; each group renders as a card */
-const LIMITS = [
-  {g:'My extension', items:[
-    {t:'Weekly timeline only', d:'Memora also has monthly and quarterly timelines, with about 4 and 13 times as many sessions; I ran only the weekly one.'},
-    {t:'3 development personas only', d:'Out of 10. The other 7 are held out for my course project, so every number here comes from 90 questions (45 per memory arm).'}
-  ]}
-];
-(function(){ const box=document.getElementById('limits');
-  box.innerHTML = LIMITS.map(gr=>`<div class="card"><div class="label">${gr.g}</div>${gr.items.length
-    ? '<ul class="limits-list">'+gr.items.map(x=>`<li><b>${x.t}.</b> ${x.d}</li>`).join('')+'</ul>'
-    : '<p class="limits-empty">None yet.</p>'}</div>`).join(''); })();
+/* Extension scenes: start with the paper, reveal my findings step by step (button, or → / Space) */
+['fair','mention','dates','checked'].forEach(id=>{
+  const sc=document.getElementById(id); if(!sc) return;
+  const steps=[...sc.querySelectorAll('.cmprow, .card, .vrow')].filter(el=>
+    (el.classList.contains('cmprow') && /My test/.test(el.textContent)) ||
+    (el.classList.contains('card') && el.querySelector('.xb-test, .xb-count, .xb-proj')) ||
+    el.classList.contains('vrow'));
+  if(!steps.length) return;
+  const bar=document.createElement('div'); bar.className='rvbar';
+  bar.innerHTML='<button class="btn rv-btn" type="button"></button><span class="rv-count" aria-live="polite"></span>';
+  const claim=sc.querySelector('.claim'); (sc.querySelector(':scope > .cmp')||claim||sc.querySelector('h2')).after(bar);
+  const btn=bar.querySelector('.rv-btn'), cnt=bar.querySelector('.rv-count');
+  let n=0;
+  const reduce=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function show(){
+    const wasIntro=sc.classList.contains('rv-intro'), flip=wasIntro && n>0 && !reduce && claim;
+    const els=[claim,bar,sc.querySelector(':scope > .cmp')].filter(Boolean);
+    const before=flip ? els.map(el=>el.getBoundingClientRect()) : null;
+    sc.classList.toggle('rv-intro', n===0);
+    if(flip){ els.forEach((el,k)=>{ const a=before[k], b=el.getBoundingClientRect();
+      el.animate([{transform:`translate(${a.left-b.left}px,${a.top-b.top}px) scale(${a.width/b.width})`,transformOrigin:'top left'},{transform:'none',transformOrigin:'top left'}],{duration:550,easing:'cubic-bezier(.2,.7,.2,1)'}); });
+      [...sc.children].forEach(el=>{ if(!el.matches('.cnav,.kicker,h2,.claim,.rvbar,.cmp,.scene-notes')) el.animate([{opacity:0},{opacity:1}],{duration:500,delay:200,fill:'backwards'}); }); }
+    steps.forEach((el,i)=>el.classList.toggle('rv-hid', i>=n));
+    const last=steps[n-1]; if(last && n>0){ last.classList.remove('rv-in'); void last.offsetWidth; last.classList.add('rv-in'); }
+    btn.textContent = n<steps.length ? (n===0 ? 'Show what I found ▸' : 'Next ▸') : 'Start over ↺';
+    cnt.textContent = n ? `${n} of ${steps.length}` : `${steps.length} findings hidden`; }
+  btn.onclick=()=>{ n = n<steps.length ? n+1 : 0; show(); };
+  FLOWCTL[id]={ next(){ if(n<steps.length){ n++; show(); return true; } return false; },
+                prev(){ if(n>0){ n--; show(); return true; } return false; },
+                reset(){ n=0; show(); } };
+  show();
+});
 
-/* Notes: a working box on each scene, saved to the artifact's database (only the owner and editors can read them) */
-(function(){
-  const boxes = {};
-  scenes.forEach(sc=>{ if(sc.id==='contents'||sc.id==='glossary') return;
-    const w=document.createElement('div'); w.className='scene-notes';
-    w.innerHTML='<div class="sn-head"><span class="label">My notes for this scene</span><span class="sn-status" aria-live="polite"></span></div><textarea aria-label="Notes for '+sc.dataset.name+'" placeholder="Notes, script lines, things to show, limitations…"></textarea>';
-    sc.appendChild(w); boxes[sc.id]={ta:w.querySelector('textarea'), st:w.querySelector('.sn-status'), dirty:false, saving:false, again:false, timer:null, last:''};
-  });
-  const toggle=document.getElementById('notesbtn');
-  let shown=true; try{ shown = localStorage.getItem('memora-notes-shown')!=='0'; }catch(e){}
-  function applyShown(){ document.body.classList.toggle('hide-notes', !shown); toggle.setAttribute('aria-pressed', shown?'true':'false'); }
-  toggle.onclick=()=>{ shown=!shown; try{ localStorage.setItem('memora-notes-shown', shown?'1':'0'); }catch(e){} applyShown(); };
-  applyShown();
-  const all=Object.values(boxes);
-  if(!(window.claude && typeof window.claude.use==='function')){ document.body.classList.add('no-notes'); return; }
-  all.forEach(b=>{ b.ta.disabled=true; b.st.textContent='Loading…'; });
-  window.claude.use('db').then(db=>{
-    if(!db){ all.forEach(b=>{ b.st.textContent='Notes can’t be saved in this view'; }); return; }
-    const col=db.collection('notes');
-    let loaded=false;
-    const slow=setTimeout(()=>{ if(!loaded) all.forEach(b=>{ b.st.textContent='Can’t reach saved notes yet'; }); }, 10000);
-    col.onSnapshot(snap=>{
-      if(!snap.metadata.fromCache){ clearTimeout(slow); }
-      const got={}; snap.docs.forEach(d=>{ const v=d.data(); got[d.id]=(v && typeof v.text==='string') ? v.text : ''; });
-      Object.entries(boxes).forEach(([id,b])=>{
-        if(!loaded){ b.ta.disabled=false; b.st.textContent=''; }
-        if(got[id]!==undefined && !b.dirty){ if(document.activeElement!==b.ta && b.ta.value!==got[id]) b.ta.value=got[id]; b.last=got[id]; }
-      });
-      loaded=true;
-    }, ()=>{ clearTimeout(slow); all.forEach(b=>{ b.st.textContent='Notes unavailable right now'; }); });
-    async function save(id){ const b=boxes[id];
-      if(b.saving){ b.again=true; return; }
-      const text=b.ta.value;
-      if(text===b.last){ b.dirty=false; b.st.textContent='Saved'; return; }
-      b.saving=true; b.st.textContent='Saving…';
-      try{ await col.doc(id).set({text, scene: document.getElementById(id).dataset.name, updated: new Date().toISOString()}); b.last=text; b.st.textContent='Saved'; }
-      catch(e){ b.st.textContent = (e && e.code==='invalid_argument') ? 'Read-only for you' : 'Not saved yet; keep typing to retry'; }
-      b.saving=false; b.dirty = b.ta.value!==b.last;
-      if(b.again){ b.again=false; if(b.dirty) save(id); } }
-    Object.entries(boxes).forEach(([id,b])=>{
-      b.ta.addEventListener('input',()=>{ b.dirty=true; b.st.textContent='Editing…'; clearTimeout(b.timer); b.timer=setTimeout(()=>save(id), 900); });
-      b.ta.addEventListener('blur',()=>{ if(b.dirty){ clearTimeout(b.timer); save(id); } });
-    });
-  });
-})();
+
+(function(){ const NS='http://www.w3.org/2000/svg';
+  [['ptk1',60],['ptk2',150]].forEach(([id,y])=>{ const g=document.getElementById(id); if(!g) return;
+    for(let x=170;x<=870;x+=25){ const l=document.createElementNS(NS,'line'); l.setAttribute('x1',x); l.setAttribute('x2',x); l.setAttribute('y1',y-5); l.setAttribute('y2',y+5); g.appendChild(l);} }); })();
+
 /* Glossary: definitions, auto-linked terms with hover definitions, and a searchable glossary scene */
 
 const GLOSS = [
@@ -1153,6 +1392,18 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
   }
   document.getElementById('fama-reset').addEventListener('click',()=>{ st.p.fill(true); st.f.fill(0); st.x.fill(false); render(); });
   render();
+})();
+
+/* ---------- Back to the critique overview, and A–D switcher, on the extension scenes ---------- */
+(function(){
+  const sub=[['fair','A','t-a','Models vs agents'],['mention','B','t-b','The FAMA measure'],['dates','C','t-c','Time-dependent updates with no clock'],['checked','D','t-d','Gaps in their pipeline']];
+  sub.map(x=>x[0]).forEach(id=>{
+    const sc=document.getElementById(id); if(!sc) return;
+    const nav=document.createElement('nav'); nav.className='cnav'; nav.setAttribute('aria-label','Critique sections');
+    nav.innerHTML='<a href="#critique">← All four questions</a><span class="sep"></span>'
+      + sub.map(([sid,l,cls,t])=>`<a class="ltr ${cls}${sid===id?' cur':''}" href="#${sid}" title="${l} · ${t}" aria-label="${l}: ${t}"${sid===id?' aria-current="page"':''}>${l}</a>`).join('');
+    sc.insertBefore(nav, sc.firstElementChild);
+  });
 })();
 </script>
 </body></html>
