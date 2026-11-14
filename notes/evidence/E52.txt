@@ -1,0 +1,52 @@
+# Evidence E52
+script:       scripts/explore/E52_task_memory_types.py
+run at:       2026-11-13T18:30:57-08:00
+memrecon:     a7730be (scripts clean)
+Memora data:  a6493188
+exit status:  0
+------------------------------------------------------------
+== all 10 weekly personas: 150 questions ==
+  Memory each task draws on (from question_id):
+    remembering   n= 50  work content 38, activity: todos 8, activity: calendar 4
+    reasoning     n= 50  activity: food 20, goal 20, activity: steps 10
+    recommending  n= 50  preference 50
+  Which tasks each memory feeds:
+    activity      reasoning 30, remembering 12
+    goal          reasoning 20
+    preference    recommending 50
+    work content  remembering 38
+  Templates (distinct question texts, digits masked) and questions with forgetting sub-questions:
+    remembering    40 distinct texts for  50 questions; with forgetting sub-questions: 48 of 50
+    reasoning       8 distinct texts for  50 questions; with forgetting sub-questions: 0 of 50
+         10  What is my total food spending this week?
+         10  How many total steps have I taken this week?
+         10  Am I meeting my daily step goal?
+         10  How much have I spent on coffee this week?
+          6  Am I meeting my coffee budget goal?
+          2  Am I meeting my lunch budget goal?
+          1  Am I meeting my grocery budget goal?
+          1  Am I meeting my breakfast budget goal?
+    recommending   17 distinct texts for  50 questions; with forgetting sub-questions: 50 of 50
+
+== development personas: 45 questions ==
+  Memory each task draws on (from question_id):
+    remembering   n= 15  work content 13, activity: todos 2
+    reasoning     n= 15  activity: food 6, goal 6, activity: steps 3
+    recommending  n= 15  preference 15
+  Which tasks each memory feeds:
+    activity      reasoning 9, remembering 2
+    goal          reasoning 6
+    preference    recommending 15
+    work content  remembering 13
+  Templates (distinct question texts, digits masked) and questions with forgetting sub-questions:
+    remembering    14 distinct texts for  15 questions; with forgetting sub-questions: 13 of 15
+    reasoning       7 distinct texts for  15 questions; with forgetting sub-questions: 0 of 15
+          3  What is my total food spending this week?
+          3  How many total steps have I taken this week?
+          3  Am I meeting my daily step goal?
+          3  How much have I spent on coffee this week?
+          1  Am I meeting my lunch budget goal?
+          1  Am I meeting my breakfast budget goal?
+          1  Am I meeting my coffee budget goal?
+    recommending   10 distinct texts for  15 questions; with forgetting sub-questions: 15 of 15
+
