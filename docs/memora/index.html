@@ -116,7 +116,9 @@ details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0
 #gsearch{font:15px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px;width:min(100%,360px);margin-bottom:18px}
 #gsearch:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
 .gcols{columns:2 360px;column-gap:28px}
-.ggroup{break-inside:avoid;margin-bottom:18px}
+.ggroup{break-inside:auto;margin-bottom:18px}
+.ggroup .label{break-after:avoid}
+.gitem{break-inside:avoid}
 .ggroup dl{margin:0}
 .gitem{padding:8px 10px;border-radius:8px;transition:background .6s}
 .gitem dt{font:700 15px var(--f-display);color:var(--ink)}
@@ -159,7 +161,7 @@ details td,details th{border-bottom:1px solid var(--line);padding:3px 10px 3px 0
 .fchip.xon .ic{background:var(--ink-3)}
 .fans{border-left:3px solid var(--line);padding:2px 0 2px 14px}
 .fans-l{font:600 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
-.fans-t{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink);max-width:70ch}
+.fans-t{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink);max-width:none}
 .fans-t span{border-radius:4px;padding:1px 3px;transition:background .25s}
 .fans-t .g{background:color-mix(in srgb,var(--good) 16%,transparent)}
 .fans-t .b{background:color-mix(in srgb,var(--bad) 16%,transparent)}
@@ -780,6 +782,26 @@ mark.xmark{animation:markin .5s ease}
 .srcs{margin:16px 0 0;font-size:12.5px;color:var(--ink-3);max-width:none}
 .srcs .label{margin-right:8px}
 .srcs a{color:var(--ink-2)}
+#pipe-stage{min-width:24ch;font-size:14px;color:var(--ink-2)}
+.flowbar .btn:disabled{opacity:.4;cursor:default}
+.fnote{margin:8px 2px 0;font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.fchip.favoid{border:2px dashed #c98a12;background:color-mix(in srgb,#c98a12 8%,var(--panel))}
+.fchip.favoid .lab::after{content:"avoid check";margin-left:8px;font:700 10px var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:#a06a00;background:color-mix(in srgb,#c98a12 18%,transparent);border-radius:4px;padding:2px 6px;vertical-align:1px}
+.fnote{border-left:2px dashed #c98a12;padding-left:8px}
+.ptl .parc{fill:none;stroke-width:1.8;stroke-dasharray:4 4;opacity:.85}
+.ptl .pa-g{stroke:var(--good)} .ptl .pa-y{stroke:#c98a12} .ptl .pa-r{stroke:var(--bad)}
+.fchip .tx{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}
+.fchip .fqq{font:400 11.5px/1.35 var(--f-body);color:var(--ink-3)}
+.fchip .tx{flex:1 1 auto}
+.fchip .st{flex:0 0 112px;text-align:right;align-self:center}
+.ftpl{margin:-2px 0 8px;font-size:12.5px;line-height:1.4;color:var(--ink-2)}
+.ftpl em{font-style:normal;color:var(--ink-3);margin-left:4px}
+.fchips .ftpl-in{margin:6px 0 -2px}
+.ftpl em{white-space:nowrap}
+.fchips .ftpl-in{font-size:12px;letter-spacing:-.005em}
+.grid2.rpat{margin-top:16px}
+.rconc{border:1.5px solid var(--s1);background:color-mix(in srgb,var(--s1) 7%,var(--panel))}
+.rconc .label{color:var(--s1)}
 </style>
 
 <div class="wrap">
@@ -822,23 +844,27 @@ mark.xmark{animation:markin .5s ease}
   <h2>Memory has to change, not just be stored</h2>
   <p class="lede">Most memory benchmarks test recall: can the agent find something it was told a session or two ago? For memory to stay useful over long time horizons, it has to be updated as things change. Memora’s contribution is a dataset built with more updates and deletions before each question, and more earlier sessions that have to be combined to answer it.</p>
   <div class="card ptl">
-    <div class="label">One preference over time</div>
-    <svg viewBox="0 0 900 200" role="img" aria-label="A recall benchmark asks about a fact told one or two sessions earlier. Memora adds, updates and deletes a memory over many sessions, then asks about what is true now.">
+    <div class="label">What a question needs from earlier sessions</div>
+    <svg viewBox="0 0 900 262" role="img" aria-label="In a recall benchmark the answer needs one fact told one or two sessions earlier. In Memora the answer needs three items: one added, one added then updated, and one added then deleted.">
       <text class="pl" x="0" y="64">Recall benchmark</text>
       <line class="pax" x1="150" y1="60" x2="880" y2="60"/>
       <g class="pticks" id="ptk1"></g>
-      <circle class="pd pd-add" cx="720" cy="60" r="9"/><text class="pt" x="720" y="38" text-anchor="middle">told</text>
+      <path class="parc pa-g" d="M400 70 Q610.0 114 820 70"/>
+      <circle class="pd pd-add" cx="400" cy="60" r="9"/><text class="pt" x="400" y="38" text-anchor="middle">added</text>
       <rect class="pd pd-ask" x="812" y="52" width="16" height="16" transform="rotate(45 820 60)"/><text class="pt" x="820" y="38" text-anchor="middle">asked</text>
-      <path class="pbr" d="M720 80 v6 H820 v-6"/><text class="ps" x="770" y="102" text-anchor="middle">1–2 sessions back</text>
+      <text class="ps" x="610" y="122" text-anchor="middle">the answer needs one fact</text>
 
-      <text class="pl" x="0" y="154">Memora</text>
-      <line class="pax" x1="150" y1="150" x2="880" y2="150"/>
+      <text class="pl" x="0" y="174">Memora</text>
+      <line class="pax" x1="150" y1="170" x2="880" y2="170"/>
       <g class="pticks" id="ptk2"></g>
-      <circle class="pd pd-add" cx="230" cy="150" r="9"/><text class="pt" x="230" y="128" text-anchor="middle">added</text>
-      <circle class="pd pd-upd" cx="430" cy="150" r="9"/><text class="pt" x="430" y="128" text-anchor="middle">updated</text>
-      <circle class="pd pd-del" cx="640" cy="150" r="9"/><text class="pt" x="640" y="128" text-anchor="middle">deleted</text>
-      <rect class="pd pd-ask" x="812" y="142" width="16" height="16" transform="rotate(45 820 150)"/><text class="pt" x="820" y="128" text-anchor="middle">asked</text>
-      <path class="pbr" d="M230 170 v6 H820 v-6"/><text class="ps" x="525" y="192" text-anchor="middle">many sessions back, and the right answer is what’s true at the time of asking</text>
+      <path class="parc pa-g" d="M230 180 Q525.0 248 820 180"/><path class="parc pa-y" d="M460 180 Q640.0 228 820 180"/><path class="parc pa-r" d="M680 180 Q750.0 208 820 180"/>
+      <circle class="pd pd-add" cx="230" cy="170" r="9"/><text class="pt" x="230" y="148" text-anchor="middle">added</text>
+      <circle class="pd pd-upd" cx="340" cy="170" r="9"/><text class="pt" x="340" y="148" text-anchor="middle">added</text>
+      <circle class="pd pd-upd pd-op" cx="460" cy="170" r="9"/><text class="pt" x="460" y="148" text-anchor="middle">updated</text>
+      <circle class="pd pd-del" cx="570" cy="170" r="9"/><text class="pt" x="570" y="148" text-anchor="middle">added</text>
+      <circle class="pd pd-del pd-op" cx="680" cy="170" r="9"/><text class="pt" x="680" y="148" text-anchor="middle">deleted</text>
+      <rect class="pd pd-ask" x="812" y="162" width="16" height="16" transform="rotate(45 820 170)"/><text class="pt" x="820" y="148" text-anchor="middle">asked</text>
+      <text class="ps" x="525" y="254" text-anchor="middle">the answer needs the current state of three facts, including one that was deleted</text>
     </svg>
   </div>
   <div class="grid2 pgrid">
@@ -848,7 +874,7 @@ mark.xmark{animation:markin .5s ease}
         <div class="pb"><span class="pn">LongMemEval</span><span class="ptr"><i style="width:31.7%"></i></span><span class="pv">1.9</span></div>
         <div class="pb pb-m"><span class="pn">Memora</span><span class="ptr"><i style="width:88.3%"></i></span><span class="pv">5.3</span></div>
       </div>
-      <p class="note">Average per question. 94% of LoCoMo’s and 85% of LongMemEval’s questions need at most two. I recounted all three from the released data and got the same picture (Memora 5.6).</p>
+      <p class="note">Average per question. 94% of LoCoMo’s and 85% of LongMemEval’s questions need at most two. My recount from their released data closely aligns (1.3, 1.9 and 5.6).</p>
     </div>
     <div class="card"><div class="label">Changes the memory goes through</div>
       <div class="pchg">
@@ -867,8 +893,8 @@ mark.xmark{animation:markin .5s ease}
   <p class="kicker">How Memora works</p>
   <h2>From simulated users to scored answers</h2>
   <figure class="pipefig">
-    <div class="scroll"><svg class="pipe" viewBox="0 142 1045 626" role="img" aria-labelledby="pipe-t pipe-d"><title id="pipe-t">How Memora is built and scored</title><desc id="pipe-d">Seed data has three parts: persona traits go to the session simulator and to both turn writers; memory types and constraints go only to the simulator. The simulator writes the memory trace, the plan, as two outputs. Each session’s planned change goes to the memory-turn writer and to the checks. The small-talk writer produces neutral sessions and the openings and closings of memory sessions; the memory-turn writer produces memory sessions. The memory-turn writer hands its plan to the checks, which look only at the memory turns plus one turn either side; neutral sessions skip the checks. A failed conversation is rewritten whole. Accepted conversations go two ways: to a memory system (one of six), whose top 50 memories, as text with a relevance score and no dates, go to a shared answer step, GPT-4o-mini with one prompt; or, in the paper’s other setting, to an LLM that reads the whole history. Both get the question and both answers go to the judges. Every state over time goes to the question writer, which produces the question, its date, the criteria and the evidence; only the question and the criteria are used, the date is never read and the evidence is only saved.</desc><defs><marker id="a0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah0"/></marker><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah1"/></marker><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah2"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahp"/></marker><marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aht"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahc"/></marker><marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahs"/></marker><marker id="aq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahq"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahm"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aho"/></marker><pattern id="net" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V7M0 0H7" class="netl"/></pattern><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahr"/></marker><marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahk"/></marker></defs><rect class="grp" x="392" y="200" width="159" height="202" rx="14"/><rect class="nb" x="10" y="165" width="125" height="120" rx="10"/><text class="bt" x="72.5" y="191" text-anchor="middle">Seed data</text><circle class="dot cc" cx="24" cy="211" r="4"/><text class="tcg" x="34" y="215" text-anchor="start">constraints</text><g class="mtypes" tabindex="0" role="button" aria-label="Memory types: preference, activity and goal"><rect class="hit" x="14" y="225" width="118" height="22" rx="4"/><circle class="dot ct" cx="24" cy="236" r="4"/><text class="tct mtu" x="34" y="240" text-anchor="start">memory types</text></g><circle class="dot cp" cx="24" cy="261" r="4"/><text class="tcp" x="34" y="265" text-anchor="start">persona traits</text><path class="lc" d="M135 211H171" marker-end="url(#ac)"/><path class="lt" d="M135 236H171" marker-end="url(#at)"/><path class="lp" d="M135 261H171" marker-end="url(#ap)"/><path class="lp" d="M152 261V380H400" marker-end="url(#ap)"/><path class="lp" d="M372 380V270H400" marker-end="url(#ap)"/><rect class="nb" x="175" y="165" width="180" height="135" rx="10"/><text class="bt" x="265" y="188" text-anchor="middle">Session simulator</text><text class="bs" x="265" y="205" text-anchor="middle">decides what happens</text><circle class="dot d1" cx="189" cy="229" r="4"/><text class="c1s" x="199" y="233" text-anchor="start">session trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="248" text-anchor="start">each session’s change</text><circle class="dot d2" cx="189" cy="269" r="4"/><text class="c2s" x="199" y="273" text-anchor="start">memory trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="288" text-anchor="start">every state over time</text><path class="l1" d="M355 237H400" marker-end="url(#a1)"/><path class="l1" d="M544 222H751" marker-end="url(#a1)"/><path class="l2" d="M265 300V600H501" marker-end="url(#a2)"/><rect class="nb k1" x="404" y="210" width="140" height="84" rx="10"/><text class="bt" x="474" y="231" text-anchor="middle">Memory-turn writer</text><text class="bs" x="474" y="248" text-anchor="middle">LLMs state the</text><text class="bs" x="474" y="263" text-anchor="middle">planned change</text><circle class="dot dm" cx="422" cy="281" r="4"/><text class="tcm" x="432" y="285" text-anchor="start">memory sessions</text><rect class="nb k3" x="404" y="318" width="140" height="74" rx="10"/><text class="bt" x="474" y="339" text-anchor="middle">Small-talk writer‡</text><text class="bs" x="474" y="356" text-anchor="middle">non-memory turns</text><circle class="dot ds" cx="420" cy="374" r="4"/><text class="tcs" x="430" y="378" text-anchor="start">neutral sessions</text><path class="lm" d="M544 281H581" marker-end="url(#am)"/><path class="ls" d="M544 374H566V318H581" marker-end="url(#as)"/><rect class="nb" x="585" y="262" width="124" height="78" rx="10"/><text class="bt" x="647.0" y="288.0" text-anchor="middle">Conversations</text><text class="bs" x="647.0" y="305.0" text-anchor="middle">generated,</text><text class="bs" x="647.0" y="322.0" text-anchor="middle">one per session</text><rect class="gatebg" x="755" y="196" width="22" height="206" rx="4"/><rect class="gate" x="755" y="196" width="22" height="206" rx="4"/><path class="wv1" d="M709 300H755"/><path class="wv2" d="M709 300H755"/><path class="wvg" d="M755 300H777"/><path class="wv1" d="M777 300H826"/><path class="wv2" d="M777 300H826"/><path class="wv0" d="M825 300H826" marker-end="url(#a0)"/><path class="wv1" d="M790 300V410H680V436"/><path class="wv2" d="M790 300V410H680V436"/><path class="wv0" d="M680 435V436" marker-end="url(#a0)"/><text class="gl" x="788" y="214" text-anchor="start">Auto-eval loop</text><text class="gs" x="788" y="230" text-anchor="start">memory grounding + coherence†</text><path class="rej" d="M755 204H745V178H472V196" marker-end="url(#a0)"/><text class="bm" x="608" y="170" text-anchor="middle">return to writers if failed</text><rect class="nb" x="585" y="440" width="190" height="96" rx="10"/><text class="bt" x="680.0" y="456.5" text-anchor="middle">LLM, history in context</text><text class="bs" x="680.0" y="473.5" text-anchor="middle">GPT-5.2 · Claude Sonnet 4.5</text><text class="bs" x="680.0" y="490.5" text-anchor="middle">Gemini 3 Pro · Qwen3-32B</text><text class="bm" x="680.0" y="507.5" text-anchor="middle">with and without thinking</text><circle class="dot dn" cx="599" cy="522" r="4"/><text class="tcg" x="609" y="526" text-anchor="start">answer</text><rect class="nb" x="830" y="265" width="190" height="118" rx="10"/><text class="bt" x="925" y="286" text-anchor="middle">Memory system</text><text class="bm" x="925" y="302" text-anchor="middle">agents: one of six</text><text class="bs" x="925" y="320" text-anchor="middle">A-Mem · LangMem</text><text class="bs" x="925" y="335" text-anchor="middle">Mem-0 · MemoBase</text><text class="bs" x="925" y="350" text-anchor="middle">MemoryOS§ · Nemori</text><circle class="dot dr" cx="844" cy="368" r="4"/><text class="tcr" x="854" y="372" text-anchor="start">top 50 memories</text><path class="lr" d="M925 383V423" marker-end="url(#ar)"/><rect class="nb" x="830" y="427" width="190" height="80" rx="10"/><text class="bt" x="925.0" y="445" text-anchor="middle">Answer step</text><text class="bs" x="925.0" y="462" text-anchor="middle">GPT-4o-mini, no thinking</text><text class="bs" x="925.0" y="479" text-anchor="middle">one prompt for every system</text><circle class="dot dn" cx="844" cy="493" r="4"/><text class="tcg" x="854" y="497" text-anchor="start">answer</text><rect class="nb k2" x="505" y="560" width="170" height="108" rx="10"/><text class="bt" x="590" y="582" text-anchor="middle">Question writer</text><circle class="dot dq" cx="519" cy="600" r="4"/><text class="tcq" x="529" y="604" text-anchor="start">the question</text><circle class="dot dk" cx="519" cy="624" r="4"/><text class="tck" x="529" y="628" text-anchor="start">criteria</text><text class="bm" x="529" y="643" text-anchor="start">yes/no, with</text><text class="bm" x="529" y="657" text-anchor="start">expected answers</text><path class="lq" d="M675 600H700V540" marker-end="url(#aq)"/><path class="lq" d="M700 600H799V458H826" marker-end="url(#aq)"/><path class="lk" d="M675 624H745V648H826" marker-end="url(#ak)"/><a class="jlink" href="#fama" aria-label="Go to the Scoring scene: how FAMA is computed"><g class="jl-in"><rect class="nb jbox" x="830" y="600" width="190" height="70" rx="10"/><text class="bt" x="925.0" y="622.0" text-anchor="middle">3 judges, majority</text><text class="bs" x="925.0" y="639.0" text-anchor="middle">score each answer</text><text class="bs jfama" x="925.0" y="656.0" text-anchor="middle">on the criteria → <tspan class="jf">FAMA</tspan></text><circle class="jgo" cx="1006" cy="614" r="8"/><path class="jgo-a" d="M1002.5 614H1009M1006 611L1009 614L1006 617"/></g></a><path class="l0" d="M775 522H785V618H826" marker-end="url(#a0)"/><path class="l0" d="M925 507V596" marker-end="url(#a0)"/><text class="gs" x="20" y="640" text-anchor="start">* Neither trace is released, and the simulator is not seeded,</text><text class="gs" x="20" y="655" text-anchor="start">so they cannot be regenerated.</text><text class="gs" x="20" y="675" text-anchor="start">† Coherence is described in the paper but not in the released code.</text><text class="gs" x="20" y="690" text-anchor="start">The code checks memory grounding only: the memory turns ± 1 turn,</text><text class="gs" x="20" y="705" text-anchor="start">one LLM rather than three, and neutral sessions skip the loop.</text><text class="gs" x="20" y="725" text-anchor="start">‡ The small-talk writer also writes the openings and closings of memory sessions.</text><text class="gs" x="20" y="745" text-anchor="start">§ The paper names MemoryOS and links memoryos.com, a memory-training app;</text><text class="gs" x="20" y="760" text-anchor="start">the released code integrates MemOS (MemTensor), a different system.</text></svg></div>
-    <div class="flowbar"><button class="btn" id="pipe-play" type="button" aria-pressed="false">▶ Play the flow</button><span class="flowhint">dots follow each kind of data, stage by stage</span></div>
+    <div class="scroll"><svg class="pipe" viewBox="0 142 1045 626" role="img" aria-labelledby="pipe-t pipe-d"><title id="pipe-t">How Memora is built and scored</title><desc id="pipe-d">Seed data has three parts: persona traits go to the session simulator and to both turn writers; memory types and constraints go only to the simulator. The simulator writes the memory trace, the plan, as two outputs. Each session’s planned change goes to the memory-turn writer and to the checks. The small-talk writer produces neutral sessions and the openings and closings of memory sessions; the memory-turn writer produces memory sessions. The memory-turn writer hands its plan to the checks, which look only at the memory turns plus one turn either side; neutral sessions skip the checks. A failed conversation is rewritten whole. Accepted conversations go two ways: to a memory system (one of six), whose top 50 memories, as text with a relevance score and no dates, go to a shared answer step, GPT-4o-mini with one prompt; or, in the paper’s other setting, to an LLM that reads the whole history. Both get the question and both answers go to the judges. Every state over time goes to the question writer, which produces the question, its date, the criteria and the evidence; only the question and the criteria are used, the date is never read and the evidence is only saved.</desc><defs><marker id="a0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah0"/></marker><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah1"/></marker><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ah2"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahp"/></marker><marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aht"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahc"/></marker><marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahs"/></marker><marker id="aq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahq"/></marker><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahm"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="aho"/></marker><pattern id="net" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V7M0 0H7" class="netl"/></pattern><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahr"/></marker><marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" class="ahk"/></marker></defs><rect class="grp" x="392" y="200" width="159" height="202" rx="14"/><rect class="nb" x="10" y="165" width="125" height="120" rx="10"/><text class="bt" x="72.5" y="191" text-anchor="middle">Seed data</text><circle class="dot cc" cx="24" cy="211" r="4"/><text class="tcg" x="34" y="215" text-anchor="start">constraints</text><g class="mtypes" tabindex="0" role="button" aria-label="Memory types: preference, activity and goal"><rect class="hit" x="14" y="225" width="118" height="22" rx="4"/><circle class="dot ct" cx="24" cy="236" r="4"/><text class="tct mtu" x="34" y="240" text-anchor="start">memory types</text></g><circle class="dot cp" cx="24" cy="261" r="4"/><text class="tcp" x="34" y="265" text-anchor="start">persona traits</text><path class="lc" d="M135 211H171" marker-end="url(#ac)"/><path class="lt" d="M135 236H171" marker-end="url(#at)"/><path class="lp" d="M135 261H171" marker-end="url(#ap)"/><path class="lp" d="M152 261V380H400" marker-end="url(#ap)"/><path class="lp" d="M372 380V270H400" marker-end="url(#ap)"/><rect class="nb" x="175" y="165" width="180" height="135" rx="10"/><text class="bt" x="265" y="188" text-anchor="middle">Session simulator</text><text class="bs" x="265" y="205" text-anchor="middle">decides what happens</text><circle class="dot d1" cx="189" cy="229" r="4"/><text class="c1s" x="199" y="233" text-anchor="start">session trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="248" text-anchor="start">each session’s change</text><circle class="dot d2" cx="189" cy="269" r="4"/><text class="c2s" x="199" y="273" text-anchor="start">memory trace<tspan class="fn">*</tspan></text><text class="bm" x="199" y="288" text-anchor="start">every state over time</text><path class="l1" d="M355 237H400" marker-end="url(#a1)"/><path class="l1" d="M544 222H751" marker-end="url(#a1)"/><path class="l2" d="M265 300V600H501" marker-end="url(#a2)"/><rect class="nb k1" x="404" y="210" width="140" height="84" rx="10"/><text class="bt" x="474" y="231" text-anchor="middle">Memory-turn writer</text><text class="bs" x="474" y="248" text-anchor="middle">LLMs state the</text><text class="bs" x="474" y="263" text-anchor="middle">planned change</text><circle class="dot dm" cx="422" cy="281" r="4"/><text class="tcm" x="432" y="285" text-anchor="start">memory sessions</text><rect class="nb k3" x="404" y="318" width="140" height="74" rx="10"/><text class="bt" x="474" y="339" text-anchor="middle">Small-talk writer‡</text><text class="bs" x="474" y="356" text-anchor="middle">non-memory turns</text><circle class="dot ds" cx="420" cy="374" r="4"/><text class="tcs" x="430" y="378" text-anchor="start">neutral sessions</text><path class="lm" d="M544 281H581" marker-end="url(#am)"/><path class="ls" d="M544 374H566V318H581" marker-end="url(#as)"/><rect class="nb" x="585" y="262" width="124" height="78" rx="10"/><text class="bt" x="647.0" y="288.0" text-anchor="middle">Conversations</text><text class="bs" x="647.0" y="305.0" text-anchor="middle">generated,</text><text class="bs" x="647.0" y="322.0" text-anchor="middle">one per session</text><rect class="gatebg" x="755" y="196" width="22" height="206" rx="4"/><rect class="gate" x="755" y="196" width="22" height="206" rx="4"/><path class="wv1" d="M709 300H755"/><path class="wv2" d="M709 300H755"/><path class="wvg" d="M755 300H777"/><path class="wv1" d="M777 300H826"/><path class="wv2" d="M777 300H826"/><path class="wv0" d="M825 300H826" marker-end="url(#a0)"/><path class="wv1" d="M790 300V410H680V436"/><path class="wv2" d="M790 300V410H680V436"/><path class="wv0" d="M680 435V436" marker-end="url(#a0)"/><text class="gl" x="788" y="214" text-anchor="start">Auto-eval loop</text><text class="gs" x="788" y="230" text-anchor="start">memory grounding + coherence†</text><path class="rej" d="M755 204H745V178H472V196" marker-end="url(#a0)"/><text class="bm" x="608" y="170" text-anchor="middle">return to writers if failed</text><rect class="nb" x="585" y="440" width="190" height="96" rx="10"/><text class="bt" x="680.0" y="456.5" text-anchor="middle">LLM, history in context</text><text class="bs" x="680.0" y="473.5" text-anchor="middle">GPT-5.2 · Claude Sonnet 4.5</text><text class="bs" x="680.0" y="490.5" text-anchor="middle">Gemini 3 Pro · Qwen3-32B</text><text class="bm" x="680.0" y="507.5" text-anchor="middle">with and without thinking</text><circle class="dot dn" cx="599" cy="522" r="4"/><text class="tcg" x="609" y="526" text-anchor="start">answer</text><rect class="nb" x="830" y="265" width="190" height="134" rx="10"/><text class="bt" x="925" y="286" text-anchor="middle">Memory system</text><text class="bm" x="925" y="302" text-anchor="middle">agents: one of six</text><text class="bs" x="925" y="320" text-anchor="middle">A-Mem · LangMem</text><text class="bs" x="925" y="335" text-anchor="middle">Mem-0 · MemoBase</text><text class="bs" x="925" y="350" text-anchor="middle">MemoryOS§ · Nemori</text><circle class="dot dr" cx="841" cy="368" r="4"/><text class="tcr" x="849" y="372" text-anchor="start">50 most relevant memories</text><text class="tcr" x="849" y="388" text-anchor="start">to the question</text><path class="lr" d="M925 399V423" marker-end="url(#ar)"/><rect class="nb" x="830" y="427" width="190" height="80" rx="10"/><text class="bt" x="925.0" y="445" text-anchor="middle">Answer step</text><text class="bs" x="925.0" y="462" text-anchor="middle">GPT-4o-mini, no thinking</text><text class="bs" x="925.0" y="479" text-anchor="middle">one prompt for every system</text><circle class="dot dn" cx="844" cy="493" r="4"/><text class="tcg" x="854" y="497" text-anchor="start">answer</text><rect class="nb k2" x="505" y="560" width="170" height="108" rx="10"/><text class="bt" x="590" y="582" text-anchor="middle">Question writer</text><circle class="dot dq" cx="519" cy="600" r="4"/><text class="tcq" x="529" y="604" text-anchor="start">the question</text><circle class="dot dk" cx="519" cy="624" r="4"/><text class="tck" x="529" y="628" text-anchor="start">criteria</text><text class="bm" x="529" y="643" text-anchor="start">yes/no, with</text><text class="bm" x="529" y="657" text-anchor="start">expected answers</text><path class="lq" d="M675 600H700V540" marker-end="url(#aq)"/><path class="lq" d="M700 600H799V458H826" marker-end="url(#aq)"/><path class="lq" d="M799 460V338H826" marker-end="url(#aq)"/><path class="lk" d="M675 624H745V648H826" marker-end="url(#ak)"/><a class="jlink" href="#fama" aria-label="Go to the Scoring scene: how FAMA is computed"><g class="jl-in"><rect class="nb jbox" x="830" y="600" width="190" height="70" rx="10"/><text class="bt" x="925.0" y="622.0" text-anchor="middle">3 judges, majority</text><text class="bs" x="925.0" y="639.0" text-anchor="middle">score each answer</text><text class="bs jfama" x="925.0" y="656.0" text-anchor="middle">on the criteria → <tspan class="jf">FAMA</tspan></text><circle class="jgo" cx="1006" cy="614" r="8"/><path class="jgo-a" d="M1002.5 614H1009M1006 611L1009 614L1006 617"/></g></a><path class="l0" d="M775 522H785V618H826" marker-end="url(#a0)"/><path class="l0" d="M925 507V596" marker-end="url(#a0)"/><text class="gs" x="20" y="640" text-anchor="start">* Neither trace is released, and the simulator is not seeded,</text><text class="gs" x="20" y="655" text-anchor="start">so they cannot be regenerated.</text><text class="gs" x="20" y="675" text-anchor="start">† Coherence is described in the paper but not in the released code.</text><text class="gs" x="20" y="690" text-anchor="start">The code checks memory grounding only: the memory turns ± 1 turn,</text><text class="gs" x="20" y="705" text-anchor="start">one LLM rather than three, and neutral sessions skip the loop.</text><text class="gs" x="20" y="725" text-anchor="start">‡ The small-talk writer also writes the openings and closings of memory sessions.</text><text class="gs" x="20" y="745" text-anchor="start">§ The paper names MemoryOS and links memoryos.com, a memory-training app;</text><text class="gs" x="20" y="760" text-anchor="start">the released code integrates MemOS (MemTensor), a different system.</text></svg></div>
+    <div class="flowbar"><button class="btn" id="pipe-prev" type="button" aria-label="Previous stage">◀</button><button class="btn" id="pipe-next" type="button">Next stage ▶</button><span class="flowhint" id="pipe-stage" aria-live="polite"></span><button class="btn" id="pipe-play" type="button" aria-pressed="false">▶ Play all</button></div>
   </figure>
 </section>
 
@@ -881,15 +907,15 @@ mark.xmark{animation:markin .5s ease}
     <div class="fq"><span class="fq-who">sales_manager asks</span>“I'm looking for a good book to read. Any suggestions?”</div>
     <p class="fhint">Each question comes with yes/no checks. Tap a check to change what the answer says.</p>
     <div class="fcols">
-      <div class="fcol now"><h3>Should mention <span>what's true now</span></h3><div class="fchips" data-kind="p"></div></div>
-      <div class="fcol old"><h3>Should leave out <span>what used to be true</span></h3><div class="fchips" data-kind="f"></div></div>
+      <div class="fcol now"><h3>Should mention <span>what's true now</span></h3><p class="ftpl">“Does the response reflect or align with the user’s preference for ___?” <em>expected: yes</em></p><div class="fchips" data-kind="p"></div></div>
+      <div class="fcol old"><h3>Should leave out <span>what used to be true</span></h3><p class="ftpl">“Does the response reflect or mention the user’s preference for ___?” <em>expected: no</em></p><div class="fchips" data-kind="f"></div></div>
     </div>
-    <div class="fcol extra"><h3>Not on the list <span>true about her, but never scored</span></h3><div class="fchips" data-kind="x"></div></div>
+    <div class="fcol extra"><h3>Not on the list <span>true about the user, but not part of the scoring criteria</span></h3><div class="fchips" data-kind="x"></div></div>
     <div class="fans"><div class="fans-l">The answer</div><p class="fans-t" aria-live="polite"></p></div>
     <div class="fscore">
       <div class="fbar" aria-hidden="true"><div class="fb-credit"></div><div class="fb-pen"></div></div>
       <div class="fread">
-        <div class="fbig"><span class="fnum">1.00</span><span class="flab">FAMA for this answer</span></div>
+        <div class="fbig"><span class="fnum">100</span><span class="flab">FAMA for this answer, out of 100</span></div>
         <ul class="fwhy"><li class="w-credit"></li><li class="w-pen"></li></ul>
       </div>
     </div>
@@ -902,7 +928,6 @@ mark.xmark{animation:markin .5s ease}
 <section class="scene" id="results" data-name="What they found" hidden>
   <p class="kicker">What they found</p>
   <h2>Which setup wins depends on the task</h2>
-  <p class="lede">They ran two settings on the same questions: strong LLMs reading the whole history, and six memory systems answered by GPT-4o-mini. Every answer is scored with FAMA by a three-judge majority vote.</p>
   <div class="card rchart"><div class="label"><span class="xb xb-paper">The paper</span>Weekly FAMA by task (their Table 3)</div>
     <div class="legend2"><span><i class="g-full"></i>LLM reading the whole history, thinking off (4 models)</span><span><i class="g-think"></i>same 4 LLMs, thinking on</span><span><i class="g-mem"></i>memory systems answered by GPT-4o-mini (6)</span></div>
     <div class="rrows">
@@ -914,10 +939,9 @@ mark.xmark{animation:markin .5s ease}
     </div>
     <p class="note">Bars show each group’s average; thin lines show the range across the group.</p>
   </div>
-  <div class="grid3 rpat">
-    <div class="card"><div class="label">Task-dependent</div><p>All six memory systems beat every LLM on remembering. Recommending is close, and reasoning is low for all systems (30 at best).</p></div>
-    <div class="card"><div class="label">Longer timelines score lower</div><p>Most systems drop from weekly to quarterly. MemoBase falls from 44 to 15 on remembering.</p></div>
-    <div class="card"><div class="label">The forgetting penalty</div><p>Scoring only what’s mentioned overstates performance. The penalty for outdated items affects memory systems more as timelines get longer.</p></div>
+  <div class="grid2 rpat">
+    <div class="card"><div class="label">Longer timelines score lower</div><p>Most systems score lower on the monthly and quarterly timelines, which have about 4 and 13 times as many sessions as the weekly one.</p></div>
+    <div class="card rconc"><div class="label">Their conclusions</div><p>Scoring only what’s mentioned overstates memory performance; the penalty for outdated items matters more as timelines grow. And “memory agents offer marginal improvements” over LLMs alone.</p></div>
   </div>
 </section>
 
@@ -1079,6 +1103,7 @@ const dots = document.getElementById('dots');
 const tip = document.getElementById('tip');
 let cur = 0, timers = [];
 const FLOWCTL = {};   // scenes with internal steps: {next(), prev(), reset()}
+window.__FLOWCTL = FLOWCTL;
 const ENTER = {};     // scene id -> function run on entering (animations)
 const REPLAY = {};    // scene id -> true if it has something to replay
 
@@ -1151,7 +1176,7 @@ addEventListener('keydown', e=>{ if(e.target.closest('input,textarea')) return;
 
 
 (function(){ const NS='http://www.w3.org/2000/svg';
-  [['ptk1',60],['ptk2',150]].forEach(([id,y])=>{ const g=document.getElementById(id); if(!g) return;
+  [['ptk1',60],['ptk2',170]].forEach(([id,y])=>{ const g=document.getElementById(id); if(!g) return;
     for(let x=170;x<=870;x+=25){ const l=document.createElementNS(NS,'line'); l.setAttribute('x1',x); l.setAttribute('x2',x); l.setAttribute('y1',y-5); l.setAttribute('y2',y+5); g.appendChild(l);} }); })();
 
 /* Glossary: definitions, auto-linked terms with hover definitions, and a searchable glossary scene */
@@ -1170,7 +1195,7 @@ const GLOSS = [
  {g:'The benchmark', t:'Memory mutation', a:['memory mutation','mutation'], d:'In the paper: how many updates or deletions the information goes through before the question is asked.'},
  {g:'The benchmark', t:'Remembering / reasoning / recommending', a:['remembering','recommending','reasoning questions'], d:'The three tasks: recall stored items; combine facts across sessions (for example, budget remaining); suggest something from current preferences.'},
  {g:'The benchmark', t:'Temporal validity', a:['temporal validity'], d:'Whether a piece of information is still true now.'},
- {g:'The benchmark', t:'Invalid memory', a:['invalid memory','invalid memories','invalidated memory','invalidated'], d:'The paper’s term for information that is no longer valid because the user later updated, corrected or deleted it (also “obsolete” or “outdated”). Relying on it is what FAMA’s forgetting penalty targets; whether merely naming it as no longer true counts is left open (see E45).'},
+ {g:'The benchmark', t:'Invalid memory', a:['invalid memory','invalid memories','invalidated memory','invalidated'], d:'The paper’s term for information that is no longer valid because the user later updated, corrected or deleted it (also “obsolete” or “outdated”). Relying on it is what FAMA’s forgetting penalty targets; whether merely naming it as no longer true counts is left open.'},
  {g:'The benchmark', t:'Outdated memory', a:['outdated','obsolete'], d:'Information that was later updated or deleted: the same thing as invalid memory. Reusing it is what the forgetting score penalises.'},
  {g:'Scoring', t:'Evaluation criteria', a:['evaluation criteria','criteria','criterion','sub-question','sub-questions'], d:'The yes/no checks under each question (called evaluation questions in the code; sub-questions in my extension).'},
  {g:'Scoring', t:'Memory presence', a:['memory presence'], d:'A criterion the answer must meet by including current information. Expected answer: yes.'},
@@ -1190,8 +1215,7 @@ const GLOSS = [
  {g:'Systems compared', t:'Chronological truncation', a:['truncation'], d:'When the history doesn’t fit an LLM’s context window, the oldest sessions are dropped.'},
  {g:'Systems compared', t:'Partial retrieval', a:['partial retrieval'], d:'The error where a system retrieves some but not all of the memories it needs (the paper’s error analysis).'},
  {g:'My extension', t:'Development personas', a:['development personas'], d:'The 3 personas (financial analyst, management consultant, sales manager) used for everything here; the other 7 stay untouched for my course project.'},
- {g:'My extension', t:'Note arm / log arm', a:['note arm','log arm'], d:'Two ways of storing memory: notes the agent writes and updates (note), or the user’s own words, appended and never rewritten (log).'},
- {g:'My extension', t:'Hand labels', a:['hand labels','hand-labelled'], d:'My own yes/no labels on 70 judged items, made before seeing any judge output.'},
+  {g:'My extension', t:'Hand labels', a:['hand labels','hand-labelled'], d:'My own yes/no labels on 70 judged items, made before seeing any judge output.'},
  {g:'My extension', t:'judge_v1', a:['judge_v1'], d:'My judge prompt: Memora’s question plus labelling rules, the first being that something named only as no longer liked or removed doesn’t count as mentioned.'},
  {g:'My extension', t:'answer_v1', a:['answer_v1'], d:'My answer prompt: memories newest first with dates, and “when memories disagree, the newer one is what is true now”.'}
 ];
@@ -1266,27 +1290,31 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
     {r:[['M766 300V204H745V178H472V196','--ink-3',1]], flash:true},     // sent back to the writers
     {r:WRITE},                                                          // they write the conversation again
     {r:[['M709 300H826',W,4],['M709 300H790V410H680V436',W,4]]},        // passes this time
-    {r:[['M925 383V423','--cr'],['M675 600H700V540','--cq'],['M675 600H799V458H826','--cq']]},
+    {r:[['M675 600H799V338H826','--cq'],['M925 399V423','--cr'],['M675 600H700V540','--cq'],['M675 600H799V458H826','--cq']]},
     {r:[['M775 522H785V618H826','--ink-3'],['M925 507V596','--ink-3'],['M675 624H745V648H826','--ck']]}
   ];
   const SPEED=0.26, GAP=240;
-  let raf=0, layer=null, running=false, timers=[];
+  const NAMES=['Seed data goes into the simulator','The simulator writes the two traces','The writers write a conversation','The auto-eval loop catches one','It goes back to the writers','They write it again','It passes, and goes to the memory system and the LLM','Memories and the question go to the answer step','Answers and criteria go to the judges'];
+  const prevB=document.getElementById('pipe-prev'), nextB=document.getElementById('pipe-next'), lab=document.getElementById('pipe-stage');
+  let raf=0, layer=null, running=false, timers=[], k=0, allMode=false;
+  function label(){ if(!lab) return; lab.textContent = k ? `${k} of ${STAGES.length} · ${NAMES[k-1]}` : `${STAGES.length} stages`;
+    if(prevB) prevB.disabled=k===0; if(nextB) nextB.disabled=k===STAGES.length; }
   function stop(){ cancelAnimationFrame(raf); raf=0; timers.forEach(clearTimeout); timers=[]; if(grp) grp.classList.remove('flash');
-    if(layer){layer.remove(); layer=null;} running=false; btn.textContent='▶ Play the flow'; btn.setAttribute('aria-pressed','false'); }
-  function play(){
-    stop(); running=true; btn.textContent='■ Stop'; btn.setAttribute('aria-pressed','true');
+    if(layer){layer.remove(); layer=null;} running=false; allMode=false; btn.textContent='▶ Play all'; btn.setAttribute('aria-pressed','false'); }
+  function run(list, done){
+    stop(); running=true;
     layer=document.createElementNS(NS,'g'); layer.setAttribute('class','pdots'); svg.appendChild(layer);
     const jobs=[]; let t0=0, last=0;
-    STAGES.forEach(st=>{
+    list.forEach(st=>{
       let end=t0;
       st.r.forEach(([d,col,n,o])=>{
         o=o||{}; n=n||3;
         const p=document.createElementNS(NS,'path'); p.setAttribute('d',d); p.setAttribute('fill','none');
         layer.appendChild(p); const L=p.getTotalLength(), dur=L/SPEED, hold=o.hold||0;
-        for(let k=0;k<n;k++){
+        for(let q=0;q<n;q++){
           const c=document.createElementNS(NS,'circle'); c.setAttribute('r',5); c.setAttribute('class','pdot');
-          c.style.fill='var('+(Array.isArray(col)?col[k%col.length]:col)+')'; c.style.opacity=0;
-          layer.appendChild(c); const start=t0+k*GAP; jobs.push({p,c,L,start,dur,hold});
+          c.style.fill='var('+(Array.isArray(col)?col[q%col.length]:col)+')'; c.style.opacity=0;
+          layer.appendChild(c); const start=t0+q*GAP; jobs.push({p,c,L,start,dur,hold});
           if(!o.free) end=Math.max(end,start+dur+hold); last=Math.max(last,start+dur+hold);
         }
       });
@@ -1300,16 +1328,24 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
         if(e<0||e>j.dur+j.hold){ j.c.style.opacity=0; return; }
         const u=Math.min(1,e/j.dur); const pt=j.p.getPointAtLength(u*j.L);
         j.c.setAttribute('cx',pt.x); j.c.setAttribute('cy',pt.y);
-        if(j.hold){ // caught: arrive, shake in the net, fade
+        if(j.hold){
           if(e<=j.dur){ j.c.style.opacity=Math.min(1,u/0.06); j.c.setAttribute('r',5); }
           else { const h=(e-j.dur)/j.hold; j.c.setAttribute('cx',pt.x+Math.sin(h*40)*2.2*(1-h)); j.c.setAttribute('r',5+1.5*Math.sin(h*Math.PI)); j.c.style.opacity= h>0.7 ? (1-h)/0.3 : 1; }
         } else j.c.style.opacity = u<0.06 ? u/0.06 : u>0.94 ? (1-u)/0.06 : 1;
       });
-      if(t<total) raf=requestAnimationFrame(frame); else { stop(); const jl=svg.querySelector('.jlink'); if(jl){ jl.classList.add('ping'); setTimeout(()=>jl.classList.remove('ping'),1400);} }
+      if(t<total) raf=requestAnimationFrame(frame); else { stop(); if(done) done(); }
     }
     raf=requestAnimationFrame(frame);
   }
-  btn.addEventListener('click',()=> running?stop():play());
+  function playAll(){ k=0; label(); run(STAGES, ()=>{ k=STAGES.length; label(); const jl=svg.querySelector('.jlink'); if(jl){ jl.classList.add('ping'); setTimeout(()=>jl.classList.remove('ping'),1400);} });
+    allMode=true; btn.textContent='■ Stop'; btn.setAttribute('aria-pressed','true'); }
+  function stage(n){ k=n; label(); if(n>0) run([STAGES[n-1]], n===STAGES.length ? ()=>{ const jl=svg.querySelector('.jlink'); if(jl){ jl.classList.add('ping'); setTimeout(()=>jl.classList.remove('ping'),1400);} } : null); else stop(); }
+  btn.addEventListener('click',()=> allMode?stop():playAll());
+  if(nextB) nextB.addEventListener('click',()=>{ if(k<STAGES.length) stage(k+1); });
+  if(prevB) prevB.addEventListener('click',()=>{ if(k>0) stage(k-1); });
+  if(window.__FLOWCTL){ window.__FLOWCTL['how']={ next(){ if(k<STAGES.length){ stage(k+1); return true; } return false; },
+      prev(){ if(k>0){ stage(k-1); return true; } return false; }, reset(){ stop(); k=0; label(); } }; }
+  label();
   window.addEventListener('hashchange',stop);
 })();
 
@@ -1343,13 +1379,16 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
   const P=['Tess Gerritsen','techno-thrillers','avoids The Bourne Identity'];
   const F=[['forensic science','forensic science','a forensic-science procedural'],['organized crime','organized crime','an organized-crime saga'],['Tana French','Tana French','Tana French’s latest']];
   const X=['ancient philosophy'];
-  const st={p:[true,true,true],f:[0,0,0],x:[false]};
+  const st={p:[true,true,true],f:[0,0,0],x:[false],bv:0};  // bv: Bourne 0 left out, 1 said it's skipped, 2 recommended
   const box={p:root.querySelector('[data-kind="p"]'),f:root.querySelector('[data-kind="f"]'),x:root.querySelector('[data-kind="x"]')};
+  const QP=['Does the response reflect or align with the user’s preference for Tess Gerritsen?','Does the response reflect or align with the user’s preference for techno-thriller?','Does the response avoid recommending The Bourne Identity (which the user dislikes)?'];
+  const QF=['Does the response reflect or mention the user’s preference for forensic science?','Does the response reflect or mention the user’s preference for organized crime?','Does the response reflect or mention the user’s preference for Tana French?'];
   function chip(kind,i,label){
     const b=document.createElement('button'); b.type='button'; b.className='fchip';
     b.innerHTML='<span class="ic"></span><span class="tx"></span><span class="st"></span>';
-    b.querySelector('.tx').textContent=label;
-    b.addEventListener('click',()=>{ if(kind==='f') st.f[i]=(st.f[i]+1)%3; else st[kind][i]=!st[kind][i]; render(); });
+    const tx=b.querySelector('.tx'); const lb=document.createElement('span'); lb.className='lab'; lb.textContent=label; tx.appendChild(lb);
+    if(kind==='p'&&i===2){ const t=document.createElement('p'); t.className='ftpl ftpl-in'; t.innerHTML='“Does the response avoid recommending ___ (which the user dislikes)?” <em>expected: yes</em>'; box[kind].appendChild(t); }
+    b.addEventListener('click',()=>{ if(kind==='f') st.f[i]=(st.f[i]+1)%3; else if(kind==='p'&&i===2) st.bv=(st.bv+1)%3; else st[kind][i]=!st[kind][i]; render(); });
     box[kind].appendChild(b); return b;
   }
   const chips={p:P.map((x,i)=>chip('p',i,x)),f:F.map((x,i)=>chip('f',i,x[0])),x:X.map((x,i)=>chip('x',i,x))};
@@ -1362,23 +1401,25 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
     out.push((why.length?'Since '+join(why)+', I’d suggest ':'I’d suggest ')+core+'.');
     const dropped=F.filter((f,i)=>st.f[i]===1).map(f=>f[1]);
     if(dropped.length) out.push(sp('a','I know you’ve moved on from '+join(dropped)+', so I’ve left '+(dropped.length>1?'those':'that')+' out.'));
-    out.push(st.p[2]?sp('g','I’ve skipped The Bourne Identity, since it isn’t your thing.'):sp('b','The Bourne Identity is also a classic worth picking up.'));
+    if(st.bv===1) out.push(sp('g','I’ve skipped The Bourne Identity, since it isn’t your thing.'));
+    if(st.bv===2) out.push(sp('b','The Bourne Identity is also a classic worth picking up.'));
     const recs=F.filter((f,i)=>st.f[i]===2).map(f=>f[2]);
     if(recs.length) out.push(sp('b','You could also try '+joinOr(recs)+'.'));
     if(st.x[0]) out.push(sp('x','And since you’re into ancient philosophy, look for one with a historical thread.'));
     return out.join(' ');
   }
   function render(){
-    chips.p.forEach((b,i)=>{ const g=st.p[i]; b.className='fchip'+(g?'':' miss'); b.querySelector('.ic').textContent=g?'✓':'✕';
-      b.querySelector('.st').textContent = i===2 ? (g?'skipped':'recommended it') : (g?'in the answer':'missing'); });
+    st.p[2]=st.bv<2;
+    chips.p.forEach((b,i)=>{ const g=st.p[i]; b.className='fchip'+(g?'':' miss')+(i===2?' favoid':''); b.querySelector('.ic').textContent=g?'✓':'✕';
+      b.querySelector('.st').textContent = i===2 ? ['left out','said it’s skipped','recommended it'][st.bv] : (g?'in the answer':'missing'); });
     chips.f.forEach((b,i)=>{ const v=st.f[i]; b.className='fchip'+(v===1?' amb':v===2?' miss':''); b.querySelector('.ic').textContent=v===0?'✓':v===1?'?':'✕';
       b.querySelector('.st').textContent=['left out','said it’s dropped','recommended it'][v]; });
     chips.x.forEach((b,i)=>{ const on=st.x[i]; b.className='fchip '+(on?'xon':'xoff'); b.querySelector('.ic').textContent=on?'+':'';
-      b.querySelector('.st').textContent=on?'in the answer · no points':'not in the answer'; });
+      b.querySelector('.st').textContent=on?'in the answer · unscored':'not in the answer · unscored'; });
     root.querySelector('.fans-t').innerHTML=answer();
     const nP=P.length,nF=F.length,mp=st.p.filter(Boolean).length,ff=st.f.filter(v=>v===0).length;
     const MPA=mp/nP, FAA=ff/nF, lam=nF/(nP+nF), pen=lam*(1-FAA), FAMA=Math.max(0,MPA-pen);
-    root.querySelector('.fnum').textContent=fmt(FAMA);
+    root.querySelector('.fnum').textContent=Math.round(FAMA*100);
     const cr=root.querySelector('.fb-credit'), pn=root.querySelector('.fb-pen');
     cr.style.width=(MPA*100)+'%'; const shown=Math.min(pen,MPA); pn.style.left=((MPA-shown)*100)+'%'; pn.style.width=(shown*100)+'%';
     root.querySelector('.w-credit').textContent=`Credit: ${mp} of ${nP} current details right`;
@@ -1388,9 +1429,9 @@ addEventListener('hashchange',()=>{ const k=scenes.findIndex(s=>'#'+s.id===locat
     const notes=[]; if(st.f.includes(1)) notes.push('“Said it’s dropped” is a judge’s call. Memora’s own judge prompt usually counts it as brought up, so it’s scored that way here.');
     if(st.x[0]) notes.push('The ancient-philosophy line is true and relevant, but it isn’t on the list, so it changes nothing.');
     note.textContent=notes.join(' '); note.hidden=!notes.length;
-    root.querySelector('.fm').innerHTML=`MPA = ${mp}/${nP} = ${fmt(MPA)} &nbsp; FAA = ${ff}/${nF} = ${fmt(FAA)} &nbsp; λ = ${nF}/(${nP}+${nF}) = ${fmt(lam)}<br>FAMA = max(0, MPA − λ·(1 − FAA)) = max(0, ${fmt(MPA)} − ${fmt(lam)}×${fmt(1-FAA)}) = ${fmt(FAMA)}`;
+    root.querySelector('.fm').innerHTML=`MPA = ${mp}/${nP} = ${fmt(MPA)} &nbsp; FAA = ${ff}/${nF} = ${fmt(FAA)} &nbsp; λ = ${nF}/(${nP}+${nF}) = ${fmt(lam)}<br>FAMA = max(0, MPA − λ·(1 − FAA)) = max(0, ${fmt(MPA)} − ${fmt(lam)}×${fmt(1-FAA)}) = ${fmt(FAMA)}, or ${Math.round(FAMA*100)} out of 100`;
   }
-  document.getElementById('fama-reset').addEventListener('click',()=>{ st.p.fill(true); st.f.fill(0); st.x.fill(false); render(); });
+  document.getElementById('fama-reset').addEventListener('click',()=>{ st.p.fill(true); st.f.fill(0); st.x.fill(false); st.bv=0; render(); });
   render();
 })();
 
